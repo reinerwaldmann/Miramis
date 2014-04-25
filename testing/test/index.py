@@ -1,4 +1,4 @@
-#!C:\Python34\python.exe
+#!/usr/bin/python3                                                                                                            
 #-*- coding: utf-8
 
 #https://docs.python.org/2/library/cgi.html
@@ -9,16 +9,33 @@
 import cgitb, cgi, io, sys, os
 cgitb.enable()
 
-#sys.stdout._encoding = 'utf-8'
+#функция вывода кириллицы в юникоде
+import io, cgi, cgitb, sys                                                                                                    
+                                                                                                                              
+cgitb.enable()                                                                                                                
+                                                                                                                              
+if hasattr(sys.stdout, "buffer"):                                                                                            
+  def bwrite(s):                                                                                                              
+    sys.stdout.flush()                                                                                                     
+    sys.stdout.buffer.write(s)                                                                                                
+  write = sys.stdout.write                                                                                                    
+else:
+    try:
+        wrapper = io.TextIOWrapper(sys.stdout)
+        def bwrite(s):                                                                                                              
+            wrapper.flush()                                                                                                          
+            sys.stdout.write(s)                                                                                                      
+        write = wrapper.write
+    except:
+        pass
 
-def out(msg):
-    sys.stdout.buffer.write(msg.encode('utf8'))
-    sys.stdout.flush()
+#выводим голову
+print("Content-type: text/html;charset=utf-8\r\n\r\n")     
 
-out("Content-Type: text/html;charset=utf-8\n\n")
-out("<html><head>\n\n")
-out("</head><body>\n\n")
-out("<h1> ФОРМЫ </h1>")
+ 
+print("<html><head>\n\n")
+print("</head><body>\n\n")
+bwrite("<h1> ФОРМЫ </h1>".encode())
 
 #https://docs.python.org/3.3/library/cgi.html
 
