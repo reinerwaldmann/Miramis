@@ -4,14 +4,14 @@ import mysql.connector
 from mysql.connector import errorcode
 
  
+
+
 print("Content-Type: text/html;charset=utf-8")
 print() # <----------- addtional newlnie for header/body separation.
 print ("<html><head>")
 print() # <----------- addtional newlnie for header/body separation.
 print ("</head><body>")
 print ("At least python is working now!!")
-
-
 
 #mysql
 

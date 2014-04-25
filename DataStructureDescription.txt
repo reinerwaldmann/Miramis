@@ -1,0 +1,64 @@
+﻿Protocol Types Database
+
+class AProtocol 
+	str model
+	str typeOfTest
+	list channelname список названий каналов
+	list Procedures - или dict, для фиксации с номерами
+
+
+
+
+class Procedures
+	int number - номер порядковый
+	str name - имя процедуры
+	dict [str, str] mode_common - словарь общих режимов имя параметра - значение
+	dict [str, dict [ str, str ]] mode_channel словарь словарей режимов по каналам 
+					имя канала - имя параметра - значение
+	dict [str, dict [str, str]] normal_values словарь словарей значений нормативов 
+					название канала - название параметра - строка больше-меньше (значение параметра)
+
+
+
+------------------------------------------------------------------------------------------------
+Protocol Results Database
+class AResult
+	str model
+	str typeOfTest
+	str(или date) testDate
+	str(или  time) testTime
+	int numOfProduct
+	int numOfBatch
+        bool hasPassedTest - результаты испытаний прошёл (1) не прошёл (0)
+	list ResultsOfProcedure - или dict, для фиксации номеров испытаний
+	
+
+class resultsOfProcedure
+	int number
+	bool hasPassedProcedure
+	dict [str, dict [str, str]] values - словарь словарей название канала - название параметра - значение
+
+------------------------------------------------------------------------------------------------
+
+
+В каждом классе следующие стандартные методы:
+str, для представления на экране в консоли 
+toXML, для представления в XML (строится позже, в первой преверсии используем сериализацию)
+
+
+
+	
+
+	
+
+	
+
+	
+		
+
+
+
+
+	
+
+
