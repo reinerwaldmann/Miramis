@@ -73,46 +73,50 @@ class AResult (BaseStrReturn):
 #Представляет результат процедуры
 class resultsOfProcedure(BaseStrReturn):
     #парсит в resultsOfProcedure, каковой и возвращает.
-    def __init__(self, line):
-        listlines=line.split("\n")
-        self.hasPassedProcedure=listlines[0].__contains__("PASS")
+    def __init__(self):
+        number=int()
+        hasPassedProcedure=bool()
+        values1=dict()  #словарь словарей название канала - название параметра - значение
 
-        # print (listlines[0])
-        # return rp;
-        self.number=int(listlines[0].split(":")[0].split(".")[1])
-         #или же поудалять все символы, которые не цифры
-        ind=0
-        for i in range (0, listlines.__len__()):
-            if (listlines[i].__contains__("Результаты измерений")):
-                ind=i
-                break
-        ind+=2
-        #print (listlines[ind])
-        value_names=listlines[ind][0: listlines[ind].rfind("#")].split("|")[1::]
-        #print (channel_names)
-        ind+=2
 
-        #объединить операторы, парсящие таблицу, в функцию
-        self.values1={}
-        while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
-            #print (listlines[ind])
-            listnamesvals=listlines[ind][0: listlines[ind].rfind("#")].split("|")
-            channame=listnamesvals[0]
-            listvals=listnamesvals[1::]
-            valsdict=dict(zip(value_names, listvals))
-            self.values1[channame]=valsdict
-            ind+=1
-            #print (rp.number)
+    #
+    # def __init__(self, line):
+    #     listlines=line.split("\n")
+    #     self.hasPassedProcedure=listlines[0].__contains__("PASS")
+    #
+    #     # print (listlines[0])
+    #     # return rp;
+    #     self.number=int(listlines[0].split(":")[0].split(".")[1])
+    #      #или же поудалять все символы, которые не цифры
+    #     ind=0
+    #     for i in range (0, listlines.__len__()):
+    #         if (listlines[i].__contains__("Результаты измерений")):
+    #             ind=i
+    #             break
+    #     ind+=2
+    #     #print (listlines[ind])
+    #     value_names=listlines[ind][0: listlines[ind].rfind("#")].split("|")[1::]
+    #     #print (channel_names)
+    #     ind+=2
+    #
+    #     #объединить операторы, парсящие таблицу, в функцию
+    #     self.values1=dict()
+    #     while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
+    #         #print (listlines[ind])
+    #         listnamesvals=listlines[ind][0: listlines[ind].rfind("#")].split("|")
+    #         channame=listnamesvals[0]
+    #         listvals=listnamesvals[1::]
+    #         valsdict=dict(zip(value_names, listvals))
+    #         self.values1[channame]=valsdict
+    #         ind+=1
+    #         #print (rp.number)
 
-    number=int()
-    hasPassedProcedure=bool()
-    values1=dict()  #словарь словарей название канала - название параметра - значение
 
 
     def __str__(self):
         res = BaseStrReturn.__str__(self)   #по непонятной причине, BaseStrReturn отказывается выводить словарь словарей
-        res+=  self.values1.__str__()
         return res
+
 
 
 
@@ -172,44 +176,57 @@ def parseToResult (filename):
 
     rrlist=proclines.split("********************************************************************************\n")[0:-1]
 
-    #rpcseq=list(map(parse_to_results_of_procedure, rrlist))
+
+
+    rpcseq=list(map(parceToPrRes, rrlist))
 
     #print (rpcseq[0])
 
-
-  #  print ()
-
- #   print ()
-
-    v = resultsOfProcedure(rrlist[0])
-
-    #v  .values1={1: { 'a':'1' } }
-
-    m = resultsOfProcedure(rrlist[1])
-
-    print (v)
-    print (m)
-
-
-
-#    numseq=list(map (return_number_from_results_of_procedure, rpcseq))
-
-#    print (numseq)
-
-
-#    res.proceduresResults=dict(zip(numseq, rpcseq))
+    numseq=list(map (return_number_from_results_of_procedure, rpcseq))
+    res.proceduresResults=dict(zip(numseq, rpcseq))
 
     #res.proceduresResults[1]=parse_to_results_of_procedure(procline)
 
-
-
-
-
- #   print (res)
+    print (res)
     return res
 
 def return_number_from_results_of_procedure (rpc):
     return rpc.number
+
+
+def parceToPrRes (line):
+        rp=resultsOfProcedure()
+        listlines=line.split("\n")
+        rp.hasPassedProcedure=listlines[0].__contains__("PASS")
+
+        # print (listlines[0])
+        # return rp;
+        rp.number=int(listlines[0].split(":")[0].split(".")[1])
+         #или же поудалять все символы, которые не цифры
+        ind=0
+        for i in range (0, listlines.__len__()):
+            if (listlines[i].__contains__("Результаты измерений")):
+                ind=i
+                break
+        ind+=2
+        #print (listlines[ind])
+        value_names=listlines[ind][0: listlines[ind].rfind("#")].split("|")[1::]
+        #print (channel_names)
+        ind+=2
+
+        #объединить операторы, парсящие таблицу, в функцию
+        rp.values1=dict()
+        while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
+            #print (listlines[ind])
+            listnamesvals=listlines[ind][0: listlines[ind].rfind("#")].split("|")
+            channame=listnamesvals[0]
+            listvals=listnamesvals[1::]
+            valsdict=dict(zip(value_names, listvals))
+            rp.values1[channame]=valsdict
+            ind+=1
+            #print (rp.number)
+        return rp
+
 
 
 
