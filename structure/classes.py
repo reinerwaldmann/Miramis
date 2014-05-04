@@ -1,7 +1,10 @@
 
 import datetime
 from datetime import datetime
+from idlelib import rpc
 from numpy.lib.shape_base import tile
+from scipy.io.arff.arffread import r_relation
+from scipy.linalg.interface_gen import process_all
 
 
 class BaseStrReturn:
@@ -44,8 +47,16 @@ class AResult (BaseStrReturn):
     numOfProduct=int()
     numOfBatch=int()
     hasPassedTest=bool() #1 - прошёл, 0 - не прошйл. Результаты испытаний
-    proceduresResults=dict() #номер испыания - resultsOfProcedure
-   # def __str__(self):
+    proceduresResults=dict() #номер испытания - resultsOfProcedure
+    def __str__(self):
+        res=BaseStrReturn.__str__(self)
+        for key, val in self.proceduresResults.items():
+            res+=str(key)+" : "+val.__str__().replace("\n", "\n\t")   #выводим с отступом
+
+
+        return res
+
+
         #res=self.model
        # res+="\n"+self.typeOfTest
 
@@ -61,14 +72,54 @@ class AResult (BaseStrReturn):
 
 #Представляет результат процедуры
 class resultsOfProcedure(BaseStrReturn):
+    #парсит в resultsOfProcedure, каковой и возвращает.
+    def __init__(self, line):
+        listlines=line.split("\n")
+        self.hasPassedProcedure=listlines[0].__contains__("PASS")
+
+        # print (listlines[0])
+        # return rp;
+        self.number=int(listlines[0].split(":")[0].split(".")[1])
+         #или же поудалять все символы, которые не цифры
+        ind=0
+        for i in range (0, listlines.__len__()):
+            if (listlines[i].__contains__("Результаты измерений")):
+                ind=i
+                break
+        ind+=2
+        #print (listlines[ind])
+        value_names=listlines[ind][0: listlines[ind].rfind("#")].split("|")[1::]
+        #print (channel_names)
+        ind+=2
+
+        #объединить операторы, парсящие таблицу, в функцию
+        self.values1={}
+        while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
+            #print (listlines[ind])
+            listnamesvals=listlines[ind][0: listlines[ind].rfind("#")].split("|")
+            channame=listnamesvals[0]
+            listvals=listnamesvals[1::]
+            valsdict=dict(zip(value_names, listvals))
+            self.values1[channame]=valsdict
+            ind+=1
+            #print (rp.number)
+
     number=int()
     hasPassedProcedure=bool()
-    values=dict()  #словарь словарей название канала - название параметра - значение
+    values1=dict()  #словарь словарей название канала - название параметра - значение
+
+
     def __str__(self):
-        return self.__dict__.__str__()
-        #print (self.number.__str__())
-        #print (self.hasPassedProcedure.__str__())
-        #print(self.values.__str__())
+        res = BaseStrReturn.__str__(self)   #по непонятной причине, BaseStrReturn отказывается выводить словарь словарей
+        res+=  self.values1.__str__()
+        return res
+
+
+
+
+
+
+
 
 
 
@@ -86,8 +137,6 @@ def parseToResult (filename):
     if first_line.__contains__("ИВЭП")!=1:
         print ("Эта версия только для ИВЭП")
         exit(1)
-
-
     #парсим справочную часть
     for line in file:
         if line.__contains__("*"): # значит, дошли до главной части
@@ -108,14 +157,63 @@ def parseToResult (filename):
         if linelst[0].__contains__("Номер партии"):
                res.numOfBatch=linelst[1].strip()
 
+    proclines=""
+    for line in file:
+        #if line.__contains__("**"): # значит, дошли следующего шага
+         #   break
+        #procline+=line
+        proclines+=line
+
+    #получили последовательность объектов resultsOfProcedure, применив парсинговую функцию
+    ## ко всем строчкам, относившимся к результатам
+    #срез потому, что иначе последним в сплите идёт пустая строка - ибо последняя процедура
+    # в конце файла также имеет строчку из звёздочек с \n
+
+
+    rrlist=proclines.split("********************************************************************************\n")[0:-1]
+
+    #rpcseq=list(map(parse_to_results_of_procedure, rrlist))
+
+    #print (rpcseq[0])
+
+
+  #  print ()
+
+ #   print ()
+
+    v = resultsOfProcedure(rrlist[0])
+
+    #v  .values1={1: { 'a':'1' } }
+
+    m = resultsOfProcedure(rrlist[1])
+
+    print (v)
+    print (m)
+
+
+
+#    numseq=list(map (return_number_from_results_of_procedure, rpcseq))
+
+#    print (numseq)
+
+
+#    res.proceduresResults=dict(zip(numseq, rpcseq))
+
+    #res.proceduresResults[1]=parse_to_results_of_procedure(procline)
 
 
 
 
 
+ #   print (res)
+    return res
+
+def return_number_from_results_of_procedure (rpc):
+    return rpc.number
 
 
-    print(res)
+
+
 
 
 #Перекодирование файла в папке в utf8
