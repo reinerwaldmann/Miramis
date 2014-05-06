@@ -119,14 +119,6 @@ class resultsOfProcedure(BaseStrReturn):
 
 
 
-
-
-
-
-
-
-
-
 #Эта функция - ещё тестовая. Она будет впихивать данные из протокола в класс AResult
 def parseToResult (filename):
     try:
@@ -175,23 +167,12 @@ def parseToResult (filename):
 
 
     rrlist=proclines.split("********************************************************************************\n")[0:-1]
-
-
-
     rpcseq=list(map(parceToPrRes, rrlist))
-
-    #print (rpcseq[0])
-
-    numseq=list(map (return_number_from_results_of_procedure, rpcseq))
+    numseq=list(map (lambda  rpc: rpc.number, rpcseq))
     res.proceduresResults=dict(zip(numseq, rpcseq))
-
-    #res.proceduresResults[1]=parse_to_results_of_procedure(procline)
-
     print (res)
     return res
 
-def return_number_from_results_of_procedure (rpc):
-    return rpc.number
 
 
 def parceToPrRes (line):
@@ -211,24 +192,66 @@ def parceToPrRes (line):
         ind+=2
         #print (listlines[ind])
         value_names=listlines[ind][0: listlines[ind].rfind("#")].split("|")[1::]
-        #print (channel_names)
         ind+=2
 
         #объединить операторы, парсящие таблицу, в функцию
-        rp.values1=dict()
-        while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
-            #print (listlines[ind])
-            listnamesvals=listlines[ind][0: listlines[ind].rfind("#")].split("|")
-            channame=listnamesvals[0]
-            listvals=listnamesvals[1::]
-            valsdict=dict(zip(value_names, listvals))
-            rp.values1[channame]=valsdict
-            ind+=1
-            #print (rp.number)
+
+        # rp.values1=dict()
+        # while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
+        #     #print (listlines[ind])
+        #     listnamesvals=listlines[ind][0: listlines[ind].rfind("#")].split("|")
+        #     channame=listnamesvals[0]
+        #     listvals=listnamesvals[1::]
+        #     valsdict=dict(zip(value_names, listvals))
+        #     rp.values1[channame]=valsdict
+        #     ind+=1
+        #     #print (rp.number)
+
+        rp.values1 = parseTable(line[line.rfind("Результаты измерений"):],'res')
+
+
+
         return rp
 
 
+#на вход принимает таблицу
+  # --------------------------
+  # Выходной канал ИВЭП | Iвых, А
+  # -------------------  -------
+  # 1 канал +5 В        |   3.000
+#На выходе словарь словарей - имя канала - название параметра - значение
 
+def parseTable (line, type):
+        listlines=line.split("\n")
+        ind=2
+        namesline=listlines[ind]
+        value_names = {
+        'res': lambda namesline: namesline[0: namesline.rfind("#")].split("|")[1::],       #вариант для результатов
+        'norm': lambda namesline: namesline[namesline.rfind("#")+1:].strip().split("|"),  #вариант для норм
+        'mode': lambda namesline: namesline.split("|")[1::] #вариант для режима измерения
+        }[type](namesline)
+        print (listlines[ind][listlines[ind].rfind("#"):].split("|"))  #вариант для норм
+        ind+=2
+        rp=dict()
+        while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
+            listnamesvals = {
+                'res': lambda resline: resline[0: resline.rfind("#")].split("|"),
+                'norm': lambda resline: resline[ resline.rfind("#"):].split("|"),
+                'mode': lambda resline: resline.split("|")
+            }[type](listlines[ind])
+            channame=listlines[ind] [0: listlines[ind].rfind("#")].split("|")[0].strip()
+            listvals= {
+                'res' :  listnamesvals[1::],
+                'norm':  listnamesvals,
+                'mode': listnamesvals[1::]
+            }[type]
+#ПИТОН - САМЫЙ ОМСКИЙ ЯЗЫК ВСЕХ ВРЕМЁН И НАРОДОВ!!! ЛЯМБДЫ ВО ВСЕ ПОЛЯ!!!!!!!!!!!
+            valsdict=dict(zip(value_names,   map (lambda d: d.strip(), listvals)))
+            #valsdict=dict(zip(value_names, listvals))
+            rp[channame]=valsdict
+            ind+=1
+            #print (rp.number)
+        return rp
 
 
 
