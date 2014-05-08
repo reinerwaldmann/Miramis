@@ -1,10 +1,6 @@
-
 import datetime
 from datetime import datetime
 from idlelib import rpc
-from numpy.lib.shape_base import tile
-from scipy.io.arff.arffread import r_relation
-from scipy.linalg.interface_gen import process_all
 
 
 class BaseStrReturn:
@@ -20,12 +16,12 @@ class AProtocol(BaseStrReturn):
     typeOfTest=str()
     channelname=list()
     procedures=dict()
-    def __str__(self):
-        res=self.model
-        res+="\n"+self.typeOfTest
-        res+="\n"+self.channelname
-        res+="\n"+self.procedures
-        return res
+    # def __str__(self):
+    #     res=self.model
+    #     res+="\n"+self.typeOfTest
+    #     res+="\n"+self.channelname
+    #     res+="\n"+self.procedures
+    #     return res
 
 #Класс, представляющий процедуру из типа протокола
 class Procedures(BaseStrReturn):
@@ -55,7 +51,6 @@ class AResult (BaseStrReturn):
 
 
         return res
-
 
         #res=self.model
        # res+="\n"+self.typeOfTest
@@ -125,6 +120,8 @@ def parseToResult (filename):
         file=open(filename, "r")
     except:
         print("Error while opening file")
+        return None
+
 
     res=AResult()
 
@@ -164,13 +161,10 @@ def parseToResult (filename):
     ## ко всем строчкам, относившимся к результатам
     #срез потому, что иначе последним в сплите идёт пустая строка - ибо последняя процедура
     # в конце файла также имеет строчку из звёздочек с \n
-
-
     rrlist=proclines.split("********************************************************************************\n")[0:-1]
     rpcseq=list(map(parceToPrRes, rrlist))
     numseq=list(map (lambda  rpc: rpc.number, rpcseq))
     res.proceduresResults=dict(zip(numseq, rpcseq))
-    print (res)
     return res
 
 
@@ -222,21 +216,22 @@ def parceToPrRes (line):
 #На выходе словарь словарей - имя канала - название параметра - значение
 
 def parseTable (line, type):
+        line = line [line.find("-"):]
         listlines=line.split("\n")
-        ind=2
+        ind=1
         namesline=listlines[ind]
         value_names = {
         'res': lambda namesline: namesline[0: namesline.rfind("#")].split("|")[1::],       #вариант для результатов
         'norm': lambda namesline: namesline[namesline.rfind("#")+1:].strip().split("|"),  #вариант для норм
         'mode': lambda namesline: namesline.split("|")[1::] #вариант для режима измерения
         }[type](namesline)
-        print (listlines[ind][listlines[ind].rfind("#"):].split("|"))  #вариант для норм
+     #   print (listlines[ind][listlines[ind].rfind("#"):].split("|"))  #вариант для норм
         ind+=2
         rp=dict()
         while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
             listnamesvals = {
                 'res': lambda resline: resline[0: resline.rfind("#")].split("|"),
-                'norm': lambda resline: resline[ resline.rfind("#"):].split("|"),
+                'norm': lambda resline: resline[resline.rfind("#")+1:].split("|"),
                 'mode': lambda resline: resline.split("|")
             }[type](listlines[ind])
             channame=listlines[ind] [0: listlines[ind].rfind("#")].split("|")[0].strip()
@@ -256,6 +251,69 @@ def parseTable (line, type):
 
 
 
+def parseToProcedures (line):
+    rtp=Procedures ()
+    listlines=line.split("\n")
+    rtp.number=int(listlines[0].split(":")[0].split(".")[1])
+    rtp.name=listlines[1]
+    linemodetable=line[line.rfind("Режим измерения"):line.rfind("* Результаты измерений")]
+    linemodetable =linemodetable[linemodetable.find("-"):-1]
+    rtp.mode_channel = parseTable(linemodetable,'mode')
+    rtp.normal_values= parseTable(line[line.rfind("Результаты измерений"):],'norm')
+
+    linecommonmode = line[line.find("Режим измерения"): line.find("-",line.find('Режим измерения')) ]
+    listcommonmode=linecommonmode.split('\n')[1:-1]
+    parsefunc = lambda s: list (map (lambda g: g.strip() , s.split ("=")))
+    rtp.mode_common =  (dict(map (parsefunc, listcommonmode)))
+    return rtp
+
+def parseToAProtocol (filename):
+    try:
+        file=open(filename, "r")
+    except:
+        print("Error while opening file")
+        return None
+    ap=AProtocol()
+    first_line=file.readline()
+    if first_line.__contains__("ИВЭП")!=1:
+        print ("Эта версия только для ИВЭП")
+        exit(1)
+    #парсим справочную часть
+    for line in file:
+        if line.__contains__("*"): # значит, дошли до главной части
+            break
+        linelst=line.strip().split(":")
+        if linelst[0].__contains__("Модель"):
+            ap.model=linelst[1].strip()
+        if linelst[0].__contains__("Имя программы"):
+            ap.typeOfTest=linelst[1].strip()
+
+    proclines=""
+    for line in file:
+        proclines+=line
+    rrlist=proclines.split("********************************************************************************\n")[0:-1]
+    rpcseq=list(map(parseToProcedures, rrlist))
+    numseq=list(map (lambda  app: app.number, rpcseq))
+    ap.procedures=dict(zip(numseq, rpcseq))
+
+    #print   (ap.procedures.items().)
+
+    print (ap)
+
+    return ap
+
+
+
+
+
+
+
+
+
+
+
+
+
 #Перекодирование файла в папке в utf8
 #Это же можно делать и построчно, во время чтения
 
@@ -269,7 +327,8 @@ def parseTable (line, type):
 #text_in_unicode = text_in_cp1251.decode('cp1251')
 #text_in_utf8 = text_in_unicode.encode('utf8')
 #open('sandbox/utf8.txt', 'wb').write(text_in_utf8)
-parseToResult ("sandbox/utf8.txt")
+#parseToResult ("sandbox/protocolCP1251.txt")
+parseToAProtocol("sandbox/protocolCP1251.txt")
 
 
 
