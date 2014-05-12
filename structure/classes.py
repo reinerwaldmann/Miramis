@@ -16,8 +16,13 @@ class AProtocol(BaseStrReturn):
     typeOfTest=str()
     channelname=list()
     procedures=dict()
-    # def __str__(self):
-    #     res=self.model
+    def __str__(self):
+        res=BaseStrReturn.__str__(self)
+        for key, val in self.procedures.items():
+            res+=str(key)+" : "+val.__str__().replace("\n", "\n\t")   #выводим с отступом
+        return res
+
+
     #     res+="\n"+self.typeOfTest
     #     res+="\n"+self.channelname
     #     res+="\n"+self.procedures
@@ -257,11 +262,11 @@ def parseToProcedures (line):
     rtp.number=int(listlines[0].split(":")[0].split(".")[1])
     rtp.name=listlines[1]
     linemodetable=line[line.rfind("Режим измерения"):line.rfind("* Результаты измерений")]
-    linemodetable =linemodetable[linemodetable.find("-"):-1]
+    linemodetable =linemodetable[linemodetable.find("--"):-1]
     rtp.mode_channel = parseTable(linemodetable,'mode')
     rtp.normal_values= parseTable(line[line.rfind("Результаты измерений"):],'norm')
 
-    linecommonmode = line[line.find("Режим измерения"): line.find("-",line.find('Режим измерения')) ]
+    linecommonmode = line[line.find("Режим измерения"): line.find("--",line.find('Режим измерения')) ]
     listcommonmode=linecommonmode.split('\n')[1:-1]
     parsefunc = lambda s: list (map (lambda g: g.strip() , s.split ("=")))
     rtp.mode_common =  (dict(map (parsefunc, listcommonmode)))
@@ -298,16 +303,87 @@ def parseToAProtocol (filename):
 
     #print   (ap.procedures.items().)
 
-    print (ap)
+    ap.channelname=list(rpcseq[0].mode_channel.keys())
+
+
+
+#    print (ap)
 
     return ap
 
 
+#Такая структура, как представлена, даёт возможность генерировать также и пустые объекты для  заполнения их руками
+#Заполненность объектов может быть любой, от никакой вообще (пустой объект) и до полной.
+
+#начинаем создавать хытымыль-страницу
+#хытымыль страница состоит из шапки и главной части по одной классификации
+#и из программы испытаний и протокола испытаний по другой классификации
+#главная часть состоит из процедур, каждая из которых генерируется отдельно
+#каждая процедура состоит из левой и правой части. Левая часть заполняется из программы испытаний, правая часть заполняется из протокола испытаний
 
 
 
 
+result = parseToResult ("sandbox/protocolCP1251.txt")
+protocol = parseToAProtocol("sandbox/protocolCP1251.txt")
 
+
+
+
+def generateHTML (resultslist:list, protocol:AProtocol):
+    if (resultslist.__len__()==0):
+        return ""
+
+    res=generateHTMLMetaHeader()
+    res+=generageHTMLProtocolHeader(resultslist[0])  #resultslist - это список результатов. Результатов всегда список, тогда как протокол - один
+    #таблица пошла
+
+
+    res += generateHTMLFooter()
+    return res
+
+
+def generateHTMLResult (result):
+    pass
+
+
+#генерирует начало HTML-файла
+def generateHTMLMetaHeader():
+    res="""<!DOCTYPE html>
+    <html lang="ru-RU">
+    <head>
+    <meta charset="UTF-8" />
+    <title>Протокол испытаний</title>
+    <link rel="stylesheet" type="text/css" media="all" href="" />
+    </head>
+    <body>
+    """
+    return res
+
+def generageHTMLProtocolHeader(result):
+    res="<p align='center'> ПРОТОКОЛ №  от "+result.testDate+"  </p>"
+    res+="Каки-то испытаний, установить!!"
+    res+="<p>"+result.model+"</p"
+    return res
+
+
+
+#Как ставить номер протокола? Добавить поля вид протокола (ОТК), вид испытаний (Предъявительские)
+#Дату надо парсить в нормальный формат
+
+def generateHTMLFooter():
+    return """
+    </body> </html>
+    """
+#добавить подпися, если надо
+
+#для отладки создаём хтмль файл
+
+
+#wb-binary mode,
+htmlfile = open("index.html", "wb")
+htmlfile.write (generateHTML(None, None).encode("utf-8"))
+#as file opened in binary, we can write there encoded bytes sequence, cyrillic one this case
 
 
 
@@ -328,7 +404,7 @@ def parseToAProtocol (filename):
 #text_in_utf8 = text_in_unicode.encode('utf8')
 #open('sandbox/utf8.txt', 'wb').write(text_in_utf8)
 #parseToResult ("sandbox/protocolCP1251.txt")
-parseToAProtocol("sandbox/protocolCP1251.txt")
+#print (parseToAProtocol("sandbox/protocolCP1251.txt"))
 
 
 
