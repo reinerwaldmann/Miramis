@@ -305,8 +305,6 @@ def parseToAProtocol (filename):
 
     ap.channelname=list(rpcseq[0].mode_channel.keys())
 
-
-
 #    print (ap)
 
     return ap
