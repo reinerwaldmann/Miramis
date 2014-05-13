@@ -35,6 +35,37 @@ class Procedures(BaseStrReturn):
     mode_common=dict() #словарь общих режимов имя-значение
     mode_channel=dict(dict()) #словарь словарей режимов по каналам (имя канала - имя параметра - значение)
     normal_values=dict(dict()) #словарь словарей значений нормативов название канала-название параметра-строка больше-меньше (значение параметра)
+    def toHTML(self):      #переводит подержимое в левую половину строки в протоколе (первые три ячейки)
+
+
+    #    modereprlst=list( [(k, "=", v, "</br>" ) for k, v in  self.mode_common.items()]   )
+
+
+
+        res="<td>{0}</td>\n".format(str(self.number)+" "+self.name)
+
+        modereprcm=""
+        for k, v in  self.mode_common.items():
+            modereprcm+="{0}={1}</br>\n".format(k, v)
+
+
+        modechannelrepr="Режим по каналам</br>"
+        for k in self.mode_channel.keys():
+            modechannelrepr+="{0}: </br>".format(k)
+            for k, v in  self.mode_channel[k].items():
+                modechannelrepr+="{0}={1}</br>\n".format(k, v)
+
+            #moderepr=[ (k, "=", v, "</br>\n" ) for k, v in  self.mode_channel[k].items()  ]
+
+        res+="<td>{0}</td>\n".format(modereprcm + "</br>"+ modechannelrepr)
+
+
+        normsstr=[ (k, "=", v, "</br>\n" ) for k, v in  self.normal_values.items()]
+        for k in self.normal_values.keys():
+            normsstr=[ (k, "=", v, "</br>\n" ) for k, v in  self.normal_values[k].items()  ]
+        res+="<td>{0}</td>\n".format(normsstr)
+
+        return res
 
 
 
@@ -329,12 +360,26 @@ protocol = parseToAProtocol("sandbox/protocolCP1251.txt")
 
 
 def generateHTML (resultslist:list, protocol:AProtocol):
-    if (resultslist.__len__()==0):
+    if (resultslist == None):
         return ""
 
-    res=generateHTMLMetaHeader()
-    res+=generageHTMLProtocolHeader(resultslist[0])  #resultslist - это список результатов. Результатов всегда список, тогда как протокол - один
+    if (resultslist.__len__==0):
+        return ""
+
+    res=generateHTMLMetaHeader() + generageHTMLProtocolHeader(resultslist.__len__())
+    #res+=generageHTMLProtocolHeader(resultslist[0])  #resultslist - это список результатов. Результатов всегда список, тогда как протокол - один
     #таблица пошла
+
+    #сильно умно
+    #res+=[x for x in map( )  ]
+
+
+
+    res+= """<tr> {0} <td> </td> <td> </td> <td> </td> </tr> """.format(protocol.procedures[1].toHTML())
+
+
+
+
 
 
     res += generateHTMLFooter()
@@ -358,10 +403,39 @@ def generateHTMLMetaHeader():
     """
     return res
 
-def generageHTMLProtocolHeader(result):
-    res="<p align='center'> ПРОТОКОЛ №  от "+result.testDate+"  </p>"
-    res+="Каки-то испытаний, установить!!"
-    res+="<p>"+result.model+"</p"
+def generageHTMLProtocolHeader(numOfProducts):
+    res="<div align='center'> <p>ПРОТОКОЛ №  от "+result.testDateTime+"</p>  "
+    res+="<p> Каких-то испытаний, установить!!</p>"
+    res+="<p>"+result.model+"</p>"
+
+
+    strnumprs=""
+    for x in range (1, numOfProducts+1):
+        strnumprs+="<td align=center >{0}</td>\n".format(x)
+
+    res+= """
+
+
+
+    <table border="1" style="width: 1000px">
+      <tbody>
+        <tr>
+          <th width=50px align=center  rowspan=3>Наименование измеряемого параметра, пункт технических требований по ТУ </br>(методов контроля)</th>
+          <th width=30px align=center rowspan=3>Требования к режиму измерения</th>
+          <th width=50px align=center rowspan=3>Условное обозначение измеряемого параметра (норма по ТУ)</th>
+          <th align=center colspan={0}>Результаты измерений</th>
+        </tr>
+        <tr>
+          <td align=center  colspan={0}>Номер ИВЭП</td>
+        </tr>
+        <tr>
+          {1}
+        </tr>
+
+    """.format(numOfProducts, strnumprs)
+
+
+
     return res
 
 
@@ -370,7 +444,8 @@ def generageHTMLProtocolHeader(result):
 #Дату надо парсить в нормальный формат
 
 def generateHTMLFooter():
-    return """
+    return """ </tbody>
+    </table>
     </body> </html>
     """
 #добавить подпися, если надо
@@ -380,10 +455,12 @@ def generateHTMLFooter():
 
 #wb-binary mode,
 htmlfile = open("index.html", "wb")
-htmlfile.write (generateHTML(None, None).encode("utf-8"))
+htmlfile.write (generateHTML( (parseToResult("sandbox/protocolCP1251.txt"), parseToResult("sandbox/protocolCP1251.txt"), parseToResult("sandbox/protocolCP1251.txt") ) , parseToAProtocol( "sandbox/protocolCP1251.txt"  )  ).encode("utf-8"))
 #as file opened in binary, we can write there encoded bytes sequence, cyrillic one this case
 
 
+#http://dik123.blogspot.ru/2009/02/html-pdf.html
+#На этой странице написано, как переводить html-документы в pdf
 
 
 
