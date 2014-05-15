@@ -4,18 +4,26 @@ from idlelib import rpc
 
 
 class BaseStrReturn:
+    """
+    Класс, описывающий метод, который возвращает все значения полей класса в строковом виде
+    """
     def __str__(self):
         res="["+type(self).__name__+"]\n"
         for line, value in self.__dict__.items():
             res+=line+":\t"+value.__str__()+"\n"
         return res
 
-#Класс, представляющий тип протокола (т. е. тип изделие - испытания)
+
 class AProtocol(BaseStrReturn):
+    """
+    Класс, представляющий тип протокола (т. е. тип изделие - испытания)
+    """
     model=str()
     typeOfTest=str()
     channelname=list()
     procedures=dict()
+
+
     def __str__(self):
         res=BaseStrReturn.__str__(self)
         for key, val in self.procedures.items():
@@ -28,42 +36,63 @@ class AProtocol(BaseStrReturn):
     #     res+="\n"+self.procedures
     #     return res
 
-#Класс, представляющий процедуру из типа протокола
+
 class Procedures(BaseStrReturn):
+    """
+    Класс, представляющий процедуру из типа протокола
+    """
     number=int() #номер порядковый
     name=""  #имя процедуры
     mode_common=dict() #словарь общих режимов имя-значение
     mode_channel=dict(dict()) #словарь словарей режимов по каналам (имя канала - имя параметра - значение)
     normal_values=dict(dict()) #словарь словарей значений нормативов название канала-название параметра-строка больше-меньше (значение параметра)
+    listOfPossibleResults=list()  #список полей результатов, каковые должны быть отражены в протоколе
+
     def toHTML(self):      #переводит подержимое в левую половину строки в протоколе (первые три ячейки)
+        """
+        Производит html-представление в виде нескольких ячеек
+        """
+        nopr=self.listOfPossibleResults.__len__() #numOfPossibleResults
 
-
-    #    modereprlst=list( [(k, "=", v, "</br>" ) for k, v in  self.mode_common.items()]   )
-
-
-
+        #Выводим название процедуры в первую колонку
+        #res="<td rowspan={0}>{1}</td>\n".format(nopr,  str(self.number)+" "+self.name)
         res="<td>{0}</td>\n".format(str(self.number)+" "+self.name)
 
+        #Выводим вторую колонку - требования к режимам
         modereprcm=""
         for k, v in  self.mode_common.items():
             modereprcm+="{0}={1}</br>\n".format(k, v)
-
-
         modechannelrepr="Режим по каналам</br>"
         for k in self.mode_channel.keys():
             modechannelrepr+="{0}: </br>".format(k)
             for k, v in  self.mode_channel[k].items():
                 modechannelrepr+="{0}={1}</br>\n".format(k, v)
-
-            #moderepr=[ (k, "=", v, "</br>\n" ) for k, v in  self.mode_channel[k].items()  ]
-
-        res+="<td>{0}</td>\n".format(modereprcm + "</br>"+ modechannelrepr)
+        #res+="<td rowpan={0}>{1}</td>\n".format(nopr, modereprcm + "</br>"+ modechannelrepr)
+        res+="<td >{0}</td>\n".format(modereprcm + "</br>"+ modechannelrepr)
 
 
-        normsstr=[ (k, "=", v, "</br>\n" ) for k, v in  self.normal_values.items()]
+        #Выводим третью колонку - нормы по ТУ
+        norms=""
         for k in self.normal_values.keys():
-            normsstr=[ (k, "=", v, "</br>\n" ) for k, v in  self.normal_values[k].items()  ]
-        res+="<td>{0}</td>\n".format(normsstr)
+            norms+="{0}: </br>".format(k)
+            for k, v in  self.normal_values[k].items():
+                norms+="{0}:</br>{1}</br>\n".format(k, v)
+        #res+="<td rowspan={0}>{1}</td>\n".format(nopr, norms)
+        res+="<td >{0}</td>\n".format(norms)
+
+
+        #выводим четвёртую полонку - названия величин
+        valnames=""
+        for km in self.listOfPossibleResults:
+            valnames+=km+"</br>"
+
+        res+="<td>{0}</td>".format(valnames)
+
+
+        # normsstr=[ (k, "=", v, "</br>\n" ) for k, v in  self.normal_values.items()]
+        # for k in self.normal_values.keys():
+        #     normsstr=[ (k, "=", v, "</br>\n" ) for k, v in  self.normal_values[k].items()  ]
+        # res+="<td>{0}</td>\n".format(normsstr)
 
         return res
 
@@ -104,48 +133,27 @@ class AResult (BaseStrReturn):
 #Представляет результат процедуры
 class resultsOfProcedure(BaseStrReturn):
     #парсит в resultsOfProcedure, каковой и возвращает.
-    def __init__(self):
-        number=int()
-        hasPassedProcedure=bool()
-        values1=dict()  #словарь словарей название канала - название параметра - значение
-
-
-    #
-    # def __init__(self, line):
-    #     listlines=line.split("\n")
-    #     self.hasPassedProcedure=listlines[0].__contains__("PASS")
-    #
-    #     # print (listlines[0])
-    #     # return rp;
-    #     self.number=int(listlines[0].split(":")[0].split(".")[1])
-    #      #или же поудалять все символы, которые не цифры
-    #     ind=0
-    #     for i in range (0, listlines.__len__()):
-    #         if (listlines[i].__contains__("Результаты измерений")):
-    #             ind=i
-    #             break
-    #     ind+=2
-    #     #print (listlines[ind])
-    #     value_names=listlines[ind][0: listlines[ind].rfind("#")].split("|")[1::]
-    #     #print (channel_names)
-    #     ind+=2
-    #
-    #     #объединить операторы, парсящие таблицу, в функцию
-    #     self.values1=dict()
-    #     while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
-    #         #print (listlines[ind])
-    #         listnamesvals=listlines[ind][0: listlines[ind].rfind("#")].split("|")
-    #         channame=listnamesvals[0]
-    #         listvals=listnamesvals[1::]
-    #         valsdict=dict(zip(value_names, listvals))
-    #         self.values1[channame]=valsdict
-    #         ind+=1
-    #         #print (rp.number)
-
-
+    number=int()
+    hasPassedProcedure=bool()
+    values1=dict()  #словарь словарей название канала - название параметра - значение
 
     def __str__(self):
         res = BaseStrReturn.__str__(self)   #по непонятной причине, BaseStrReturn отказывается выводить словарь словарей
+        return res
+    def toHTML(self):
+        """
+        Возвращает HTML представление результатов, сиречь содержание ячейки.
+        Теги ячейки не включаются в оную строку
+        """
+        res="{0} </br>".format("[Пройдена]" if self.hasPassedProcedure else "[Не пройдена]") #вариант тернарного оператора в Python
+
+        valrepr=""
+        for k in self.values1.keys():
+            valrepr+="{0}: </br>".format(k)
+            for k, v in  self.values1[k].items():
+                valrepr+="{0}={1}</br>\n".format(k, v)
+        res+=valrepr
+
         return res
 
 
@@ -252,58 +260,89 @@ def parceToPrRes (line):
 #На выходе словарь словарей - имя канала - название параметра - значение
 
 def parseTable (line, type):
-        line = line [line.find("-"):]
-        listlines=line.split("\n")
-        ind=1
-        namesline=listlines[ind]
-        value_names = {
-        'res': lambda namesline: namesline[0: namesline.rfind("#")].split("|")[1::],       #вариант для результатов
-        'norm': lambda namesline: namesline[namesline.rfind("#")+1:].strip().split("|"),  #вариант для норм
-        'mode': lambda namesline: namesline.split("|")[1::] #вариант для режима измерения
-        }[type](namesline)
-     #   print (listlines[ind][listlines[ind].rfind("#"):].split("|"))  #вариант для норм
-        ind+=2
-        rp=dict()
-        while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
-            listnamesvals = {
-                'res': lambda resline: resline[0: resline.rfind("#")].split("|"),
-                'norm': lambda resline: resline[resline.rfind("#")+1:].split("|"),
-                'mode': lambda resline: resline.split("|")
-            }[type](listlines[ind])
-            channame=listlines[ind] [0: listlines[ind].rfind("#")].split("|")[0].strip()
-            listvals= {
-                'res' :  listnamesvals[1::],
-                'norm':  listnamesvals,
-                'mode': listnamesvals[1::]
-            }[type]
+    """
+    Парсит таблицу во что прикажут: type: 'res' - если нужны результаты 'norm' - если нужны нормы 'mode' - если нужны режимы
+    """
+    line = line [line.find("-"):]
+    listlines=line.split("\n")
+    ind=1
+    namesline=listlines[ind]
+    value_names = {
+    'res': lambda namesline: namesline[0: namesline.rfind("#")].split("|")[1::], #вариант для результатов
+    'norm': lambda namesline: namesline[namesline.rfind("#")+1:].strip().split("|"), #вариант для норм
+    'mode': lambda namesline: namesline.split("|")[1::] #вариант для режима измерения
+    }[type](namesline)
+ # print (listlines[ind][listlines[ind].rfind("#"):].split("|")) #вариант для норм
+    ind+=2
+    rp=dict()
+    while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
+        listnamesvals = {
+            'res': lambda resline: resline[0: resline.rfind("#")].split("|"),
+            'norm': lambda resline: resline[resline.rfind("#")+1:].split("|"),
+            'mode': lambda resline: resline.split("|")
+        }[type](listlines[ind])
+        channame=listlines[ind] [0: listlines[ind].rfind("#")].split("|")[0].strip()
+        listvals= {
+            'res' : listnamesvals[1::],
+            'norm': listnamesvals,
+            'mode': listnamesvals[1::]
+        }[type]
 #ПИТОН - САМЫЙ ОМСКИЙ ЯЗЫК ВСЕХ ВРЕМЁН И НАРОДОВ!!! ЛЯМБДЫ ВО ВСЕ ПОЛЯ!!!!!!!!!!!
-            valsdict=dict(zip(value_names,   map (lambda d: d.strip(), listvals)))
-            #valsdict=dict(zip(value_names, listvals))
-            rp[channame]=valsdict
-            ind+=1
-            #print (rp.number)
-        return rp
+        valsdict=dict(zip(value_names, map (lambda d: d.strip(), listvals)))
+        #valsdict=dict(zip(value_names, listvals))
+        rp[channame]=valsdict
+        ind+=1
+        #print (rp.number)
+    return rp
 
 
 
 
 def parseToProcedures (line):
+    """
+    Парсит в класс Procedures
+    """
     rtp=Procedures ()
-    listlines=line.split("\n")
-    rtp.number=int(listlines[0].split(":")[0].split(".")[1])
-    rtp.name=listlines[1]
-    linemodetable=line[line.rfind("Режим измерения"):line.rfind("* Результаты измерений")]
-    linemodetable =linemodetable[linemodetable.find("--"):-1]
-    rtp.mode_channel = parseTable(linemodetable,'mode')
-    rtp.normal_values= parseTable(line[line.rfind("Результаты измерений"):],'norm')
 
+    #пилим на строки
+    listlines=line.split("\n")
+
+    #Получили номер процедуры
+    rtp.number=int(listlines[0].split(":")[0].split(".")[1])
+
+    #Получили имя процедуры
+    rtp.name=listlines[1]
+
+    #Получили строку режимов по каналам
+    linemodetable = line[line.rfind("Режим измерения"):line.rfind("* Результаты измерений")]
+    linemodetable = linemodetable[linemodetable.find("--"):-1]
+    rtp.mode_channel = parseTable(linemodetable,'mode')
+
+    #Получили строку результатов измерений, и распарсили ей, считав только нормативы
+    rtp.normal_values = parseTable(line[line.rfind("Результаты измерений"):],'norm')
+
+    #Получаем  строку названий возможных результатов
+    possibleResults = list ( parseTable(line[line.rfind("Результаты измерений"):],'res').values()  )
+
+    rtp.listOfPossibleResults=list(  possibleResults[0].keys())
+
+
+    #Получили строку режимов просто
     linecommonmode = line[line.find("Режим измерения"): line.find("--",line.find('Режим измерения')) ]
     listcommonmode=linecommonmode.split('\n')[1:-1]
     parsefunc = lambda s: list (map (lambda g: g.strip() , s.split ("=")))
     rtp.mode_common =  (dict(map (parsefunc, listcommonmode)))
+
+
+
+
+
     return rtp
 
 def parseToAProtocol (filename):
+    """
+    Парсит в класс AProtocol
+    """
     try:
         file=open(filename, "r")
     except:
@@ -360,31 +399,34 @@ protocol = parseToAProtocol("sandbox/protocolCP1251.txt")
 
 
 def generateHTML (resultslist:list, protocol:AProtocol):
+    """
+    Генерирует HTML код того, что внутри таблицы (касающийся процедур)
+    """
+
+
     if (resultslist == None):
         return ""
-
     if (resultslist.__len__==0):
         return ""
-
     res=generateHTMLMetaHeader() + generageHTMLProtocolHeader(resultslist.__len__())
     #res+=generageHTMLProtocolHeader(resultslist[0])  #resultslist - это список результатов. Результатов всегда список, тогда как протокол - один
     #таблица пошла
-
     #сильно умно
     #res+=[x for x in map( )  ]
 
 
 
-    res+= """<tr> {0} <td> </td> <td> </td> <td> </td> </tr> """.format(protocol.procedures[1].toHTML())
-
-
-
-
+    for i in (1,protocol.procedures.__len__()):
+        p=protocol.procedures[i]
+        res+="<tr>"+p.toHTML()
+        for k in resultslist:
+            res+="<td>{0}</td>".format(k.proceduresResults[p.number].toHTML())
+        res+="</tr>"
+        #res+= """<tr> {0} <td> </td> <td> </td> <td> </td> </tr> """.format(p.toHTML())
 
 
     res += generateHTMLFooter()
     return res
-
 
 def generateHTMLResult (result):
     pass
@@ -417,12 +459,13 @@ def generageHTMLProtocolHeader(numOfProducts):
 
 
 
-    <table border="1" style="width: 1000px">
+    <table border="1" style="width: 900px">
       <tbody>
         <tr>
-          <th width=50px align=center  rowspan=3>Наименование измеряемого параметра, пункт технических требований по ТУ </br>(методов контроля)</th>
-          <th width=30px align=center rowspan=3>Требования к режиму измерения</th>
-          <th width=50px align=center rowspan=3>Условное обозначение измеряемого параметра (норма по ТУ)</th>
+          <th width=100px align=center  rowspan=3>Наименование измеряемого параметра, пункт технических требований по ТУ </br>(методов контроля)</th>
+          <th width=100px align=center rowspan=3>Требования к режиму измерения</th>
+          <th width=100px align=center rowspan=3>Норма по ТУ</th>
+          <th width=100px align=center rowspan=3>Условное обозначение измеряемого параметра </th>
           <th align=center colspan={0}>Результаты измерений</th>
         </tr>
         <tr>
