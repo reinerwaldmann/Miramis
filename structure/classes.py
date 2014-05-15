@@ -525,7 +525,10 @@ htmlfile.write (generateHTML( (parseToResult("sandbox/protocolCP1251.txt"), pars
 #print (parseToAProtocol("sandbox/protocolCP1251.txt"))
 
 
-
+#TODO   1. Рефакторинг кода
+#TODO   2.  Написание кошерных документационных тегов
+#TODO   3. Тестирование создания HTML-странички и добавление дополнительных полей вроде вида испытаний (возможно, их вводить при генерации)
+#TODO   4. Проектирование веб-страницы с полями ввода и так далее
 
 
 
