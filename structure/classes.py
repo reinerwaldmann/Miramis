@@ -392,9 +392,6 @@ def parseToAProtocol (filename):
 
 
 
-result = parseToResult ("sandbox/protocolCP1251.txt")
-protocol = parseToAProtocol("sandbox/protocolCP1251.txt")
-
 
 
 
@@ -408,7 +405,7 @@ def generateHTML (resultslist:list, protocol:AProtocol):
         return ""
     if (resultslist.__len__==0):
         return ""
-    res=generateHTMLMetaHeader() + generageHTMLProtocolHeader(resultslist.__len__())
+    res=generateHTMLMetaHeader() + generageHTMLProtocolHeader(resultslist.__len__(), resultslist[0])
     #res+=generageHTMLProtocolHeader(resultslist[0])  #resultslist - это список результатов. Результатов всегда список, тогда как протокол - один
     #таблица пошла
     #сильно умно
@@ -451,7 +448,7 @@ def generateHTMLMetaHeader():
     """
     return res
 
-def generageHTMLProtocolHeader(numOfProducts):
+def generageHTMLProtocolHeader(numOfProducts, result):
     res="<div align='center'> <p>ПРОТОКОЛ №  от "+result.testDateTime+"</p>  "
     res+="<p> Каких-то испытаний, установить!!</p>"
     res+="<p>"+result.model+"</p>"
@@ -502,17 +499,29 @@ def generateHTMLFooter():
 #для отладки создаём хтмль файл
 
 
+
+
+import platform
+#print (platform.system())
+
+if (platform.system().__contains__("Linux")):
+    filename="utf8.txt" #и вот тут должно быть перекодирование, тащемта
+else:
+    filename="protocolCP1251.txt"
+
+
 #wb-binary mode,
 htmlfile = open("index.html", "wb")
-htmlfile.write (generateHTML( (parseToResult("sandbox/protocolCP1251.txt"), parseToResult("sandbox/protocolCP1251.txt"), parseToResult("sandbox/protocolCP1251.txt") ) , parseToAProtocol( "sandbox/protocolCP1251.txt"  )  ).encode("utf-8"))
-#as file opened in binary, we can write there encoded bytes sequence, cyrillic one this case
+htmlfile.write (generateHTML( (parseToResult("sandbox/"+filename), parseToResult("sandbox/"+filename), parseToResult("sandbox/"+filename) ) , parseToAProtocol( "sandbox/"+filename  )  ).encode("utf-8"))
+result = parseToResult ("sandbox/"+filename)
+protocol = parseToAProtocol("sandbox/"+filename)
 
+
+
+#as file opened in binary, we can write there encoded bytes sequence, cyrillic one this case
 
 #http://dik123.blogspot.ru/2009/02/html-pdf.html
 #На этой странице написано, как переводить html-документы в pdf
-
-
-
 
 #Перекодирование файла в папке в utf8
 #Это же можно делать и построчно, во время чтения
@@ -520,7 +529,6 @@ htmlfile.write (generateHTML( (parseToResult("sandbox/protocolCP1251.txt"), pars
 #f = file("utf8.html", "wb")
 #for line in file("cp1251.html", "rb"):
 #    f.write(line.decode('cp1251').encode('utf8'))
-
 
 #commented, uncomment if original file in CP1251 changed
 #text_in_cp1251 = open("sandbox/protocolCP1251.txt", 'rb').read()
