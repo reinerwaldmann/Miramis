@@ -431,6 +431,12 @@ def generateHTML (resultslist:list, protocol:AProtocol):
 def generateHTMLResult (result):
     pass
 
+#_Reasons_
+#Leagacy
+#Political solution
+#Gratitude for previous kindness brought to me
+
+
 
 #генерирует начало HTML-файла
 def generateHTMLMetaHeader():
