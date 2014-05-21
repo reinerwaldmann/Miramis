@@ -1,9 +1,11 @@
 ﻿#!C:\Python33\python.exe
 # -*- coding: utf-8
+
+
 import mysql.connector
 from mysql.connector import errorcode
 
- 
+
 
 
 print("Content-Type: text/html;charset=utf-8")
