@@ -3,29 +3,30 @@ from structure.classes import AProtocol
 __author__ = 'vasilev_is'
 
 from structure.parsers import *
-import mysql.connector
-from mysql.connector import errorcode
+
 import pickle
 
-def dbdesc ():
-    return mysql.connector.connect(user='root', passwd='123',host='localhost', db='MiramisDB')
+from mydbconnect import dbdesc
 
-def upload_to_protocol (filedescriptor):
+
+def upload_to_protocol(filedescriptor):
+    """
+    Загружает протокол из файла в базу данных. Пока через Pickle
+    """
     db=dbdesc()
     cursor=db.cursor()
     protocol=parseToAProtocol(filedescriptor)
-
+    pickled=pickle.dumps(protocol)
 
     #вкатываем протокол в базу данных через pickle
     sql = """INSERT INTO protocols(ProductName, TestName, Pickle)
-        VALUES ('{0}', '{1}', '{2}')
-        """.format(protocol.model, protocol.typeOfTest, pickle.dumps(protocol))
-
-
-
+        VALUES (%(model)s, %(testname)s ,  %(pickl)s)
+        """.format(protocol.typeOfTest)
+    #print (sql)
 
         # исполняем SQL-запрос
-    cursor.execute(sql)
+    cursor.execute(sql,  {'model':protocol.model, 'testname':protocol.typeOfTest, 'pickl': pickled})
+
         # применяем изменения к базе данных
     db.commit()
 
@@ -42,9 +43,10 @@ def upload_to_protocol (filedescriptor):
 
 
 def upload_to_result(filedescriptor):
+    """
+    Грузит в базу данных
+    """
     pass
-
-
 
 
 
@@ -53,8 +55,7 @@ def test ():
     """
     for debugging
     """
-
-
+    filename="sandbox/protocolCP1251.txt"
 
 # import platform
 # #print (platform.system())
@@ -62,7 +63,6 @@ def test ():
 # if (platform.system().__contains__("Linux")):
 #     filename="utf8.txt" #и вот тут должно быть перекодирование, тащемта
 # else:
-    filename="sandbox/protocolCP1251.txt"
 
     try:
         file=open(filename, "r")
@@ -72,5 +72,6 @@ def test ():
     upload_to_protocol(file)
 
 test()
+
 
 

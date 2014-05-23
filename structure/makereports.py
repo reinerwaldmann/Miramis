@@ -2,6 +2,8 @@ __author__ = 'vasilev_is'
 
 from classes import *
 
+import htmlgeneralfunctions
+
 
 #начинаем создавать хытымыль-страницу
 #хытымыль страница состоит из шапки и главной части по одной классификации
@@ -31,25 +33,14 @@ def generateHTML (resultslist:list, protocol:AProtocol):
         #res+= """<tr> {0} <td> </td> <td> </td> <td> </td> </tr> """.format(p.toHTML())
 
 
-    res += generateHTMLFooter()
+    res += generateHTMLFooterRep()
     return res
 
 def generateHTMLResult (result):
     pass
 
 
-#генерирует начало HTML-файла
-def generateHTMLMetaHeader():
-    res="""<!DOCTYPE html>
-    <html lang="ru-RU">
-    <head>
-    <meta charset="UTF-8" />
-    <title>Протокол испытаний</title>
-    <link rel="stylesheet" type="text/css" media="all" href="" />
-    </head>
-    <body>
-    """
-    return res
+
 
 def generageHTMLProtocolHeader(numOfProducts, result):
     res="<div align='center'> <p>ПРОТОКОЛ №  от "+result.testDateTime+"</p>  "
@@ -91,12 +82,6 @@ def generageHTMLProtocolHeader(numOfProducts, result):
 #Как ставить номер протокола? Добавить поля вид протокола (ОТК), вид испытаний (Предъявительские)
 #Дату надо парсить в нормальный формат
 
-def generateHTMLFooter():
-    return """ </tbody>
-    </table>
-    </body> </html>
-    """
-#добавить подпися, если надо
 
 #для отладки создаём хтмль файл
 
@@ -130,9 +115,10 @@ def generateHTMLFooter():
 
 
 
+
 #wb-binary mode,
 # htmlfile = open("index.html", "wb")
-# htmlfile.write (generateHTML( (parseToResult("sandbox/"+filename), parseToResult("sandbox/"+filename), parseToResult("sandbox/"+filename) ) , parseToAProtocol( "sandbox/"+filename  )  ).encode("utf-8"))
+#htmlfile.write (generateHTML( (parseToResult("sandbox/"+filename), parseToResult("sandbox/"+filename), parseToResult("sandbox/"+filename) ) , parseToAProtocol( "sandbox/"+filename  )  ).encode("utf-8"))
 # result = parseToResult ("sandbox/"+filename)
 # protocol = parseToAProtocol("sandbox/"+filename)
 
