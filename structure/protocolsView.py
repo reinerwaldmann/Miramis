@@ -41,43 +41,29 @@ def get_list_of_protocols (filters=None):
     for each in rows:
     ## The result is also in a tuple
         res[each[0]]=pickle.loads(each[3])
-
     return res
 
 def make_html():
     res = generateHTMLMetaHeader("Обзор видов протоколов")
-
     listOfProtocols = get_list_of_protocols()  #потом  надо применить сюда фильтры, когда дело дойдёт до CGI
-
-
-
     res+="""
     <table border="1" style="width: 900px">
       <tbody>
         <tr>
-          <th width=100px align=center  >Наименование измеряемого параметра, пункт технических требований по ТУ </br>(методов контроля)</th>
-          <th width=100px align=center >Требования к режиму измерения</th>
-          <th width=100px align=center >Норма по ТУ</th>
-          <th width=100px align=center >Условное обозначение измеряемого параметра </th>
+          <th width=100px align=center  >Номер протокола</th>
+          <th width=100px align=center >Название модели</th>
+          <th width=100px align=center >Название программы</th>
         </tr>
         """
-
-
-    for i in (1,protocol.procedures.__len__()):
-        p=protocol.procedures[i]
-        res+="<tr>"+p.toHTML()
-        for k in resultslist:
-            res+="<td>{0}</td>".format(k.proceduresResults[p.number].toHTML())
-        res+="</tr>"
-        #res+= """<tr> {0} <td> </td> <td> </td> <td> </td> </tr> """.format(p.toHTML())
-
-
-
-
-
-
+    for i in listOfProtocols.keys():
+        res+="<tr>  <td>{0}</td> \n   <td>{1}</td> \n   <td>{2}</td> \n    </tr> ".format(i, listOfProtocols[i].model, listOfProtocols[i].typeOfTest)
     res += generateHTMLFooterRep()
     return res
+
+
+
+
+
 
 
 #test area
@@ -85,14 +71,9 @@ def test():
     #for i, k in get_list_of_protocols().items():
     #    print (i, k)
 
-
     with open ("htmlprotocolstest.html", "wb") as outhtml:
         outhtml.write (make_html().encode("utf-8"))
 
 
-
-
-
-
-
 test()
+
