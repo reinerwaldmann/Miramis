@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<meta charset="UTF8" />
+
+<head>
+    <title>AJAXTEST</title>
+
+
+ <script language="javascript" type="text/javascript">
+
+   var request = null;
+   try {
+     request = new XMLHttpRequest();
+   } catch (trymicrosoft) {
+     try {
+       request = new ActiveXObject("Msxml2.XMLHTTP");
+     } catch (othermicrosoft) {
+       try {
+         request = new ActiveXObject("Microsoft.XMLHTTP");
+       } catch (failed) {
+         request = null;
+       }
+     }
+   }
+
+
+   if (request == null)
+     alert("Error creating request object!");
+
+
+
+   function getAjaxInfo() 
+	{
+	
+     var url = "index1.php";
+     request.open("GET", url, true);
+     request.onreadystatechange = updatePage;
+     request.send(null);
+   }
+
+   function updatePage() {
+
+     if (request.readyState == 4) {
+	if (request.status == 200) {
+       var gotValue = request.responseText;
+       document.getElementById("gotvalues").value = gotValue;
+     } 
+
+	else alert ("server unreachable"+request.status)
+	}
+   }
+  </script>
+
+
+
+
+
+</head>
+
+<body>
+
+  <form method="POST">
+
+   <p>Test Area:
+   <p><textarea name="gotvalues" id="gotvalues" rows="4" cols="50"></textarea></p>
+   <p><input type="button"  onclick="getAjaxInfo();"  value="SUBMIT" /></p>
+  </form>
+
+
+
+
+
+
+ </body>
+</html>
+
+
+

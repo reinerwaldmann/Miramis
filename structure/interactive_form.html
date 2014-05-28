@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<meta charset="UTF-8" />
+<head>
+    <title></title>
+</head>
+<body>
+
+<script>
+    var count=0;    // Счетчик элементов TBODY
+    // Вставка новых строк в форму
+
+     function addLine() {
+        count++;    // Увеличиваем количество TBODY
+        var table=document.getElementById('friends');    // Получаем указатель нужной нам таблицы
+        var tbody = document.createElement('tbody');    // Создаем новый TBODY
+        table.appendChild(tbody);    // Вставляем его в конец таблицы
+        // Пишем в него все что нам нужно
+        tbody.innerHTML="\n\n<tr id='"+count+"'>\n<td><input type='text' name='key["+count+"]'></td>\n"
+                    +"<td><input type='text' name='value["+count+"]'></td></tr>\n\n";
+        return false;
+    }
+
+
+    // Удаление последней строки
+    function rmLine()
+    {
+        if (count!=0){    // Удаляем любую строку кроме первой
+            var table=document.getElementById('friends');    // Получаем указатель нужной нам таблицы
+            var tbody = table.lastChild;    // Выбираем последний дочерний элемент таблицы (вставленный нами TBODY)
+            table.removeChild(tbody);    // Убиваем его
+            count--;    // Уменьшаем счетчик элементов TBODY
+        }
+
+
+
+
+
+        return false;
+    }
+</script>
+
+<a class='friendsForm' href='#' onclick='return addLine();'>Добавить поле</a>
+<a class='friendsForm' href='#' onclick='return rmLine();'>Удалить последнее поле</a>
+
+<form method="GET" >
+
+<table id='friends' border='1'>
+    <tbody>
+        <tr><td>Ключ</td><td>Значение</td></tr>
+        <tr id='0'>
+            <td><input type='text' name='key[0]'  > </td>
+            <td><input type='text' name='value[0]'></td>
+        </tr>
+
+
+        <tr id='1'>
+            <td><input type='text' name='key[1]'  > </td>
+            <td><input type='text' name='value[2]'></td>
+        </tr>
+
+    </tbody>
+</table>
+
+<input type='submit' name='submit_button'>
+
+</form>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+        <!-- http://javascript.ru/ajax/intro  --!>

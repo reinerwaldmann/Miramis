@@ -1,0 +1,47 @@
+﻿<script>
+    var count=0;    // Счетчик элементов TBODY
+    // Вставка новых строк в форму
+    function addLine() {
+        count++;    // Увеличиваем количество TBODY
+        var table=document.getElementById('friends');    // Получаем указатель нужной нам таблицы
+        var tbody = document.createElement('tbody');    // Создаем новый TBODY
+        table.appendChild(tbody);    // Вставляем его в конец таблицы
+        // Пишем в него все что нам нужно
+        tbody.innerHTML="\n\n<tr id='"+count+"'>\n<td><input type='text' name='fr_fio["+count+"]'></td>\n"
+                    +"<td><input type='text' name='fr_email["+count+"]'></td>\n"
+                    +"<td>\n<select name='fr_city["+count+"]'>\n"
+                    +"<option value='1'>Москва</option>\n<option value='2'>Немосква</option>\n"
+                    // строку выше заменить на реальный список городов
+                    +"</select>\n</td>\n</tr>\n\n";
+        return false;
+    }
+    // Удаление последней строки
+    function rmLine()
+    {
+        if (count!=0){    // Удаляем любую строку кроме первой
+            var table=document.getElementById('friends');    // Получаем указатель нужной нам таблицы
+            var tbody = table.lastChild;    // Выбираем последний дочерний элемент таблицы (вставленный нами TBODY)
+            table.removeChild(tbody);    // Убиваем его
+            count--;    // Уменьшаем счетчик элементов TBODY
+        }
+        return false;
+    }
+</script>
+
+<a class='friendsForm' href='#' onclick='return addLine();'>ADD</a>
+<a class='friendsForm' href='#' onclick='return rmLine();'>Remove</a>
+<table id='friends' border='1'>
+    <tbody>
+        <tr><td>ФИО</td><td>e-mail</td><td>город</td></tr>
+        <tr id='0'>
+            <td><input type='text' name='fr_fio[0]'></td>
+            <td><input type='text' name='fr_email[0]'></td>
+            <td>
+                <select name='fr_city[0]'>
+                    <option value='1'>Москва</option>
+                    <option value='2'>Немосква</option>
+                </select>
+            </td>
+        </tr>
+    </tbody>
+</table>
