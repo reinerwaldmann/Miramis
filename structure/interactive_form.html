@@ -4,66 +4,146 @@
 <meta charset="UTF-8" />
 <head>
     <title></title>
+
+    <style type="text/css">
+td{padding:10px;border:1px solid #000;}
+#.c1,td:first-child{display:none;}
+</style>
+
+
 </head>
 <body>
 
 <script>
-    var count=0;    // Счетчик элементов TBODY
-    // Вставка новых строк в форму
-
-     function addLine() {
-        count++;    // Увеличиваем количество TBODY
-        var table=document.getElementById('friends');    // Получаем указатель нужной нам таблицы
-        var tbody = document.createElement('tbody');    // Создаем новый TBODY
-        table.appendChild(tbody);    // Вставляем его в конец таблицы
-        // Пишем в него все что нам нужно
-        tbody.innerHTML="\n\n<tr id='"+count+"'>\n<td><input type='text' name='key["+count+"]'></td>\n"
-                    +"<td><input type='text' name='value["+count+"]'></td></tr>\n\n";
-        return false;
-    }
+//удаление строки
 
 
-    // Удаление последней строки
-    function rmLine()
+    function getMaxRowIdInTable(tableid)
     {
-        if (count!=0){    // Удаляем любую строку кроме первой
-            var table=document.getElementById('friends');    // Получаем указатель нужной нам таблицы
-            var tbody = table.lastChild;    // Выбираем последний дочерний элемент таблицы (вставленный нами TBODY)
-            table.removeChild(tbody);    // Убиваем его
-            count--;    // Уменьшаем счетчик элементов TBODY
-        }
+                var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
+                if (table.rows.length==1) return 0;
+
+                  var maxid=0;
+                for (var i=1; i<table.rows.length;i++)
+                {
+
+                var  row = table.rows[i];
+                 var cell=row.cells[0];
+                 maxid=Math.max (maxid, parseInt(cell.innerHTML));
+                }
+
+                return maxid+1;
 
 
-
-
-
-        return false;
     }
+
+
+    function rmRow(tableid, rowIndex)
+    {
+            var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
+            //if (table.rows.length>2)
+                 table.deleteRow(rowIndex);
+    }
+
+    // Вставка новых строк в форму
+    function insertRow(tableid, rowIndex)
+    {
+            var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
+
+            var id=getMaxRowIdInTable(tableid);
+
+            var row = table.insertRow(rowIndex);
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            var cell3 = row.insertCell(3);
+
+
+
+            cell0.innerHTML=" "+id
+            cell1.innerHTML = "<input type='text' id='"+tableid+"_key["+id+"]'>";
+            cell2.innerHTML = "<input type='text' id='"+tableid+"_value["+id+"]' >"+ tableid+"_value["+id+"]'" ;
+            cell3.innerHTML = "<a class='controlLinkDel' href='#'  onclick=\"return rmRow('dict1',   getParent(this, 'TR').rowIndex  ) ;\"   >[-] </a>"+
+                "<a class='controlLinkAdd' href='#'  onclick=\"return insertRow('dict1',   getParent(this, 'TR').rowIndex+1  ) ;\"   >[+&#8595 ]</a>";
+                //"<a class='controlLinkAdd' href='#'  onclick=\"return insertRow('dict1',   getParent(this, 'TR').rowIndex  ) ;\"   >[+&#8593;]</a>";
+
+    }
+
+//получение родителя - obj - ссылка на объект, родителя которого мы ищем parentTagName - тег родителя, которого мы ищем.  Если тега нет, вернёт null. Теги задавать в верхнем регистре!
+    function getParent(obj, parentTagName) {
+    return (obj.tagName==parentTagName)?obj:getParent(obj.parentNode, parentTagName);
+    }
+
+//функция, которая собирает все данные из таблицы и собирает их в строку Питона, отображающую словарь
+    function collectDataFromDictTable(dicttableId )  //в таблице 1 строка всегда по умолчанию, зачем-то
+    {
+            var table=document.getElementById(dicttableId );    // Получаем указатель нужной нам таблицы
+            var numrows =table.rows.length;
+            var res="{";
+            if (numrows==1) return "";  //если нет полей, то вернуть пустую строку
+
+
+            maxid=getMaxRowIdInTable(dicttableId);
+            for (var i=0; i<maxid; i++)
+            {
+
+                keyform = document.getElementById(dicttableId+"_key["+i+"]");
+                valueform = document.getElementById(dicttableId+"_value["+i+"]");
+
+
+                if ((keyform!=null)&&(valueform!=null ))
+                {
+
+                    keyformval=keyform.value.trim();
+                    valueformval=valueform.value.trim();
+
+                    if (keyformval&&valueformval)
+                    {
+                        res+="'"+keyformval+"' : '"+valueformval+"'";
+
+                        if (i!=maxid-1)
+                            { res+=" ,";}
+                    }
+                    else
+                    {
+
+
+                        if ((res[res.length-1]=="," )&& (i==maxid-1)) //если последняя запятая, и при этом вышло так, что мы на последнем элементе, тооо
+                            {
+
+                             res=res.substring(0, res.length - 2);
+                            }
+
+
+                    }
+                }
+            }
+
+            res+="}";
+
+            alert (res)
+            return res
+
+    }
+
+
+
 </script>
 
-<a class='friendsForm' href='#' onclick='return addLine();'>Добавить поле</a>
-<a class='friendsForm' href='#' onclick='return rmLine();'>Удалить последнее поле</a>
-
 <form method="GET" >
-
-<table id='friends' border='1'>
+  <p>  Общие нормы  </p>
+<table id='dict1' border='0'>
     <tbody>
-        <tr><td>Ключ</td><td>Значение</td></tr>
-        <tr id='0'>
-            <td><input type='text' name='key[0]'  > </td>
-            <td><input type='text' name='value[0]'></td>
-        </tr>
 
+    <col class="c1"><col span="2">
 
-        <tr id='1'>
-            <td><input type='text' name='key[1]'  > </td>
-            <td><input type='text' name='value[2]'></td>
-        </tr>
-
+    <tr> </tr>
+    <!--<tr><td>Ключ</td><td>Значение</td> <td> </td>   </tr>-->
     </tbody>
 </table>
-
-<input type='submit' name='submit_button'>
+    <a class='controlLink' href='#' onclick="return insertRow('dict1',   1) ;">Добавить поле</a>
+ <br/>
+<input type='button' name='submit_button' onclick="collectDataFromDictTable('dict1')  ">
 
 </form>
 
