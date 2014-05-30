@@ -7,7 +7,7 @@
 
     <style type="text/css">
 td{padding:10px;border:1px solid #000;}
-#.c1,td:first-child{display:none;}
+.c1,td:first-child{display:none;}
 </style>
 
 
@@ -22,11 +22,9 @@ td{padding:10px;border:1px solid #000;}
     {
                 var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
                 if (table.rows.length==1) return 0;
-
                   var maxid=0;
                 for (var i=1; i<table.rows.length;i++)
                 {
-
                 var  row = table.rows[i];
                  var cell=row.cells[0];
                  maxid=Math.max (maxid, parseInt(cell.innerHTML));
@@ -49,22 +47,17 @@ td{padding:10px;border:1px solid #000;}
     function insertRow(tableid, rowIndex)
     {
             var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
-
             var id=getMaxRowIdInTable(tableid);
-
             var row = table.insertRow(rowIndex);
             var cell0 = row.insertCell(0);
             var cell1 = row.insertCell(1);
             var cell2 = row.insertCell(2);
             var cell3 = row.insertCell(3);
-
-
-
             cell0.innerHTML=" "+id
             cell1.innerHTML = "<input type='text' id='"+tableid+"_key["+id+"]'>";
-            cell2.innerHTML = "<input type='text' id='"+tableid+"_value["+id+"]' >"+ tableid+"_value["+id+"]'" ;
-            cell3.innerHTML = "<a class='controlLinkDel' href='#'  onclick=\"return rmRow('dict1',   getParent(this, 'TR').rowIndex  ) ;\"   >[-] </a>"+
-                "<a class='controlLinkAdd' href='#'  onclick=\"return insertRow('dict1',   getParent(this, 'TR').rowIndex+1  ) ;\"   >[+&#8595 ]</a>";
+            cell2.innerHTML = "<input type='text' id='"+tableid+"_value["+id+"]' >";
+            cell3.innerHTML = "<a class='controlLinkDel' href='#'  onclick=\"return rmRow('"+tableid+"',   getParent(this, 'TR').rowIndex  ) ;\"   >[-] </a>";
+                //"<a class='controlLinkAdd' href='#'  onclick=\"return insertRow('dict1',   getParent(this, 'TR').rowIndex+1  ) ;\"   >[+&#8595 ]</a>";
                 //"<a class='controlLinkAdd' href='#'  onclick=\"return insertRow('dict1',   getParent(this, 'TR').rowIndex  ) ;\"   >[+&#8593;]</a>";
 
     }
@@ -75,28 +68,22 @@ td{padding:10px;border:1px solid #000;}
     }
 
 //функция, которая собирает все данные из таблицы и собирает их в строку Питона, отображающую словарь
+//на входе айди таблицы
     function collectDataFromDictTable(dicttableId )  //в таблице 1 строка всегда по умолчанию, зачем-то
     {
             var table=document.getElementById(dicttableId );    // Получаем указатель нужной нам таблицы
             var numrows =table.rows.length;
             var res="{";
             if (numrows==1) return "";  //если нет полей, то вернуть пустую строку
-
-
             maxid=getMaxRowIdInTable(dicttableId);
             for (var i=0; i<maxid; i++)
             {
-
                 keyform = document.getElementById(dicttableId+"_key["+i+"]");
                 valueform = document.getElementById(dicttableId+"_value["+i+"]");
-
-
                 if ((keyform!=null)&&(valueform!=null ))
                 {
-
                     keyformval=keyform.value.trim();
                     valueformval=valueform.value.trim();
-
                     if (keyformval&&valueformval)
                     {
                         res+="'"+keyformval+"' : '"+valueformval+"'";
@@ -106,15 +93,10 @@ td{padding:10px;border:1px solid #000;}
                     }
                     else
                     {
-
-
                         if ((res[res.length-1]=="," )&& (i==maxid-1)) //если последняя запятая, и при этом вышло так, что мы на последнем элементе, тооо
                             {
-
                              res=res.substring(0, res.length - 2);
                             }
-
-
                     }
                 }
             }
@@ -128,25 +110,100 @@ td{padding:10px;border:1px solid #000;}
 
 
 
+function addDictForm (formid, parentdivid)
+{
+var table = " <table id='"+ formid +"' border='0'> "+
+    "<tbody>"+
+    "<col class='c1'><col span='2'>"+
+    " <tr> </tr> "+
+    " </tbody>"+
+"</table>"+
+    " <a class='controlLink' href='#' onclick=\"return insertRow('"+formid +"',   1) ;\">Добавить поле</a>"+
+ "<br/>"+
+"<input type='button' name='submit_button' onclick=\"collectDataFromDictTable('"+formid+"')\">";
+
+document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+table;
+}
+
+function addDictFormStr (formid)
+{
+var table = " <table id='"+ formid +"' border='0'> "+
+    "<tbody>"+
+    "<col class='c1'><col span='2'>"+
+    " <tr> </tr> "+
+    " </tbody>"+
+"</table>"+
+    " <a class='controlLink' href='#' onclick=\"return insertRow('"+formid +"',   1) ;\">Добавить поле</a>"+
+ "<br/>"+
+"<input type='button' name='submit_button' onclick=\"collectDataFromDictTable('"+formid+"')\">";
+
+return table;
+}
+
+
+
+function addDict2DictForm (formid, parentdivid)
+{
+contains=" <a class='controlLink' href='#' onclick=\"return insertDict2DictField('"+parentdivid +"',   1) ;\">Добавить поле верхнего уровня</a>";
+document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+contains;
+}
+
+
+function insertDict2DictField (formid)
+{
+//просто добавить к див formid инпут и применить к немму adDictForm
+
+newrecordid="0" //ременно, вообще будет получаться специальной функцией
+input="<div id='"+formid+newrecordid+"'  style='border: 1px double black;'> <input type='text'  id='"+formid+newrecordid+"keygeneral"+"'  > <br/>";
+reqdiv=document.getElementById (formid);
+reqdiv.innerHTML=reqdiv.innerHTML+input+addDictFormStr(newrecordid)+"</div>";
+
+}
+
+function dict2dictgetnewid (formid)
+{
+div = document.getElementById(formid);
+maxid=0;
+//проехать по всем потомкам div, выдернуть номер айди, сравнить
+
+
+//этот код не работает в IE до 9-й версии
+var children=div.children; //все потомки div
+
+for (var i=0; i<children; i++)
+    {
+        if (children[i].tagName=="DIV")
+        {
+
+
+        }
+
+
+    }
+
+
+
+
+
+}
+
 </script>
 
-<form method="GET" >
-  <p>  Общие нормы  </p>
-<table id='dict1' border='0'>
-    <tbody>
 
-    <col class="c1"><col span="2">
+<h1  > Форма для словаря</h1>
+<div id="par"> </div>
+<script>
+addDictForm('dict11','par');
+</script>
 
-    <tr> </tr>
-    <!--<tr><td>Ключ</td><td>Значение</td> <td> </td>   </tr>-->
-    </tbody>
-</table>
-    <a class='controlLink' href='#' onclick="return insertRow('dict1',   1) ;">Добавить поле</a>
- <br/>
-<input type='button' name='submit_button' onclick="collectDataFromDictTable('dict1')  ">
 
-</form>
 
+<h1  > Форма для словаря словарей </h1>
+
+<div id="dict2dictform"> </div>
+<script>
+addDict2DictForm ("dict2dict", "dict2dictform");
+</script>
 
 
 
