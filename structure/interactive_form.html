@@ -112,17 +112,7 @@ td{padding:10px;border:1px solid #000;}
 
 function addDictForm (formid, parentdivid)
 {
-var table = " <table id='"+ formid +"' border='0'> "+
-    "<tbody>"+
-    "<col class='c1'><col span='2'>"+
-    " <tr> </tr> "+
-    " </tbody>"+
-"</table>"+
-    " <a class='controlLink' href='#' onclick=\"return insertRow('"+formid +"',   1) ;\">Добавить поле</a>"+
- "<br/>"+
-"<input type='button' name='submit_button' onclick=\"collectDataFromDictTable('"+formid+"')\">";
-
-document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+table;
+document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+addDictFormStr (formid);
 }
 
 function addDictFormStr (formid)
@@ -134,8 +124,10 @@ var table = " <table id='"+ formid +"' border='0'> "+
     " </tbody>"+
 "</table>"+
     " <a class='controlLink' href='#' onclick=\"return insertRow('"+formid +"',   1) ;\">Добавить поле</a>"+
- "<br/>"+
-"<input type='button' name='submit_button' onclick=\"collectDataFromDictTable('"+formid+"')\">";
+ "<br/>";
+
+
+//"<input type='button' name='submit_button' onclick=\"collectDataFromDictTable('"+formid+"')\">";
 
 return table;
 }
@@ -143,6 +135,7 @@ return table;
 
 
 function addDict2DictForm (formid, parentdivid)
+//добавляет форму словаря словарей
 {
 contains=" <a class='controlLink' href='#' onclick=\"return insertDict2DictField('"+parentdivid +"',   1) ;\">Добавить поле верхнего уровня</a>";
 document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+contains;
@@ -151,12 +144,25 @@ document.getElementById(parentdivid).innerHTML=document.getElementById(parentdiv
 
 function insertDict2DictField (formid)
 {
+//добавляет поле формы словаря словарей
 //просто добавить к див formid инпут и применить к немму adDictForm
+newfielddid=formid+"field_"+dict2dictgetnewid(formid);
 
-newrecordid="0" //ременно, вообще будет получаться специальной функцией
-input="<div id='"+formid+newrecordid+"'  style='border: 1px double black;'> <input type='text'  id='"+formid+newrecordid+"keygeneral"+"'  > <br/>";
-reqdiv=document.getElementById (formid);
-reqdiv.innerHTML=reqdiv.innerHTML+input+addDictFormStr(newrecordid)+"</div>";
+
+input="<input type='text'  id='"+newfielddid+"keygeneral"+"'  >"+
+"<a class='controlLink' href='#' onclick=\"dict2dictRemoveField('"+ newfielddid+"' ) \"> Удалить поле верхнего уровня</a>   "   +
+"<br/>"+addDictFormStr(newfielddid+"table");
+
+inputDiv=document.createElement('div');
+inputDiv.className='dict2dictformfield';
+inputDiv.id=newfielddid;
+inputDiv.style="border: 1px double black; width=500px";
+inputDiv.innerHTML=input;
+
+
+reqdiv=document.getElementById (formid); //получаем айди формы dict2dict
+reqdiv.appendChild(inputDiv);
+
 
 }
 
@@ -166,26 +172,35 @@ div = document.getElementById(formid);
 maxid=0;
 //проехать по всем потомкам div, выдернуть номер айди, сравнить
 
-
 //этот код не работает в IE до 9-й версии
 var children=div.children; //все потомки div
 
-for (var i=0; i<children; i++)
+for (var i=0; i<children.length; i++)
     {
         if (children[i].tagName=="DIV")
         {
 
-
+            maxid=Math.max (maxid,  parseInt(children[i].id.split("_")[1])  )+1  ;
         }
-
-
     }
-
-
-
-
-
+return maxid;
 }
+
+
+//As James said, the DOM does not support removing an object directly.
+//You have to go to its parent and remove it from there.
+//Javascript won't let an element commit suicide, but it does permit infanticide... (c)stackoverflow
+
+
+function dict2dictRemoveField (idfield)
+//удаляет поле формы dic2dict, сиречь удаляет у формы div с id=idfield
+{
+var element = document.getElementById(idfield);
+element.parentNode.removeChild(element);
+}
+
+
+
 
 </script>
 
