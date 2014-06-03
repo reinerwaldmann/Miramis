@@ -6,7 +6,7 @@
     <title></title>
 
     <style type="text/css">
-td{padding:10px;border:1px solid #000;}
+td{border:1px solid #000;}
 .c1,td:first-child{display:none;}
 </style>
 
@@ -15,9 +15,8 @@ td{padding:10px;border:1px solid #000;}
 <body>
 
 <script>
-//удаление строки
 
-
+    //получает максимальный айди из всех строк таблицы
     function getMaxRowIdInTable(tableid)
     {
                 var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
@@ -35,7 +34,7 @@ td{padding:10px;border:1px solid #000;}
 
     }
 
-
+//удаляет строку из таблицы
     function rmRow(tableid, rowIndex)
     {
             var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
@@ -48,7 +47,7 @@ td{padding:10px;border:1px solid #000;}
     {
             var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
             var id=getMaxRowIdInTable(tableid);
-            var row = table.insertRow(rowIndex);
+            var row = table.insertRow(table.rows.length);
             var cell0 = row.insertCell(0);
             var cell1 = row.insertCell(1);
             var cell2 = row.insertCell(2);
@@ -56,7 +55,9 @@ td{padding:10px;border:1px solid #000;}
             cell0.innerHTML=" "+id
             cell1.innerHTML = "<input type='text' id='"+tableid+"_key["+id+"]'>";
             cell2.innerHTML = "<input type='text' id='"+tableid+"_value["+id+"]' >";
-            cell3.innerHTML = "<a class='controlLinkDel' href='#'  onclick=\"return rmRow('"+tableid+"',   getParent(this, 'TR').rowIndex  ) ;\"   >[-] </a>";
+            cell3.innerHTML = "<input type='button' value='[-]'  onclick=\"return rmRow('"+tableid+"',   getParent(this, 'TR').rowIndex  ) ;\"> ";
+
+
                 //"<a class='controlLinkAdd' href='#'  onclick=\"return insertRow('dict1',   getParent(this, 'TR').rowIndex+1  ) ;\"   >[+&#8595 ]</a>";
                 //"<a class='controlLinkAdd' href='#'  onclick=\"return insertRow('dict1',   getParent(this, 'TR').rowIndex  ) ;\"   >[+&#8593;]</a>";
 
@@ -103,19 +104,17 @@ td{padding:10px;border:1px solid #000;}
 
             res+="}";
 
-            alert (res)
             return res
-
     }
 
-
-
 function addDictForm (formid, parentdivid)
+//добавляет форму редакции словаря
 {
 document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+addDictFormStr (formid);
 }
 
 function addDictFormStr (formid)
+//возвращает строку формы редакции словаря
 {
 var table = " <table id='"+ formid +"' border='0'> "+
     "<tbody>"+
@@ -123,7 +122,9 @@ var table = " <table id='"+ formid +"' border='0'> "+
     " <tr> </tr> "+
     " </tbody>"+
 "</table>"+
-    " <a class='controlLink' href='#' onclick=\"return insertRow('"+formid +"',   1) ;\">Добавить поле</a>"+
+    //" <a class='controlLink' href='#' onclick=\"return insertRow('"+formid +"',   1) ;\">Добавить поле</a>"+
+    "<input type='button' value='Добавить поле'  onclick=\"return insertRow('"+formid +"',   1) ;\"> ";
+
  "<br/>";
 
 
@@ -137,7 +138,11 @@ return table;
 function addDict2DictForm (formid, parentdivid)
 //добавляет форму словаря словарей
 {
-contains=" <a class='controlLink' href='#' onclick=\"return insertDict2DictField('"+parentdivid +"',   1) ;\">Добавить поле верхнего уровня</a>";
+//contains=" <a class='controlLink' href='#' onclick=\"return insertDict2DictField('"+parentdivid +"',   1) ;\">Добавить поле верхнего уровня</a>";
+
+contains="<input type='button' value='Добавить поле верхнего уровня'  onclick=\"return insertDict2DictField('"+parentdivid +"',   1) ;\"> ";
+
+
 document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+contains;
 }
 
@@ -149,9 +154,11 @@ function insertDict2DictField (formid)
 newfielddid=formid+"field_"+dict2dictgetnewid(formid);
 
 
-input="<input type='text'  id='"+newfielddid+"keygeneral"+"'  >"+
-"<a class='controlLink' href='#' onclick=\"dict2dictRemoveField('"+ newfielddid+"' ) \"> Удалить поле верхнего уровня</a>   "   +
-"<br/>"+addDictFormStr(newfielddid+"table");
+input="<input type='text'  id='keygeneral"+newfielddid+"'  >"+
+ "<input type='button' value='Удалить поле верхнего уровня'  onclick=\"dict2dictRemoveField('"+ newfielddid+"' ) \"> "+
+
+
+"<br/>"+addDictFormStr("table"+newfielddid);
 
 inputDiv=document.createElement('div');
 inputDiv.className='dict2dictformfield';
@@ -162,7 +169,6 @@ inputDiv.innerHTML=input;
 
 reqdiv=document.getElementById (formid); //получаем айди формы dict2dict
 reqdiv.appendChild(inputDiv);
-
 
 }
 
@@ -200,9 +206,93 @@ element.parentNode.removeChild(element);
 }
 
 
+function dict2dictMakeResString(formid)
+{
+    resstr="{";
+
+    div = document.getElementById(formid);
+
+
+    //этот код не работает в IE до 9-й версии
+    var children=div.children; //все потомки div
+
+    for (var i=0; i<children.length; i++)
+    {
+     if (children[i].tagName=="DIV")
+            {
+
+                    divstr="";
+                    collecteddata="";
+
+                    fieldchildren = children[i].children;
+                    for (var j=0; j<fieldchildren.length; j++)
+                        {
+                            //добавляем ключ верхней категории
+                            if (fieldchildren[j].id.indexOf('keygeneral')!=-1    )
+                                divstr+="'"+fieldchildren[j].value+"' : ";
+
+                        }
+
+                    for (var j=0; j<fieldchildren.length; j++)
+                        {
+                            //добавляем ключ верхней категории
+                            if (fieldchildren[j].id.indexOf('table')!=-1    )
+
+                            collecteddata=collectDataFromDictTable (fieldchildren[j].id);
+
+
+
+                        }
+
+                        if (collecteddata.length>0)
+                                {
+                                    divstr+=collecteddata;
+                                    resstr+=divstr+" , ";
+
+                                }
+            }
+    }
+
+
+if (resstr[resstr.length-2]=="," ) //если последняя запятая, и при этом вышло так, что мы на последнем элементе, тооо
+{
+    resstr=resstr.substring(0, resstr.length - 3);
+}
+
+
+resstr+="}";
+
+alert (resstr);
+return resstr;
+}
+
+
 
 
 </script>
+
+
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec interdum erat in tincidunt euismod. Nulla sed enim sagittis, commodo felis quis, rutrum dui. Curabitur nec imperdiet leo. Vestibulum commodo tincidunt neque. Phasellus malesuada felis aliquet lacus mollis commodo. Curabitur vestibulum leo eu consectetur luctus. Nam at arcu at felis vehicula molestie. Aliquam vel nunc hendrerit, ultricies est nec, sagittis lectus. Donec magna felis, venenatis et gravida eu, placerat sed enim. Quisque cursus justo sit amet velit feugiat mollis.
+
+Nulla facilisi. Morbi aliquam lacus vitae nisl fermentum, non hendrerit ligula vehicula. In non laoreet sem. Vestibulum aliquet enim diam, in luctus mi varius vel. Nunc sodales vehicula nisl, vitae iaculis arcu ornare in. Donec sodales volutpat odio, vel tristique ante dictum a. Curabitur tincidunt massa quis urna aliquam condimentum lacinia vitae diam. Donec fermentum sodales posuere. Nunc et risus ut nulla aliquam lacinia. Maecenas hendrerit at nisi vitae tincidunt. Morbi eget tincidunt massa. Donec ullamcorper mauris vestibulum ipsum venenatis imperdiet. In turpis dolor, placerat a tempus at, tempor et diam. Nulla facilisis diam et eros tincidunt, nec convallis massa porta.
+
+Mauris rhoncus ante vel orci feugiat, nec feugiat magna congue. Nunc tempor scelerisque pharetra. Morbi ut consectetur risus. Mauris at accumsan sapien. Morbi aliquam elit in elit vehicula, ac lobortis lorem dictum. Vestibulum eu nisl dictum, tempor odio vestibulum, tristique odio. Suspendisse pretium vel turpis imperdiet egestas. Quisque placerat arcu quis feugiat tincidunt. Suspendisse interdum enim tristique velit bibendum venenatis. Suspendisse pulvinar quis ligula non scelerisque. Praesent felis enim, imperdiet eu consequat ac, ullamcorper vel ipsum. Nunc blandit augue et augue cursus, aliquam eleifend mauris lobortis.
+
+Etiam rutrum purus eu tellus varius gravida. Nam condimentum aliquet vulputate. Nullam vulputate suscipit ligula at sagittis. Integer ornare dolor lectus. Sed posuere at augue in vulputate. Vivamus at elit non neque imperdiet ornare. Praesent eu diam quis metus tincidunt sodales sit amet suscipit odio. Nulla consectetur ultricies tellus, eget scelerisque sapien interdum non. Aliquam erat volutpat.
+
+In pulvinar magna et orci rhoncus lacinia. Nullam id viverra nunc. Aliquam sit amet lectus a justo tincidunt luctus laoreet at turpis. Etiam eu tristique lacus, ut facilisis mi. Nulla vitae varius diam, ac aliquam eros. Vestibulum nec rutrum sapien. Morbi fringilla rhoncus eleifend.
+
+Pellentesque laoreet leo tortor. Quisque molestie pulvinar ornare. Vivamus ac scelerisque sem. Nulla nec sem at libero cursus tristique vel quis lacus. Fusce mi dui, posuere ut blandit id, condimentum eget ipsum. Pellentesque semper dictum sollicitudin. In tincidunt nulla vitae lacinia lobortis. Nulla facilisi. Donec scelerisque id metus ut interdum. Donec in hendrerit purus. Pellentesque auctor turpis nisi, et vehicula justo gravida ut. Maecenas elit urna, aliquet at felis eu, sagittis volutpat elit.
+
+Sed auctor congue ullamcorper. Curabitur vitae nunc ultrices, pellentesque erat et, fermentum erat. Fusce tristique augue vel lectus tristique, eget commodo nulla pellentesque. Suspendisse arcu quam, scelerisque consequat velit non, condimentum adipiscing enim. Sed tortor nisl, pulvinar eu tellus eu, vestibulum mollis elit. Ut id dui pellentesque, dignissim diam vitae, laoreet turpis. Donec ac arcu in erat suscipit volutpat quis ac nibh. Nulla luctus quam sit amet convallis malesuada. Ut justo urna, mollis quis consequat at, fringilla non tortor. Suspendisse potenti. Maecenas in egestas felis, eget scelerisque dui. Fusce viverra risus sapien. Cras tincidunt sapien non nisi malesuada, sit amet fermentum nisl lobortis. Cras metus lorem, iaculis non massa vitae, venenatis vestibulum dolor.
+
+In consectetur gravida augue sit amet egestas. Vestibulum quam velit, consequat eu leo scelerisque, vestibulum lobortis nunc. Phasellus sed est sit amet risus vestibulum pulvinar. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam sodales sit amet nibh ornare feugiat. Integer ac tristique nibh, vitae ornare velit. Aliquam quis sem semper ipsum mollis gravida. Nulla facilisi.
+
+Praesent vestibulum libero neque, quis hendrerit erat placerat et. Sed viverra fringilla lacus, quis condimentum eros lobortis a. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum luctus mi odio, sed scelerisque ligula accumsan quis. Sed eu arcu augue. Fusce ut enim turpis. Nunc sodales nibh tincidunt vulputate consequat. Donec gravida aliquet molestie. Etiam a nisl pulvinar, scelerisque ligula quis, varius libero. Aenean dignissim vehicula ipsum, quis iaculis diam suscipit adipiscing. Aliquam pharetra arcu lacinia tortor malesuada condimentum.
+
+Vivamus pharetra egestas tortor et consequat. Mauris eu suscipit orci. Fusce ornare hendrerit condimentum. Proin interdum nisi at sodales adipiscing. Pellentesque eu justo turpis. Nunc vel luctus ante, at rhoncus lorem. Maecenas id ligula tortor. Vestibulum aliquam in odio ut pharetra. Praesent nec dolor mattis nisi imperdiet ultricies non et tellus. Nullam fermentum luctus est at posuere. Etiam id dolor faucibus, fermentum massa eget, vestibulum enim. In placerat urna urna, eget commodo dolor scelerisque fermentum.
+
 
 
 <h1  > Форма для словаря</h1>
@@ -213,6 +303,8 @@ addDictForm('dict11','par');
 
 
 
+
+
 <h1  > Форма для словаря словарей </h1>
 
 <div id="dict2dictform"> </div>
@@ -220,9 +312,32 @@ addDictForm('dict11','par');
 addDict2DictForm ("dict2dict", "dict2dictform");
 </script>
 
+<input type='button' onclick="dict2dictMakeResString('dict2dictform');" value="PRESSSME">
 
 
 
+
+
+
+
+
+
+
+
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec interdum erat in tincidunt euismod. Nulla sed enim sagittis, commodo felis quis, rutrum dui. Curabitur nec imperdiet leo. Vestibulum commodo tincidunt neque. Phasellus malesuada felis aliquet lacus mollis commodo. Curabitur vestibulum leo eu consectetur luctus. Nam at arcu at felis vehicula molestie. Aliquam vel nunc hendrerit, ultricies est nec, sagittis lectus. Donec magna felis, venenatis et gravida eu, placerat sed enim. Quisque cursus justo sit amet velit feugiat mollis.
+
+Nulla facilisi. Morbi aliquam lacus vitae nisl fermentum, non hendrerit ligula vehicula. In non laoreet sem. Vestibulum aliquet enim diam, in luctus mi varius vel. Nunc sodales vehicula nisl, vitae iaculis arcu ornare in. Donec sodales volutpat odio, vel tristique ante dictum a. Curabitur tincidunt massa quis urna aliquam condimentum lacinia vitae diam. Donec fermentum sodales posuere. Nunc et risus ut nulla aliquam lacinia. Maecenas hendrerit at nisi vitae tincidunt. Morbi eget tincidunt massa. Donec ullamcorper mauris vestibulum ipsum venenatis imperdiet. In turpis dolor, placerat a tempus at, tempor et diam. Nulla facilisis diam et eros tincidunt, nec convallis massa porta.
+
+Mauris rhoncus ante vel orci feugiat, nec feugiat magna congue. Nunc tempor scelerisque pharetra. Morbi ut consectetur risus. Mauris at accumsan sapien. Morbi aliquam elit in elit vehicula, ac lobortis lorem dictum. Vestibulum eu nisl dictum, tempor odio vestibulum, tristique odio. Suspendisse pretium vel turpis imperdiet egestas. Quisque placerat arcu quis feugiat tincidunt. Suspendisse interdum enim tristique velit bibendum venenatis. Suspendisse pulvinar quis ligula non scelerisque. Praesent felis enim, imperdiet eu consequat ac, ullamcorper vel ipsum. Nunc blandit augue et augue cursus, aliquam eleifend mauris lobortis.
+
+Etiam rutrum purus eu tellus varius gravida. Nam condimentum aliquet vulputate. Nullam vulputate suscipit ligula at sagittis. Integer ornare dolor lectus. Sed posuere at augue in vulputate. Vivamus at elit non neque imperdiet ornare. Praesent eu diam quis metus tincidunt sodales sit amet suscipit odio. Nulla consectetur ultricies tellus, eget scelerisque sapien interdum non. Aliquam erat volutpat.
+
+In pulvinar magna et orci rhoncus lacinia. Nullam id viverra nunc. Aliquam sit amet lectus a justo tincidunt luctus laoreet at turpis. Etiam eu tristique lacus, ut facilisis mi. Nulla vitae varius diam, ac aliquam eros. Vestibulum nec rutrum sapien. Morbi fringilla rhoncus eleifend.
+
+Pellentesque laoreet leo tortor. Quisque molestie pulvinar ornare. Vivamus ac scelerisque sem. Nulla nec sem at libero cursus tristique vel quis lacus. Fusce mi dui, posuere ut blandit id, condimentum eget ipsum. Pellentesque semper dictum sollicitudin. In tincidunt nulla vitae lacinia lobortis. Nulla facilisi. Donec scelerisque id metus ut interdum. Donec in hendrerit purus. Pellentesque auctor turpis nisi, et vehicula justo gravida ut. Maecenas elit urna, aliquet at felis eu, sagittis volutpat elit.
+
+Sed auctor congue ullamcorper. Curabitur vitae nunc ultric
 
 
 
