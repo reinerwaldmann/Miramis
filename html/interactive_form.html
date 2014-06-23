@@ -6,8 +6,9 @@
     <title></title>
 
     <style type="text/css">
-td{border:1px solid #000;}
-.c1,td:first-child{display:none;}
+td#dicttable  {border:1px solid #000;}
+
+.c1 ,td#dicttable:first-child        {display:none;}
 </style>
 
 
@@ -138,21 +139,37 @@ return table;
 function addDict2DictForm (formid, parentdivid)
 //добавляет форму словаря словарей
 {
-//contains=" <a class='controlLink' href='#' onclick=\"return insertDict2DictField('"+parentdivid +"',   1) ;\">Добавить поле верхнего уровня</a>";
-
-contains="<input type='button' value='Добавить поле верхнего уровня'  onclick=\"return insertDict2DictField('"+parentdivid +"',   1) ;\"> ";
+contains="<input type='button' value='Добавить поле верхнего уровня'  onclick=\"return insertDict2DictField('"+parentdivid +"',   '') ;\"> ";
 document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+contains;
 }
 
 
-function insertDict2DictField (formid)
+function addDict2DictFormChannels (formid, parentdivid, channellist)
+//добавляет форму словаря словарей
+{
+
+    for (var i in channellist)  //для каждого канала в списке каналов
+    {
+        insertDict2DictField('"+parentdivid +"', i);
+    }
+
+
+    //contains="<input type='button' value='Добавить поле верхнего уровня'  onclick=\"return insertDict2DictField('"+parentdivid +"',   1) ;\"> ";
+
+
+//    document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+contains;
+}
+
+
+
+function insertDict2DictField (formid, fieldname)
 {
 //добавляет поле формы словаря словарей
 //просто добавить к див formid инпут и применить к немму adDictForm
 newfielddid=formid+"field_"+dict2dictgetnewid(formid);
 
 
-input="<input type='text'  id='keygeneral"+newfielddid+"'  >"+
+input="<input type='text'  id='keygeneral"+newfielddid+"'  value='"+fieldname+"'  readonly='readonly'   >"+
  "<input type='button' value='Удалить поле верхнего уровня'  onclick=\"dict2dictRemoveField('"+ newfielddid+"' ) \"> "+
 
 
@@ -312,33 +329,42 @@ addDict2DictForm ("dict2dict", "dict2dictform");
 
 <h2> Форма для строки таблицы </h2>
 
- <table border="1" style="width: 900px">
-      <tbody>
+<table border='1' style='width: 100%; padding: 0px;'  >
+    <tbody>
         <tr>
-          <th width=100px align=center  >Наименование измеряемого параметра, пункт технических требований по ТУ </br>(методов контроля)</th>
-          <th width=100px align=center >Требования к режиму измерения</th>
-          <th width=100px align=center >Норма по ТУ</th>
-          <th width=100px align=center >Условное обозначение измеряемого параметра </th>
-          <th width=100px> </th>
-          <th width=100px> </th>
+          <th align=center >Наименование измеряемого параметра, пункт технических требований по ТУ </br>(методов контроля)</th>
+          <th align=center >Требования к режиму измерения</th>
+          <th align=center >Норма по ТУ</th>
+          <th align=center >Условное обозначение измеряемого параметра </th>
+
         </tr>
 
        <tr>
-        <td><input type='text' id='name'  >    </td>
-        <td> <div id='mode'> </div>      </td>
+        <td><textarea name ='name' id='name' cols='70' rows='5'> </textarea></td>
+        <td> <div id='mode'>               </div>      </td>
         <td> <div id='normal_values_contendor'>    </div>  </td>
-
-
-
-        <td> </td>
-
+        <td> здесь должна быть форма правки списка  - некая listform </td>
        </tr>
 
       </tbody>
 </table>
 
 
+<script>
+//добавление хрени в табл. выше
+addDictForm('mode_common','mode');
 
+
+//addDict2DictForm('mode_channel','mode');
+
+//addDict2DictFormChannels ('mode_channel','mode', ["канал раз", "канал два"] );
+
+
+addDict2DictForm('normal_values_contendor','normal_values_contendor');
+
+
+
+</script>
 
 
 
