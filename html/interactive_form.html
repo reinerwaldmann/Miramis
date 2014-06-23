@@ -141,8 +141,6 @@ function addDict2DictForm (formid, parentdivid)
 //contains=" <a class='controlLink' href='#' onclick=\"return insertDict2DictField('"+parentdivid +"',   1) ;\">Добавить поле верхнего уровня</a>";
 
 contains="<input type='button' value='Добавить поле верхнего уровня'  onclick=\"return insertDict2DictField('"+parentdivid +"',   1) ;\"> ";
-
-
 document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+contains;
 }
 
@@ -207,12 +205,10 @@ element.parentNode.removeChild(element);
 
 
 function dict2dictMakeResString(formid)
+//Делает строку Питона из формы словаря словарей.
 {
     resstr="{";
-
     div = document.getElementById(formid);
-
-
     //этот код не работает в IE до 9-й версии
     var children=div.children; //все потомки div
 
@@ -267,32 +263,30 @@ return resstr;
 }
 
 
-
-
 </script>
 
 
+Чтобы добавить пустую форму словаря, или же словаря словарей,
+мы сначала подключаем к html-файлу ссылку на js-файл, содержащий функции выше.
+Потом мы добавляем функции </br>
+addDictForm('dict11','par'); <br>
+addDict2DictForm ("dict2dict", "dict2dictform"); <br>
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec interdum erat in tincidunt euismod. Nulla sed enim sagittis, commodo felis quis, rutrum dui. Curabitur nec imperdiet leo. Vestibulum commodo tincidunt neque. Phasellus malesuada felis aliquet lacus mollis commodo. Curabitur vestibulum leo eu consectetur luctus. Nam at arcu at felis vehicula molestie. Aliquam vel nunc hendrerit, ultricies est nec, sagittis lectus. Donec magna felis, venenatis et gravida eu, placerat sed enim. Quisque cursus justo sit amet velit feugiat mollis.
+в каждой из них первое - это айди формы, второе - айди дива, в который она должна быть вставлена.
 
-Nulla facilisi. Morbi aliquam lacus vitae nisl fermentum, non hendrerit ligula vehicula. In non laoreet sem. Vestibulum aliquet enim diam, in luctus mi varius vel. Nunc sodales vehicula nisl, vitae iaculis arcu ornare in. Donec sodales volutpat odio, vel tristique ante dictum a. Curabitur tincidunt massa quis urna aliquam condimentum lacinia vitae diam. Donec fermentum sodales posuere. Nunc et risus ut nulla aliquam lacinia. Maecenas hendrerit at nisi vitae tincidunt. Morbi eget tincidunt massa. Donec ullamcorper mauris vestibulum ipsum venenatis imperdiet. In turpis dolor, placerat a tempus at, tempor et diam. Nulla facilisis diam et eros tincidunt, nec convallis massa porta.
+Потом пишется своя js функция, которая собирает данные. Делается она примерно так
+str1=dict2dictMakeResString('dict2dictform') <br>
+str2=dict2dictMakeResString('dict2dictform2') <br>
+на этом этапе собрали данные из форм
 
-Mauris rhoncus ante vel orci feugiat, nec feugiat magna congue. Nunc tempor scelerisque pharetra. Morbi ut consectetur risus. Mauris at accumsan sapien. Morbi aliquam elit in elit vehicula, ac lobortis lorem dictum. Vestibulum eu nisl dictum, tempor odio vestibulum, tristique odio. Suspendisse pretium vel turpis imperdiet egestas. Quisque placerat arcu quis feugiat tincidunt. Suspendisse interdum enim tristique velit bibendum venenatis. Suspendisse pulvinar quis ligula non scelerisque. Praesent felis enim, imperdiet eu consequat ac, ullamcorper vel ipsum. Nunc blandit augue et augue cursus, aliquam eleifend mauris lobortis.
+запрос (ajax-или как-то ещё) с POST-данными, включающими в себя оные строки.
+В этот запрос также должны входить и дополнительные данные, такие как айди протокола или айди испытания.
 
-Etiam rutrum purus eu tellus varius gravida. Nam condimentum aliquet vulputate. Nullam vulputate suscipit ligula at sagittis. Integer ornare dolor lectus. Sed posuere at augue in vulputate. Vivamus at elit non neque imperdiet ornare. Praesent eu diam quis metus tincidunt sodales sit amet suscipit odio. Nulla consectetur ultricies tellus, eget scelerisque sapien interdum non. Aliquam erat volutpat.
+Либо в js по умолчанию найдётся функция анализа get-строчки адреса, либо считываем данные скрытого дива.
 
-In pulvinar magna et orci rhoncus lacinia. Nullam id viverra nunc. Aliquam sit amet lectus a justo tincidunt luctus laoreet at turpis. Etiam eu tristique lacus, ut facilisis mi. Nulla vitae varius diam, ac aliquam eros. Vestibulum nec rutrum sapien. Morbi fringilla rhoncus eleifend.
-
-Pellentesque laoreet leo tortor. Quisque molestie pulvinar ornare. Vivamus ac scelerisque sem. Nulla nec sem at libero cursus tristique vel quis lacus. Fusce mi dui, posuere ut blandit id, condimentum eget ipsum. Pellentesque semper dictum sollicitudin. In tincidunt nulla vitae lacinia lobortis. Nulla facilisi. Donec scelerisque id metus ut interdum. Donec in hendrerit purus. Pellentesque auctor turpis nisi, et vehicula justo gravida ut. Maecenas elit urna, aliquet at felis eu, sagittis volutpat elit.
-
-Sed auctor congue ullamcorper. Curabitur vitae nunc ultrices, pellentesque erat et, fermentum erat. Fusce tristique augue vel lectus tristique, eget commodo nulla pellentesque. Suspendisse arcu quam, scelerisque consequat velit non, condimentum adipiscing enim. Sed tortor nisl, pulvinar eu tellus eu, vestibulum mollis elit. Ut id dui pellentesque, dignissim diam vitae, laoreet turpis. Donec ac arcu in erat suscipit volutpat quis ac nibh. Nulla luctus quam sit amet convallis malesuada. Ut justo urna, mollis quis consequat at, fringilla non tortor. Suspendisse potenti. Maecenas in egestas felis, eget scelerisque dui. Fusce viverra risus sapien. Cras tincidunt sapien non nisi malesuada, sit amet fermentum nisl lobortis. Cras metus lorem, iaculis non massa vitae, venenatis vestibulum dolor.
-
-In consectetur gravida augue sit amet egestas. Vestibulum quam velit, consequat eu leo scelerisque, vestibulum lobortis nunc. Phasellus sed est sit amet risus vestibulum pulvinar. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam sodales sit amet nibh ornare feugiat. Integer ac tristique nibh, vitae ornare velit. Aliquam quis sem semper ipsum mollis gravida. Nulla facilisi.
-
-Praesent vestibulum libero neque, quis hendrerit erat placerat et. Sed viverra fringilla lacus, quis condimentum eros lobortis a. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Vestibulum luctus mi odio, sed scelerisque ligula accumsan quis. Sed eu arcu augue. Fusce ut enim turpis. Nunc sodales nibh tincidunt vulputate consequat. Donec gravida aliquet molestie. Etiam a nisl pulvinar, scelerisque ligula quis, varius libero. Aenean dignissim vehicula ipsum, quis iaculis diam suscipit adipiscing. Aliquam pharetra arcu lacinia tortor malesuada condimentum.
-
-Vivamus pharetra egestas tortor et consequat. Mauris eu suscipit orci. Fusce ornare hendrerit condimentum. Proin interdum nisi at sodales adipiscing. Pellentesque eu justo turpis. Nunc vel luctus ante, at rhoncus lorem. Maecenas id ligula tortor. Vestibulum aliquam in odio ut pharetra. Praesent nec dolor mattis nisi imperdiet ultricies non et tellus. Nullam fermentum luctus est at posuere. Etiam id dolor faucibus, fermentum massa eget, vestibulum enim. In placerat urna urna, eget commodo dolor scelerisque fermentum.
-
+<br><br>
+Когда дело дойдёт до формы свободной, то надо сделать так, чтоб modechannel сразу предлагал ввести
+нормы по списку каналов.
 
 
 <h1  > Форма для словаря</h1>
@@ -316,28 +310,35 @@ addDict2DictForm ("dict2dict", "dict2dictform");
 
 
 
+<h2> Форма для строки таблицы </h2>
+
+ <table border="1" style="width: 900px">
+      <tbody>
+        <tr>
+          <th width=100px align=center  >Наименование измеряемого параметра, пункт технических требований по ТУ </br>(методов контроля)</th>
+          <th width=100px align=center >Требования к режиму измерения</th>
+          <th width=100px align=center >Норма по ТУ</th>
+          <th width=100px align=center >Условное обозначение измеряемого параметра </th>
+          <th width=100px> </th>
+          <th width=100px> </th>
+        </tr>
+
+       <tr>
+        <td><input type='text' id='name'  >    </td>
+        <td> <div id='mode'> </div>      </td>
+        <td> <div id='normal_values_contendor'>    </div>  </td>
 
 
 
+        <td> </td>
+
+       </tr>
+
+      </tbody>
+</table>
 
 
 
-
-
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec interdum erat in tincidunt euismod. Nulla sed enim sagittis, commodo felis quis, rutrum dui. Curabitur nec imperdiet leo. Vestibulum commodo tincidunt neque. Phasellus malesuada felis aliquet lacus mollis commodo. Curabitur vestibulum leo eu consectetur luctus. Nam at arcu at felis vehicula molestie. Aliquam vel nunc hendrerit, ultricies est nec, sagittis lectus. Donec magna felis, venenatis et gravida eu, placerat sed enim. Quisque cursus justo sit amet velit feugiat mollis.
-
-Nulla facilisi. Morbi aliquam lacus vitae nisl fermentum, non hendrerit ligula vehicula. In non laoreet sem. Vestibulum aliquet enim diam, in luctus mi varius vel. Nunc sodales vehicula nisl, vitae iaculis arcu ornare in. Donec sodales volutpat odio, vel tristique ante dictum a. Curabitur tincidunt massa quis urna aliquam condimentum lacinia vitae diam. Donec fermentum sodales posuere. Nunc et risus ut nulla aliquam lacinia. Maecenas hendrerit at nisi vitae tincidunt. Morbi eget tincidunt massa. Donec ullamcorper mauris vestibulum ipsum venenatis imperdiet. In turpis dolor, placerat a tempus at, tempor et diam. Nulla facilisis diam et eros tincidunt, nec convallis massa porta.
-
-Mauris rhoncus ante vel orci feugiat, nec feugiat magna congue. Nunc tempor scelerisque pharetra. Morbi ut consectetur risus. Mauris at accumsan sapien. Morbi aliquam elit in elit vehicula, ac lobortis lorem dictum. Vestibulum eu nisl dictum, tempor odio vestibulum, tristique odio. Suspendisse pretium vel turpis imperdiet egestas. Quisque placerat arcu quis feugiat tincidunt. Suspendisse interdum enim tristique velit bibendum venenatis. Suspendisse pulvinar quis ligula non scelerisque. Praesent felis enim, imperdiet eu consequat ac, ullamcorper vel ipsum. Nunc blandit augue et augue cursus, aliquam eleifend mauris lobortis.
-
-Etiam rutrum purus eu tellus varius gravida. Nam condimentum aliquet vulputate. Nullam vulputate suscipit ligula at sagittis. Integer ornare dolor lectus. Sed posuere at augue in vulputate. Vivamus at elit non neque imperdiet ornare. Praesent eu diam quis metus tincidunt sodales sit amet suscipit odio. Nulla consectetur ultricies tellus, eget scelerisque sapien interdum non. Aliquam erat volutpat.
-
-In pulvinar magna et orci rhoncus lacinia. Nullam id viverra nunc. Aliquam sit amet lectus a justo tincidunt luctus laoreet at turpis. Etiam eu tristique lacus, ut facilisis mi. Nulla vitae varius diam, ac aliquam eros. Vestibulum nec rutrum sapien. Morbi fringilla rhoncus eleifend.
-
-Pellentesque laoreet leo tortor. Quisque molestie pulvinar ornare. Vivamus ac scelerisque sem. Nulla nec sem at libero cursus tristique vel quis lacus. Fusce mi dui, posuere ut blandit id, condimentum eget ipsum. Pellentesque semper dictum sollicitudin. In tincidunt nulla vitae lacinia lobortis. Nulla facilisi. Donec scelerisque id metus ut interdum. Donec in hendrerit purus. Pellentesque auctor turpis nisi, et vehicula justo gravida ut. Maecenas elit urna, aliquet at felis eu, sagittis volutpat elit.
-
-Sed auctor congue ullamcorper. Curabitur vitae nunc ultric
 
 
 

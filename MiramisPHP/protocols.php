@@ -7,15 +7,15 @@ include "dbconnect.php";
 echo makehead("Протоколы");
 
 
+
+#если установлено, вызвать функцию удаления 
 if (isset ($_GET['delid'] ))
 {
 	delitem( $_GET['delid'] );
-	
 }
 
 
-$varr=array('ProductName'=> 'Название продукта', 'TestName' => 'имя теста' );
-
+#функция удаляет значение
 function delitem ($item)
 {
 
@@ -25,37 +25,17 @@ $res = mysql_query($query);
 }
 
 
+#определить колонки в таблице, по которым будет прозводиться фильтрация по вариантам значения (надо будетпотом добавить по границам)
+$varr=array('ProductName'=> 'Название продукта', 'TestName' => 'Название теста' );
 
-#здесь пойдут штуки типа isdel и так далее
-
-
-#здесь будет формирование строки фильтров 
-
-function filters()
-{
  
-	if (isset ($_GET['Filters']))
-	{
-		 
-	
-	return makeFilterString($varr);
-	
-	}
-	
-	
-	return "";
-
-}
 
 
 
 echo "<h1 align='center'>Протоколы</h1>\n\n";
 
-
-
-
-
-
+#функция генерирует див с фильтрами. На входе - словарь имя колонки mysql - название колонки текстом, имя таблицы в mysql
+#FEATURE:можно оптимизировать, так как на каждую колонку производится запрос к БД
 function makefilterdiv ($vararray, $tablename)
 {
 echo "
@@ -83,7 +63,7 @@ foreach ($vararray as $i => $value)
 			echo "<option value='".$row[$i]."'>".$row[$i]."</option>\n";
 			}
 			echo "
-		</select></br>
+		</select>
 		";
 }
 		echo "</br>
@@ -96,51 +76,50 @@ foreach ($vararray as $i => $value)
 
 }
 
-
+#производит строку фильтров (WHERE clause), на вход принимает словарь имя колонки mysql - название колонки текстом
 function makeFilterString ($vararray)
 {
-		 
-		 
 	$fstring="WHERE ";
-/* 	
 	foreach ($vararray as $i => $value)
 	{
-		if (isset($_GET($i)))
+		if (isset($_GET[$i]))
 		{
-			$val=$_GET($i);
+			$val=$_GET[$i];
 			if ($val)
 			{
-				$fstring=$fstring." ".$i."=".$val." AND "; 
-			
+				$fstring=$fstring." `".$i."`='".$val."' AND "; 
 			}
-			
 		}
- 		
-		
 	}
-  
- 
- */
+	if ($fstring=="WHERE ") return "";
 	#удалить последнее AND
-	
 	$fstring=substr($fstring, 0, -4);
-
-	echo ($fstring);
-	
+#	echo $fstring;
 	return $fstring;
-	
-	
-	
 }
 
 
 
+#здесь будет формирование строки фильтров 
+
+#обёртка к изготовителю WHERE - если в GET есть Filters, что есть скрытое поле, генерируемое makefilterdiv, то запускать makeFilterSting
+function filters()
+{
+	global $varr;
+	if (isset ($_GET['Filters']))
+	{
+	return makeFilterString($varr);
+	}
+	return "";
+
+}
+
+#TODO: выделить фильтры и всё, что с ними связно, в отдельный файл PHP
+
+
 #здесь выводятся фильтры
 
-
 echo makefilterdiv($varr, 'protocols');
-
-
 
 
 $query = "SELECT * FROM `protocols` ".filters();
@@ -171,7 +150,9 @@ echo "</tr>";
 
 echo "</table>"; 
 
-echo "<a href=''> Создать протокол </a>  </div>";
+echo "<a href=''> Создать протокол </a> &nbsp ";
+
+echo "<a href=''> Создать протокол из отчёта</a>  </div>";
  
 
 echo makefoot(); 

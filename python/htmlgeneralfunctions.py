@@ -6,7 +6,8 @@ def generateHTMLMetaHeader(title="Протокол испытаний"):
     <head>
     <meta charset="UTF-8" />
     <title> {0}  </title>
-    <link rel="stylesheet" type="text/css" media="all" href="" />
+    <link rel="stylesheet" type="text/css" media="all" href="main.css" />
+    <script type='text/javascript' src='scripts.js'></script>
     </head>
     <body>
     """.format(title)
@@ -25,3 +26,7 @@ def generateHTMLFooterRep():
     </body> </html>
     """
 #добавить подпися, если надо
+
+
+def throwError(creatorname, errortext, errortype=None):
+    return "<script>alert('"+creatorname+": "+errortext+"')</script>"

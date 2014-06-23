@@ -1,9 +1,14 @@
 __author__ = 'vasilev_is'
 
 from classes import *
+from  htmlgeneralfunctions import *
 
-import htmlgeneralfunctions
 
+"""
+Файл, занимающийся производством отчётов
+"""
+
+#[FRONTEND]
 
 #начинаем создавать хытымыль-страницу
 #хытымыль страница состоит из шапки и главной части по одной классификации
@@ -14,15 +19,29 @@ import htmlgeneralfunctions
 
 def generateHTML (resultslist:list, protocol:AProtocol):
     """
-    Генерирует HTML код того, что внутри таблицы (касающийся процедур)
+    @resultslist список результатов
+    @protocol протокол
+
+    Генерирует тело таблицы
     """
     if (resultslist == None):
+        throwError("makereports", "Ошибка, None как список резльутатов")
         return ""
+
+    if (protocol == None):
+        throwError("makereports", "Ошибка, None как протокол")
+        return ""
+
     if (resultslist.__len__==0):
+        throwError("makereports", "Нет результатов в списке!")
         return ""
+
+
     res=generateHTMLMetaHeader() + generageHTMLProtocolHeader(resultslist.__len__(), resultslist[0])
     #res+=generageHTMLProtocolHeader(resultslist[0])  #resultslist - это список результатов. Результатов всегда список, тогда как протокол - один
     #таблица пошла
+
+    #Здесь можно напистаьпроверку на соответствие результатов протоколу
 
     for i in (1,protocol.procedures.__len__()):
         p=protocol.procedures[i]
@@ -36,25 +55,23 @@ def generateHTML (resultslist:list, protocol:AProtocol):
     res += generateHTMLFooterRep()
     return res
 
-def generateHTMLResult (result):
-    pass
-
-
 
 
 def generageHTMLProtocolHeader(numOfProducts, result):
+    """
+    @numOfProducts число изделий
+    @result один из результатов (оттуда списывается модель и дата теста)
+    Создаёт голову таблицы
+    """
     res="<div align='center'> <p>ПРОТОКОЛ №  от "+result.testDateTime+"</p>  "
     res+="<p> Каких-то испытаний, установить!!</p>"
     res+="<p>"+result.model+"</p>"
-
 
     strnumprs=""
     for x in range (1, numOfProducts+1):
         strnumprs+="<td align=center >{0}</td>\n".format(x)
 
     res+= """
-
-
 
     <table border="1" style="width: 900px">
       <tbody>
@@ -73,9 +90,6 @@ def generageHTMLProtocolHeader(numOfProducts, result):
         </tr>
 
     """.format(numOfProducts, strnumprs)
-
-
-
     return res
 
 
@@ -109,7 +123,6 @@ def generageHTMLProtocolHeader(numOfProducts, result):
 
 
 #TODO   1. Рефакторинг кода
-#TODO   2.  Написание кошерных документационных тегов
 #TODO   3. Тестирование создания HTML-странички и добавление дополнительных полей вроде вида испытаний (возможно, их вводить при генерации)
 #TODO   4. Проектирование веб-страницы с полями ввода и так далее
 
