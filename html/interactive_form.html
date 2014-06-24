@@ -20,14 +20,22 @@ td#dicttable  {border:1px solid #000;}
     //получает максимальный айди из всех строк таблицы
     function getMaxRowIdInTable(tableid)
     {
+
                 var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
+
+
                 if (table.rows.length==1) return 0;
-                  var maxid=0;
+                var maxid=0;
+
+
+
                 for (var i=1; i<table.rows.length;i++)
                 {
                 var  row = table.rows[i];
                  var cell=row.cells[0];
-                 maxid=Math.max (maxid, parseInt(cell.innerHTML));
+
+
+                maxid=Math.max (maxid, parseInt(cell.innerHTML));
                 }
 
                 return maxid+1;
@@ -76,7 +84,7 @@ td#dicttable  {border:1px solid #000;}
             var table=document.getElementById(dicttableId );    // Получаем указатель нужной нам таблицы
             var numrows =table.rows.length;
             var res="{";
-            if (numrows==1) return "";  //если нет полей, то вернуть пустую строку
+            if (numrows==1) return "{}";  //если нет полей, то вернуть пустую строку
             maxid=getMaxRowIdInTable(dicttableId);
             for (var i=0; i<maxid; i++)
             {
@@ -114,17 +122,21 @@ function addDictForm (formid, parentdivid)
 document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+addDictFormStr (formid);
 }
 
-function addDictFormStr (formid)
+function addDictFormStr (formid, isInDict2Dict)
 //возвращает строку формы редакции словаря
+//Если параметр isInDict2Dict установлен в 1, то эта форма является частью dict2dict, и на кнопке должна быть надпись "добавить поле в категорию"
 {
+buttonCaption="Добавить поле";
+if (isInDict2Dict==1) buttonCaption="Добавить поле в категорию";
+
 var table = " <table id='"+ formid +"' border='0'> "+
     "<tbody>"+
     "<col class='c1'><col span='2'>"+
     " <tr> </tr> "+
     " </tbody>"+
 "</table>"+
-    //" <a class='controlLink' href='#' onclick=\"return insertRow('"+formid +"',   1) ;\">Добавить поле</a>"+
-    "<input type='button' value='Добавить поле'  onclick=\"return insertRow('"+formid +"',   1) ;\"> ";
+
+    "<input type='button' value='"+buttonCaption+"'  onclick=\"return insertRow('"+formid +"',   1) ;\"> ";
 
  "<br/>";
 
@@ -147,33 +159,39 @@ document.getElementById(parentdivid).innerHTML=document.getElementById(parentdiv
 function addDict2DictFormChannels (formid, parentdivid, channellist)
 //добавляет форму словаря словарей
 {
+    formdiv=document.createElement('div');
+    formdiv.className='dict2dictformdiv';
+    formdiv.id=formid;
+
+    parentdiv=document.getElementById(parentdivid);
+    parentdiv.appendChild(formdiv);
+
 
     for (var i in channellist)  //для каждого канала в списке каналов
     {
-        insertDict2DictField('"+parentdivid +"', i);
+        insertDict2DictField(formid, channellist[i]);
     }
-
-
-    //contains="<input type='button' value='Добавить поле верхнего уровня'  onclick=\"return insertDict2DictField('"+parentdivid +"',   1) ;\"> ";
-
-
-//    document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+contains;
 }
 
 
 
 function insertDict2DictField (formid, fieldname)
 {
+
 //добавляет поле формы словаря словарей
 //просто добавить к див formid инпут и применить к немму adDictForm
 newfielddid=formid+"field_"+dict2dictgetnewid(formid);
 
 
+
+
+
 input="<input type='text'  id='keygeneral"+newfielddid+"'  value='"+fieldname+"'  readonly='readonly'   >"+
- "<input type='button' value='Удалить поле верхнего уровня'  onclick=\"dict2dictRemoveField('"+ newfielddid+"' ) \"> "+
+
+// "<input type='button' value='Удалить поле верхнего уровня'  onclick=\"dict2dictRemoveField('"+ newfielddid+"' ) \"> "+
 
 
-"<br/>"+addDictFormStr("table"+newfielddid);
+"<br/>"+addDictFormStr("table"+newfielddid, 1);
 
 inputDiv=document.createElement('div');
 inputDiv.className='dict2dictformfield';
@@ -193,6 +211,9 @@ div = document.getElementById(formid);
 maxid=0;
 //проехать по всем потомкам div, выдернуть номер айди, сравнить
 
+
+
+
 //этот код не работает в IE до 9-й версии
 var children=div.children; //все потомки div
 
@@ -201,7 +222,9 @@ for (var i=0; i<children.length; i++)
         if (children[i].tagName=="DIV")
         {
 
-            maxid=Math.max (maxid,  parseInt(children[i].id.split("_")[1])  )+1  ;
+            var splt=children[i].id.split("_");
+            var idch=splt[splt.length-1];
+            maxid=Math.max (maxid, parseInt(idch) )+1  ;
         }
     }
 return maxid;
@@ -275,9 +298,213 @@ if (resstr[resstr.length-2]=="," ) //если последняя запятая,
 
 resstr+="}";
 
-alert (resstr);
+//alert (resstr);
 return resstr;
 }
+
+
+
+
+
+
+
+
+////////////////////////////LISTFORM\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+//listform  -  форма правки списка
+
+
+    // Вставка новых строк в форму
+    function insertRowListform(tableid, rowIndex)
+    {
+            var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
+            var id=getMaxRowIdInTable(tableid);
+            var row = table.insertRow(table.rows.length);
+            var cell0 = row.insertCell(0);
+            var cell1 = row.insertCell(1);
+            var cell2 = row.insertCell(2);
+            cell0.innerHTML=" "+id
+            cell1.innerHTML = "<input type='text' id='"+tableid+"_item["+id+"]'>";
+            cell2.innerHTML = "<input type='button' value='[-]'  onclick=\"return rmRow('"+tableid+"',   getParent(this, 'TR').rowIndex  ) ;\"> ";
+    }
+
+
+function addListformStr (formid)
+//возвращает строку формы редакции списка
+
+{
+buttonCaption="Добавить пункт списка";
+var table = " <table id='"+ formid +"' border='0'> "+
+    "<tbody>"+
+    "<col class='c1'><col span='2'>"+
+    " <tr> </tr> "+
+    " </tbody>"+
+"</table>"+
+    "<input type='button' value='"+buttonCaption+"'  onclick=\"return insertRowListform('"+formid +"',   1) ;\"> ";
+ "<br/>";
+
+//"<input type='button' name='submit_button' onclick=\"collectDataFromDictTable('"+formid+"')\">";
+
+return table;
+}
+
+
+
+
+function addListform (formid, parentdivid)
+//добавляет форму словаря словарей
+{
+
+document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+addListformStr(formid);
+}
+
+
+function ListformMakeResString(dicttableId )  //в таблице 1 строка всегда по умолчанию, зачем-то
+    {
+            var table=document.getElementById(dicttableId );    // Получаем указатель нужной нам таблицы
+            var numrows =table.rows.length;
+            var res="[";
+            if (numrows==1) return "[]";  //если нет полей, то вернуть пустую строку
+            maxid=getMaxRowIdInTable(dicttableId);
+            for (var i=0; i<maxid; i++)
+            {
+                item = document.getElementById(dicttableId+"_item["+i+"]");
+
+                if (item!=null)
+                {
+                    itemval=item.value.trim();
+
+                    if (itemval)
+                    {
+                        res+="'"+itemval+"'";
+
+                        if (i!=maxid-1)
+                            { res+=" ,";}
+                    }
+                    else
+                    {
+                        if ((res[res.length-1]=="," )&& (i==maxid-1)) //если последняя запятая, и при этом вышло так, что мы на последнем элементе, тооо
+                            {
+                             res=res.substring(0, res.length - 2);
+                            }
+                    }
+                }
+            }
+
+            res+="]";
+
+            return res
+    }
+
+
+///////////////////ADDING FUNCS TO THE FORM\\\\\\\\\\\\\\\\\\\\\\\\
+
+//добавление хрени в табл. выше
+function add_forms_to_table(channellist)
+{
+    addDictForm('mode_common','mode_contendor');
+    addDict2DictFormChannels ('mode_channel','mode_contendor', channellist );
+    addDict2DictFormChannels('normal_values','normal_values_contendor', channellist);
+    addListform('pars', 'pars_contedor');
+}
+
+///////////////////SENDING DATA TO SERVER\\\\\\\\\\\\\\\\\\\\\\\\
+
+var request;
+
+
+
+   function getAjaxInfo(actionserver)
+	{
+
+    method="POST";
+    request.open(method, actionserver, true);
+    request.onreadystatechange = updatePage;
+    request.setRequestHeader("Content-type","application/x-www-form-urlencoded"); //не уверен, что правильно
+
+    mode_common=collectDataFromDictTable ('mode_common');
+    mode_channel=dict2dictMakeResString ('mode_channel');
+    normal_values=dict2dictMakeResString ('normal_values');
+    pars=ListformMakeResString ('pars');
+
+    collectedDataString="mode_common="+mode_common;
+    collectedDataString+="&";
+
+    collectedDataString+="mode_channel="+mode_channel;
+    collectedDataString+="&";
+
+    collectedDataString+="normal_values="+normal_values;
+    collectedDataString+="&";
+
+    collectedDataString+="pars="+pars;
+
+
+/*
+<input type="button" onclick="alert( collectDataFromDictTable ('mode_common') ); "  value="mode_common" >
+<input type="button" onclick="alert( dict2dictMakeResString ('mode_channel') ); "  value="mode_channel" >
+<input type="button" onclick="alert( dict2dictMakeResString ('normal_values') ); "  value="normal_values" >
+<input type="button" onclick="alert( ListformMakeResString ('pars') ); "  value="pars" >
+*/
+
+
+    alert (collectedDataString);
+
+    request.send(collectedDataString);
+   }
+
+
+
+function updatePage() {
+      if (request.readyState == 4) {
+	if (request.status == 200) {
+
+
+        alert (request.responseText);
+
+
+        //var gotValue = request.responseText;
+        //document.getElementById("gotvalues").value = gotValue;
+
+
+     }
+
+	else alert ("server unreachable"+request.status)
+	}
+   }
+
+
+
+
+function saveData(actionserver)
+/*сохраняет данные на сервер.
+actionserver - имя сервера
+*/
+{
+    request = null;
+   try {
+     request = new XMLHttpRequest();
+   } catch (trymicrosoft) {
+     try {
+       request = new ActiveXObject("Msxml2.XMLHTTP");
+     } catch (othermicrosoft) {
+       try {
+         request = new ActiveXObject("Microsoft.XMLHTTP");
+       } catch (failed) {
+         request = null;
+       }
+     }
+   }
+
+
+   if (request == null)
+     alert("Error creating request object!");
+
+
+    getAjaxInfo(actionserver, request);
+
+}
+
+
 
 
 </script>
@@ -336,14 +563,13 @@ addDict2DictForm ("dict2dict", "dict2dictform");
           <th align=center >Требования к режиму измерения</th>
           <th align=center >Норма по ТУ</th>
           <th align=center >Условное обозначение измеряемого параметра </th>
-
         </tr>
 
        <tr>
         <td><textarea name ='name' id='name' cols='70' rows='5'> </textarea></td>
-        <td> <div id='mode'>               </div>      </td>
+        <td> <div id='mode_contendor'>               </div>      </td>
         <td> <div id='normal_values_contendor'>    </div>  </td>
-        <td> здесь должна быть форма правки списка  - некая listform </td>
+        <td> <div id='pars_contedor'>  </div> </td>
        </tr>
 
       </tbody>
@@ -351,20 +577,26 @@ addDict2DictForm ("dict2dict", "dict2dictform");
 
 
 <script>
-//добавление хрени в табл. выше
-addDictForm('mode_common','mode');
-
-
-//addDict2DictForm('mode_channel','mode');
-
-//addDict2DictFormChannels ('mode_channel','mode', ["канал раз", "канал два"] );
-
-
-addDict2DictForm('normal_values_contendor','normal_values_contendor');
-
-
-
+add_forms_to_table(["канал раз","канал два","канал три"] );
 </script>
+
+
+
+<input type="button" onclick="saveData('actionserver'); "  value="Сохранить данные" >
+
+
+<h2>Тестовая зона - забираем данные из формы выше</h2>
+
+<input type="button" onclick="alert( collectDataFromDictTable ('mode_common') ); "  value="mode_common" >
+<input type="button" onclick="alert( dict2dictMakeResString ('mode_channel') ); "  value="mode_channel" >
+<input type="button" onclick="alert( dict2dictMakeResString ('normal_values') ); "  value="normal_values" >
+<input type="button" onclick="alert( ListformMakeResString ('pars') ); "  value="pars" >
+
+
+
+
+
+
 
 
 
