@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8" />
+<head>
+    <title>Редакция формы</title>
+    <style type="text/css">
+    td#dicttable  {border:1px solid #000;}
+    .c1 ,td#dicttable:first-child        {display:none;}
+    </style>
+<script type='text/javascript' src='functions.js'></script>
+</head>
+<body>
+
+<h2> Форма для строки таблицы </h2>
+
+<table border='1' style='width: 100%; padding: 0px;'  >
+    <tbody>
+        <tr>
+          <th align=center >Наименование измеряемого параметра, пункт технических требований по ТУ </br>(методов контроля)</th>
+          <th align=center >Требования к режиму измерения</th>
+          <th align=center >Норма по ТУ</th>
+          <th align=center >Условное обозначение измеряемого параметра </th>
+        </tr>
+
+       <tr>
+        <td><textarea name ='name' id='name' cols='70' rows='5'> </textarea></td>
+        <td> <div id='mode_contendor'>               </div>      </td>
+        <td> <div id='normal_values_contendor'>    </div>  </td>
+        <td> <div id='pars_contedor'>  </div> </td>
+       </tr>
+
+      </tbody>
+</table>
+
+<input type="button" onclick="saveData('http://test1.ru/index1.php'); "  value="Сохранить данные" >
+<input type="button" onclick="javascript:history.go(-1)"  value="Отмена" >
+
+
+
+
+
+
+<script>
+    add_forms_to_table(["канал раз","канал два","канал три"] );
+
+/*
+Переменные данные, выдаваемые сервером:
+1. Перечисление каналов line 41
+2. Куда сохранять данные line 37
+3. Данные заполнения
+
+Посылающая данные функция должна быть доработана в соответствии с тем, что ещё должно быть послано - айди протокола, айди испытания
+
+
+*/
+
+//Блок заполнения - подключается только при необходимости
+
+var name="Имя испытания ololo11111!!!"
+var pars=["so", "great", "music"];
+var mode_common={'myfavk':'myfavval', 'ключик': 'значеньице'};
+var mode_channel= {'trololokey': {'myfavk':'myfavval', 'keyee': 'valueee'} ,'ключик верхнего уровня': {'ключегрыз':'значраз', 'ключик2': 'значеньице2'}};
+var normal_values = {'trololokey': {'myfavk':'myfavval', 'keyee': 'valueee'} ,'ключик верхнего уровня': {'ключегрыз':'значраз', 'ключик2': 'значеньице2'}};
+
+/* а вот это вернула функция сохранения данных
+mode_common={'ключик' : 'значеньице'}
+mode_channel={'trololokey' : {'keyee' : 'valueee'} , 'ключик верхнего уровня' : {'ключик2' : 'значеньице2'}}
+normal_values={'trololokey' : {'keyee' : 'valueee'} , 'ключик верхнего уровня' : {'ключик2' : 'значеньице2'}}
+pars=['great' ,'so']
+*/
+
+fillListform(pars, 'pars');
+fillDictForm (mode_common, 'mode_common');
+fillDict2DictForm (mode_channel, 'mode_channel');
+fillDict2DictForm (normal_values, 'normal_values');
+setname(name, 'name');
+
+
+
+</script>
+
+
+
+</body>
+</html>
+
+
+
+
+

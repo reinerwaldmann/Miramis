@@ -1,58 +1,59 @@
-<!DOCTYPE html>
-<html>
+/*
+Этот js файл содержит функции для построения интерактивной формы на странице. Должен использоваться в комплекте с подходящим html файлом.
+*/
+/*
+Требования к HTML:
 
-<meta charset="UTF-8" />
-<head>
-    <title></title>
+Со стороны функции add_forms_to_table(channellist) и функций посылки данных на сервер
+    addDictForm('mode_common','mode_contendor');
+    addDict2DictFormChannels ('mode_channel','mode_contendor', channellist );
+    addDict2DictFormChannels('normal_values','normal_values_contendor', channellist);
+    addListform('pars', 'pars_contedor');
+*/
 
-    <style type="text/css">
-td#dicttable  {border:1px solid #000;}
 
-.c1 ,td#dicttable:first-child        {display:none;}
-</style>
-<script type='text/javascript' src='scripts.js'></script>
+////////////////////////////DICTFORM\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
-</head>
-<body>
-
-<script>
-
-    //получает максимальный айди из всех строк таблицы
     function getMaxRowIdInTable(tableid)
+        //получает максимальный айди из всех строк таблицы
+        //tableid - айди таблицы
+        //id располагается в первой колонке таблицы
     {
-
                 var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
-
-
-                if (table.rows.length==1) return 0;
+                if (table.rows.length==0) return 0;
                 var maxid=0;
-
-
 
                 for (var i=1; i<table.rows.length;i++)
                 {
                 var  row = table.rows[i];
                  var cell=row.cells[0];
 
-
                 maxid=Math.max (maxid, parseInt(cell.innerHTML));
                 }
-
                 return maxid+1;
-
-
     }
 
-//удаляет строку из таблицы
+
     function rmRow(tableid, rowIndex)
+    //удаляет строку из таблицы
+    //tableid - айди формы
+    //rowIndex - индекс строки
+
     {
             var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
             //if (table.rows.length>2)
                  table.deleteRow(rowIndex);
     }
 
-    // Вставка новых строк в форму
     function insertRow(tableid, rowIndex, key="", value="")
+    // Вставка новых строк в форму
+    //tableid - айди формы
+    //rowIndex - индекс строки
+    //key - значение ключа (вторая колонка)
+    //key - значение значения (третья колонка)
+
+
+
     {
             var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
             var id=getMaxRowIdInTable(tableid);
@@ -72,15 +73,20 @@ td#dicttable  {border:1px solid #000;}
 
     }
 
-//получение родителя - obj - ссылка на объект, родителя которого мы ищем parentTagName - тег родителя, которого мы ищем.  Если тега нет, вернёт null. Теги задавать в верхнем регистре!
-    function getParent(obj, parentTagName) {
+
+    function getParent(obj, parentTagName)
+     //получение родителя - obj - ссылка на объект, родителя которого мы ищем parentTagName - тег родителя, которого мы ищем.  Если тега нет, вернёт null. Теги задавать в верхнем регистре!
+    {
     return (obj.tagName==parentTagName)?obj:getParent(obj.parentNode, parentTagName);
     }
 
-//функция, которая собирает все данные из таблицы и собирает их в строку Питона, отображающую словарь
-//на входе айди таблицы
-    function collectDataFromDictTable(dicttableId )  //в таблице 1 строка всегда по умолчанию, зачем-то
+
+    function collectDataFromDictTable(dicttableId )
+    //функция, которая собирает все данные из таблицы и собирает их в строку Питона, отображающую словарь
+    //dicttableId  айди таблицы
     {
+
+            //в таблице 1 строка всегда по умолчанию, зачем-то
             var table=document.getElementById(dicttableId );    // Получаем указатель нужной нам таблицы
             var numrows =table.rows.length;
             var res="{";
@@ -118,12 +124,16 @@ td#dicttable  {border:1px solid #000;}
 
 function addDictForm (formid, parentdivid)
 //добавляет форму редакции словаря
+//formid - айди новой формы, то есть дива
+//parentdivid - айди родительского элемента, используется обычно div, теоретически возможна работа с другими контейнерными элементами
+//получается два вложенных дива - снаружи родительский, внутри див формы
 {
 document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+addDictFormStr (formid);
 }
 
 function addDictFormStr (formid, isInDict2Dict)
 //возвращает строку формы редакции словаря
+//formid - айди новой формы, то есть дива
 //Если параметр isInDict2Dict установлен в 1, то эта форма является частью dict2dict, и на кнопке должна быть надпись "добавить поле в категорию"
 {
 buttonCaption="Добавить поле";
@@ -135,18 +145,17 @@ var table = " <table id='"+ formid +"' border='0'> "+
     " <tr> </tr> "+
     " </tbody>"+
 "</table>"+
-
     "<input type='button' value='"+buttonCaption+"'  onclick=\"return insertRow('"+formid +"',   1) ;\"> ";
-
  "<br/>";
 
-
 //"<input type='button' name='submit_button' onclick=\"collectDataFromDictTable('"+formid+"')\">";
-
 return table;
 }
 
 function fillDictForm (dict, formid)
+//заполнеение формы словаря
+//formid - айди формы
+//dict - словарь javascript, идентичный по записи словарю Питона, которым заполняется форма. Вся предыдущая информация стирается!
 {
  div = document.getElementById(formid);
  div.innerHTML="";
@@ -168,6 +177,9 @@ function fillDictForm (dict, formid)
 
 function addDict2DictForm (formid, parentdivid)
 //добавляет форму словаря словарей
+//formid - айди новой формы, то есть дива
+//parentdivid - айди родительского элемента, используется обычно div, теоретически возможна работа с другими контейнерными элементами
+//получается два вложенных дива - снаружи родительский, внутри див формы
 {
 contains="<input type='button' value='Добавить поле верхнего уровня'  onclick=\"return insertDict2DictField('"+parentdivid +"',   '') ;\"> ";
 document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+contains;
@@ -175,7 +187,11 @@ document.getElementById(parentdivid).innerHTML=document.getElementById(parentdiv
 
 
 function addDict2DictFormChannels (formid, parentdivid, channellist)
-//добавляет форму словаря словарей
+//добавляет форму словаря словарей, при этом создавая поля верхнего уровня с именами, взятыми из списка channellist.
+//В данной версии названия каналов в этой форме не изменяются!
+//formid - айди новой формы, то есть дива
+//parentdivid - айди родительского элемента, используется обычно div, теоретически возможна работа с другими контейнерными элементами
+//получается два вложенных дива - снаружи родительский, внутри див формы
 {
     formdiv=document.createElement('div');
     formdiv.className='dict2dictformdiv';
@@ -194,36 +210,34 @@ function addDict2DictFormChannels (formid, parentdivid, channellist)
 
 
 function insertDict2DictField (formid, fieldname="", dictfillment={})
-{
-
 //добавляет поле формы словаря словарей
+//formid - айди формы
+//fieldname - имя поля  верхнего уровня
+//dictfillment - заполнение словаря нижнего уровня
+{
 //просто добавить к див formid инпут и применить к немму adDictForm
 newfielddid=formid+"field_"+dict2dictgetnewid(formid);
 
 input="<input type='text'  id='keygeneral"+newfielddid+"'  value='"+fieldname+"'  readonly='readonly'   >"+
 
 // "<input type='button' value='Удалить поле верхнего уровня'  onclick=\"dict2dictRemoveField('"+ newfielddid+"' ) \"> "+
-
-
 "<br/>"+addDictFormStr("table"+newfielddid, 1);
-
 inputDiv=document.createElement('div');
 inputDiv.className='dict2dictformfield';
 inputDiv.id=newfielddid;
 inputDiv.style="border: 1px double black; width=500px";
 inputDiv.innerHTML=input;
-
-
 reqdiv=document.getElementById (formid); //получаем айди формы dict2dict
 reqdiv.appendChild(inputDiv);
-
-
 fillDictForm (dictfillment, "table"+newfielddid);
-
 
 }
 
 function dict2dictgetnewid (formid)
+//получает новый (максимальный) идентификатор для нового поля в dict2dictform
+//formid - айди формы
+//возвращает полученный идентификатор
+
 {
 div = document.getElementById(formid);
 maxid=0;
@@ -254,6 +268,7 @@ return maxid;
 
 function dict2dictRemoveField (idfield)
 //удаляет поле формы dic2dict, сиречь удаляет у формы div с id=idfield
+//idfield  -  айди поля формы
 {
 var element = document.getElementById(idfield);
 element.parentNode.removeChild(element);
@@ -261,7 +276,9 @@ element.parentNode.removeChild(element);
 
 
 function dict2dictMakeResString(formid)
-//Делает строку Питона из формы словаря словарей.
+//Делает строку Питона из формы словаря словарей - предоставление словаря словарей
+//formid - айди формы
+//возвращает строку питона
 {
     resstr="{";
     div = document.getElementById(formid);
@@ -306,16 +323,12 @@ function dict2dictMakeResString(formid)
                                 }
             }
     }
-
-
 if (resstr[resstr.length-2]=="," ) //если последняя запятая, и при этом вышло так, что мы на последнем элементе, тооо
 {
     resstr=resstr.substring(0, resstr.length - 3);
 }
 
-
 resstr+="}";
-
 //alert (resstr);
 return resstr;
 }
@@ -325,34 +338,27 @@ return resstr;
 
 function fillDict2DictForm (dict2dict, formid)
 //заполняет форму dict2dict form данными из словаря словарей dict2dict
+//dict2dict - словарь словарей
+//formid - айди формы
 {
  div = document.getElementById(formid);
  div.innerHTML="";
-
-
-
     for (var i in dict2dict)
     {
       insertDict2DictField (formid, i, dict2dict[i]);
-
     }
-
-
-
 }
 
 
-
-
-
-
 ////////////////////////////LISTFORM\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+//Listform  -  форма правки списка
 
-//listform  -  форма правки списка
 
-
+    function insertRowListform(tableid, rowIndex=1, value="")
     // Вставка новых строк в форму
-    function insertRowListform(tableid, rowIndex, value="")
+    //tableid - айди формы
+    //rowIndex - индекс, который вставлять - данный параметр не используется!
+    //value="" - значение поля
     {
             var table=document.getElementById(tableid);    // Получаем указатель нужной нам таблицы
             var id=getMaxRowIdInTable(tableid);
@@ -368,6 +374,7 @@ function fillDict2DictForm (dict2dict, formid)
 
 function addListformStr (formid)
 //возвращает строку формы редакции списка
+//formid - айди формы
 
 {
 buttonCaption="Добавить пункт списка";
@@ -385,18 +392,18 @@ var table = " <table id='"+ formid +"' border='0'> "+
 return table;
 }
 
-
-
-
 function addListform (formid, parentdivid)
 //добавляет форму словаря словарей
+//formid  -  айди формы (будет div внутри div-а)
+//parentdivid - айди родительского контейнера
 {
-
 document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+addListformStr(formid);
 }
 
-
 function ListformMakeResString(dicttableId )  //в таблице 1 строка всегда по умолчанию, зачем-то
+//получает строку результата - строковое представление списка, актуально в Питоне и в JavaScript
+//dicttableId - айди формы
+//возвращает строку результата
     {
             var table=document.getElementById(dicttableId );    // Получаем указатель нужной нам таблицы
             var numrows =table.rows.length;
@@ -436,6 +443,8 @@ function ListformMakeResString(dicttableId )  //в таблице 1 строка
 
 function fillListform(fillinglist, formid)
 //заполняет форму списка  данными из списка собственно
+//fillinglist - список, которым заполнять
+//formid - айди формы, которую заполнять
 {
  div = document.getElementById(formid);
  div.innerHTML="";
@@ -447,11 +456,21 @@ function fillListform(fillinglist, formid)
 }
 
 
+///////////////////FILLING NAME FIELD\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+function setname(newname, nameid)
+//заполняет поле имени испытания
+{
+name=document.getElementById(nameid);
+name.innerHTML=newname;
+}
+
 
 ///////////////////ADDING FUNCS TO THE FORM\\\\\\\\\\\\\\\\\\\\\\\\
 
-//добавление хрени в табл. выше
 function add_forms_to_table(channellist)
+//добавление форм в таблицу
+//channellist - список каналов, на основе которых формируются формы
 {
     addDictForm('mode_common','mode_contendor');
     addDict2DictFormChannels ('mode_channel','mode_contendor', channellist );
@@ -462,17 +481,18 @@ function add_forms_to_table(channellist)
 ///////////////////SENDING DATA TO SERVER\\\\\\\\\\\\\\\\\\\\\\\\
 
 var request;
-
-
-
    function getAjaxInfo(actionserver)
+   //посылает данные из форм на сервер. Данные пересылаются методом POST
+   //actionserver - URL куда посылать
+
+   //так как пересылка идёт AJAX-ом, то URL должен быть в том же домене, что и страница, вызвавшая данную функцию
+
 	{
 
     method="POST";
     request.open(method, actionserver, true);
     request.onreadystatechange = updatePage;
     request.setRequestHeader("Content-type","application/x-www-form-urlencoded"); //не уверен, что правильно
-
     mode_common=collectDataFromDictTable ('mode_common');
     mode_channel=dict2dictMakeResString ('mode_channel');
     normal_values=dict2dictMakeResString ('normal_values');
@@ -480,39 +500,28 @@ var request;
 
     collectedDataString="mode_common="+mode_common;
     collectedDataString+="&";
-
     collectedDataString+="mode_channel="+mode_channel;
     collectedDataString+="&";
-
     collectedDataString+="normal_values="+normal_values;
     collectedDataString+="&";
-
     collectedDataString+="pars="+pars;
 
-
-
+       alert (collectedDataString);
 
     collectedDataString=escape(collectedDataString);
-
-    alert (collectedDataString);
 
     request.send(collectedDataString);
    }
 
-
-
-function updatePage() {
+function updatePage()
+//Функция, запускаемая при ответе сервера на запрос. Должна, вообще говоря, вести на страницу с протоколом
+{
       if (request.readyState == 4) {
 	if (request.status == 200) {
-
-
-        alert (request.responseText);
-
-
+        //alert (request.responseText);
+        alert ("Данные сохранены успешно")
         //var gotValue = request.responseText;
         //document.getElementById("gotvalues").value = gotValue;
-
-
      }
 
 	else alert ("server unreachable"+request.status)
@@ -523,9 +532,9 @@ function updatePage() {
 
 
 function saveData(actionserver)
-/*сохраняет данные на сервер.
-actionserver - имя сервера
-*/
+//сохраняет данные на сервер. ЭТА ФУНКЦИЯ И ДОЛЖНА ВЫЗЫВАТЬСЯ ПО КНОПКЕ!
+//actionserver - имя сервера
+
 {
     request = null;
    try {
@@ -551,129 +560,3 @@ actionserver - имя сервера
 
 }
 
-
-
-
-</script>
-
-
-Чтобы добавить пустую форму словаря, или же словаря словарей,
-мы сначала подключаем к html-файлу ссылку на js-файл, содержащий функции выше.
-Потом мы добавляем функции </br>
-addDictForm('dict11','par'); <br>
-addDict2DictForm ("dict2dict", "dict2dictform"); <br>
-
-в каждой из них первое - это айди формы, второе - айди дива, в который она должна быть вставлена.
-
-Потом пишется своя js функция, которая собирает данные. Делается она примерно так
-str1=dict2dictMakeResString('dict2dictform') <br>
-str2=dict2dictMakeResString('dict2dictform2') <br>
-на этом этапе собрали данные из форм
-
-запрос (ajax-или как-то ещё) с POST-данными, включающими в себя оные строки.
-В этот запрос также должны входить и дополнительные данные, такие как айди протокола или айди испытания.
-
-Либо в js по умолчанию найдётся функция анализа get-строчки адреса, либо считываем данные скрытого дива.
-
-<br><br>
-Когда дело дойдёт до формы свободной, то надо сделать так, чтоб modechannel сразу предлагал ввести
-нормы по списку каналов.
-
-
-<h1  > Форма для словаря</h1>
-<div id="par"> </div>
-<script>
-addDictForm('dict11','par');
-</script>
-
-
-
-
-
-<h1  > Форма для словаря словарей </h1>
-
-<div id="dict2dictform"> </div>
-<script>
-addDict2DictForm ("dict2dict", "dict2dictform");
-</script>
-
-<input type='button' onclick="dict2dictMakeResString('dict2dictform');" value="PRESSSME">
-
-
-
-
-<h2> Форма для строки таблицы </h2>
-
-<table border='1' style='width: 100%; padding: 0px;'  >
-    <tbody>
-        <tr>
-          <th align=center >Наименование измеряемого параметра, пункт технических требований по ТУ </br>(методов контроля)</th>
-          <th align=center >Требования к режиму измерения</th>
-          <th align=center >Норма по ТУ</th>
-          <th align=center >Условное обозначение измеряемого параметра </th>
-        </tr>
-
-       <tr>
-        <td><textarea name ='name' id='name' cols='70' rows='5'> </textarea></td>
-        <td> <div id='mode_contendor'>               </div>      </td>
-        <td> <div id='normal_values_contendor'>    </div>  </td>
-        <td> <div id='pars_contedor'>  </div> </td>
-       </tr>
-
-      </tbody>
-</table>
-<script>
-add_forms_to_table(["канал раз","канал два","канал три"] );
-
-
- /*
-
-     addDictForm('mode_common','mode_contendor');
-    addDict2DictFormChannels ('mode_channel','mode_contendor', channellist );
-    addDict2DictFormChannels('normal_values','normal_values_contendor', channellist);
-    addListform('pars', 'pars_contedor');
- */
-
- //testing form filling
-
-
-var list=["so", "great", "music"];
-fillListform(list, 'pars');
-
-var dict={'myfavk':'myfavval', 'ключик': 'значеньице'};
-fillDictForm (dict, 'mode_common');
-
-var dict2dict= {'trololokey': {'myfavk':'myfavval', 'keyee': 'valueee'} ,'ключик верхнего уровня': {'ключеграз':'значраз', 'ключик2': 'значеньице2'}};
-fillDict2DictForm (dict2dict, 'normal_values');
-
-
-
-
-
-
-</script>
-
-
-
-<input type="button" onclick="saveData('http://test1.ru/index1.php'); "  value="Сохранить данные" >
-<h2>Тестовая зона - забираем данные из формы выше</h2>
-<input type="button" onclick="alert( collectDataFromDictTable ('mode_common') ); "  value="mode_common" >
-<input type="button" onclick="alert( dict2dictMakeResString ('mode_channel') ); "  value="mode_channel" >
-<input type="button" onclick="alert( dict2dictMakeResString ('normal_values') ); "  value="normal_values" >
-<input type="button" onclick="alert( ListformMakeResString ('pars') ); "  value="pars" >
-
-
-
-
-
-
-
-
-
-
-
-</body>
-</html>
-
-
-        <!-- http://javascript.ru/ajax/intro  --!>
