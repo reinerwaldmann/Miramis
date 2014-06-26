@@ -1,8 +1,16 @@
+#!C:\Python33\python.exe
+
+#-*- coding: utf-8
+
 __author__ = 'vasilev_is'
 
 from classes import *
 import htmlgeneralfunctions as htmg
 import backend_manageProtocols as bck
+
+import cgitb, cgi, io, sys, os
+cgitb.enable()
+
 
 
 """
@@ -10,21 +18,14 @@ import backend_manageProtocols as bck
 """
 #[FRONTEND DIRECT]
 
-
-#TODO: Сделать функцию, отображающую один протокол (справочную часть и испытания)
-#TODO: вызов правки испытания
-#TODO: вызов удаления испытания
-#TODO: вызов добавления испытания
-#TODO: вызов добавления результата по протоколу
-
 def view_protocol_by_id(id):
     gotval = bck.getProtocolFromDatabase (id)
     if gotval[0]==None:
         return htmg.throwError("FRProtocolViewEdit", "В базе данных нет такого протокола id="+str(id))
-    return make_html_view_edit_protocol(gotval[0], gotval[1], gotval[2])
+    return make_html_view_edit_protocol(id, gotval[0], gotval[1], gotval[2])
 
 
-def make_html_view_edit_protocol(protocol, productname="", testname=""):
+def make_html_view_edit_protocol(id, protocol, productname="", testname=""):
     """
     Отображает один протокол, предоставляет интерфейс для правки этого протокола
     :param protocol - протокол, о котором идёт речь
@@ -55,10 +56,14 @@ def make_html_view_edit_protocol(protocol, productname="", testname=""):
     for i in keys:
         p=protocol.procedures[i]
         res+="<tr>"+p.toHTML()
-        res+="<td> <input type='button' onclick=\"destroy('Вы уверенно хотите удалить данное испытание?', 'protocols.php?delid="+str(i)+"' ) \"   value='Удаление'  > </td>  "
-        res+="<td> <a href=''>Правка</a></td>"
+        res+="<td> <input type='button' onclick=\"destroy('Вы уверенно хотите удалить данное испытание?', 'http://localhost/python/FRprotocolViewEdit.py?id='"+str(id)+"'&delid="+str(i)+"' ) \"   value='Удаление'  > </td>  "
+        res+="<td> <a href='FRtestedit.py?id="+str(id)+"&testedit="+str(i)+"'>Правка</a></td>"
         res+="</tr>"
-    res += htmg.generateHTMLFooterRep()
+
+    res+="</tbody>    </table>"
+    res+="<a href='FRtestedit.py?id="+str(id)+"'>Создать испытание</a>"
+
+#    res += htmg.generateHTMLFooterRep()
     return res;
 
 
@@ -67,8 +72,10 @@ def make_html_view_edit_protocol(protocol, productname="", testname=""):
 def test():
 
 
-    with open ("../html/protocolvieweditout.html", "wb") as outhtml:
-        outhtml.write (view_protocol_by_id(1).encode("utf-8"))
+   # with open ("../html/protocolvieweditout.html", "wb") as outhtml:
+    #    outhtml.write (view_protocol_by_id(1).encode("utf-8"))
+
+    print (view_protocol_by_id(1).encode("utf-8"))
 
 
 
@@ -76,9 +83,52 @@ def test():
   #      outhtml.write (view_protocol_by_id(1).encode("utf-8"))
 
 
+def out(msg):
+    sys.stdout.buffer.write(msg.encode('utf8'))
+    sys.stdout.flush()
+
+out("Content-Type: text/html;charset=utf-8\n\n")
+out("<html><head>\n\n")
+out("</head><body>\n\n")
+
+#узнаём, есть ли айди в параметрах
+
+form = cgi.FieldStorage()
+
+#TODO: вызов правки испытания
+#TODO: вызов удаления испытания
+#TODO: вызов добавления испытания
+#TODO: вызов добавления результата по протоколу
 
 
-test()
+
+
+
+
+
+if "id" not in form:
+    out (htmg.throwError("FRprotocolViewEdit.py", "Ошибка: не предоставлен id протокола", errortype=None))
+else:
+    id=int(form.getfirst("id", ""))
+
+    if ("delid") in form:
+        delid=int(form.getfirst("id", ""))
+        #bck.delTestFromProtocol(id, delid)
+        out("Вдалилиииии!!"+id+"  "+delid)
+
+    out (view_protocol_by_id(id))
+
+
+
+
+
+out(htmg.generateHTMLFooter())
+
+
+
+
+
+
 
 
 #http://www.codeisart.ru/processing-forms-javascript/
