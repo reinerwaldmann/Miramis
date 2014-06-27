@@ -35,43 +35,48 @@ class Procedures(BaseStrReturn):
     listOfPossibleResults=list()  # список полей результатов, каковые должны быть отражены в протоколе
 
     def toHTML(self):      #переводит подержимое в левую половину строки в протоколе (первые три ячейки)
-        """
-        Производит html-представление в виде нескольких ячеек
-        """
-        nopr=self.listOfPossibleResults.__len__() #numOfPossibleResults
-        #Выводим название процедуры в первую колонку
-        #res="<td rowspan={0}>{1}</td>\n".format(nopr,  str(self.number)+" "+self.name)
-        res="<td>{0}</td>\n".format(str(self.number)+" "+self.name)
-        #Выводим вторую колонку - требования к режимам
-        modereprcm=""
-        for k, v in  self.mode_common.items():
-            modereprcm+="{0}={1}</br>\n".format(k, v)
-        modechannelrepr="Режим по каналам</br>"
-        for k in self.mode_channel.keys():
-            modechannelrepr+="{0}: </br>".format(k)
-            for k, v in  self.mode_channel[k].items():
-                modechannelrepr+="{0}={1}</br>\n".format(k, v)
-        #res+="<td rowpan={0}>{1}</td>\n".format(nopr, modereprcm + "</br>"+ modechannelrepr)
-        res+="<td >{0}</td>\n".format(modereprcm + "</br>"+ modechannelrepr)
+        try:
+            """
+            Производит html-представление в виде нескольких ячеек
+            """
+            nopr=self.listOfPossibleResults.__len__() #numOfPossibleResults
+            #Выводим название процедуры в первую колонку
+            #res="<td rowspan={0}>{1}</td>\n".format(nopr,  str(self.number)+" "+self.name)
+            res="<td>{0}</td>\n".format(str(self.number)+" "+self.name)
+            #Выводим вторую колонку - требования к режимам
+            modereprcm=""
+            for k, v in  self.mode_common.items():
+                modereprcm+="{0}={1}</br>\n".format(k, v)
+            modechannelrepr="Режим по каналам</br>"
+            for k in self.mode_channel.keys():
+                modechannelrepr+="{0}: </br>".format(k)
+                for k, v in  self.mode_channel[k].items():
+                    modechannelrepr+="{0}={1}</br>\n".format(k, v)
+            #res+="<td rowpan={0}>{1}</td>\n".format(nopr, modereprcm + "</br>"+ modechannelrepr)
+            res+="<td >{0}</td>\n".format(modereprcm + "</br>"+ modechannelrepr)
 
 
-        #Выводим третью колонку - нормы по ТУ
-        norms=""
-        for k in self.normal_values.keys():
-            norms+="{0}: </br>".format(k)
-            for k, v in  self.normal_values[k].items():
-                norms+="{0}:</br>{1}</br>\n".format(k, v)
-        #res+="<td rowspan={0}>{1}</td>\n".format(nopr, norms)
-        res+="<td >{0}</td>\n".format(norms)
+            #Выводим третью колонку - нормы по ТУ
+            norms=""
+            for k in self.normal_values.keys():
+                norms+="{0}: </br>".format(k)
+                for k, v in  self.normal_values[k].items():
+                    norms+="{0}:</br>{1}</br>\n".format(k, v)
+            #res+="<td rowspan={0}>{1}</td>\n".format(nopr, norms)
+            res+="<td >{0}</td>\n".format(norms)
 
 
-        #выводим четвёртую полонку - названия величин
-        valnames=""
-        for km in self.listOfPossibleResults:
-            valnames+=km+"</br>"
+            #выводим четвёртую полонку - названия величин
+            valnames=""
+            for km in self.listOfPossibleResults:
+                valnames+=km+"</br>"
 
-        res+="<td>{0}</td>".format(valnames)
-        return res
+            res+="<td>{0}</td>".format(valnames)
+            return res
+        except BaseException:
+            return ""
+
+
 
 #Представляет один результат
 class AResult (BaseStrReturn):

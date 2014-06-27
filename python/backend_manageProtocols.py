@@ -19,9 +19,9 @@ delTestFromProtocol(idprotocol, idtest): Удаляет испытание из 
 writeProtocolToDatabase(protocol, idprotocol=None): Записать протокол в базу данных
     @protocol - объект протокола
     @idprotocol - если задано, то пишет на этот айди. Если таковой айди имеется в базе данных, то проиcходит обязательная перезапись
-getProtocolFromDatabase(id) Получить протокол из базы данных
+    getProtocolFromDatabase(id) Получить протокол из базы данных
     @id: айди в базе данных
-getTestFromProtocol (idprotocol, idtest) Возвращает объект испытания
+    getTestFromProtocol (idprotocol, idtest) Возвращает объект испытания
     @idprotocol - айди протокола
     @idtest - айди испытания
 
@@ -65,7 +65,8 @@ def addTestToProtocol (idprotocol, procd, desiredid=None):
         for i in protocol.procedures.keys():
             id=max(id, i)
 
-    protocol.procedures[id]=procd
+    procd.number=id
+    protocol.procedures[id+1]=procd
 
     return writeProtocolToDatabase(protocol, idprotocol)
 

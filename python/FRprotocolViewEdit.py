@@ -13,6 +13,8 @@ cgitb.enable()
 
 
 
+
+
 """
 Файл, предоставляющий доступ к просмотру и редакции одного протокола.
 """
@@ -30,7 +32,7 @@ def make_html_view_edit_protocol(id, protocol, productname="", testname=""):
     Отображает один протокол, предоставляет интерфейс для правки этого протокола
     :param protocol - протокол, о котором идёт речь
     """
-    res = htmg.generateHTMLMetaHeader("Обзор протокола")
+    res =""
 
 
     res+="""<h1> Правка протокола </h1>
@@ -56,7 +58,7 @@ def make_html_view_edit_protocol(id, protocol, productname="", testname=""):
     for i in keys:
         p=protocol.procedures[i]
         res+="<tr>"+p.toHTML()
-        res+="<td> <input type='button' onclick=\"destroy('Вы уверенно хотите удалить данное испытание?', 'http://localhost/python/FRprotocolViewEdit.py?id='"+str(id)+"'&delid="+str(i)+"' ) \"   value='Удаление'  > </td>  "
+        res+="<td> <input type='button' onclick=\"destroy('Вы уверенно хотите удалить данное испытание?', 'http://localhost/python/FRprotocolViewEdit.py?id="+str(id)+"&delid="+str(i)+"' ) \"   value='Удаление'  > </td>  "
         res+="<td> <a href='FRtestedit.py?id="+str(id)+"&testedit="+str(i)+"'>Правка</a></td>"
         res+="</tr>"
 
@@ -70,26 +72,17 @@ def make_html_view_edit_protocol(id, protocol, productname="", testname=""):
 
 #test area
 def test():
-
-
    # with open ("../html/protocolvieweditout.html", "wb") as outhtml:
     #    outhtml.write (view_protocol_by_id(1).encode("utf-8"))
-
     print (view_protocol_by_id(1).encode("utf-8"))
-
-
-
  #   with open ("protocolvieweditout1.html", "wb") as outhtml:
   #      outhtml.write (view_protocol_by_id(1).encode("utf-8"))
 
 
-def out(msg):
-    sys.stdout.buffer.write(msg.encode('utf8'))
-    sys.stdout.flush()
 
-out("Content-Type: text/html;charset=utf-8\n\n")
-out("<html><head>\n\n")
-out("</head><body>\n\n")
+#out("Content-Type: text/html;charset=utf-8\n\n")
+#out("<html><head>\n\n")
+#out("</head><body>\n\n")
 
 #узнаём, есть ли айди в параметрах
 
@@ -97,32 +90,25 @@ form = cgi.FieldStorage()
 
 #TODO: вызов правки испытания
 #TODO: вызов удаления испытания
-#TODO: вызов добавления испытания
+
 #TODO: вызов добавления результата по протоколу
 
 
 
 
-
-
-
 if "id" not in form:
-    out (htmg.throwError("FRprotocolViewEdit.py", "Ошибка: не предоставлен id протокола", errortype=None))
+    htmg.out (htmg.throwError("FRprotocolViewEdit.py", "Ошибка: не предоставлен id протокола", errortype=None))
 else:
     id=int(form.getfirst("id", ""))
-
+    htmg.out (htmg.generateHTMLMetaHeader("Обзор протокола"))
     if ("delid") in form:
-        delid=int(form.getfirst("id", ""))
-        #bck.delTestFromProtocol(id, delid)
-        out("Вдалилиииии!!"+id+"  "+delid)
+        delid=int(form.getfirst("delid", ""))
+        bck.delTestFromProtocol(id, delid)
+        htmg.out("Испытание удалено успешно!"+str(id)+"  "+str(delid))
+        htmg.out("<script> document.location.replace('FRprotocolViewEdit.py?id="+str(id)+"');</script>")
+    htmg.out (view_protocol_by_id(id))
 
-    out (view_protocol_by_id(id))
-
-
-
-
-
-out(htmg.generateHTMLFooter())
+htmg.out(htmg.generateHTMLFooter())
 
 
 
