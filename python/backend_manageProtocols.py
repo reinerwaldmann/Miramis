@@ -40,7 +40,10 @@ def getTestFromProtocol (idprotocol, idtest):
     protocol = getProtocolFromDatabase(idprotocol)[0]
     if protocol==None:
         return 1
-    return protocol.procedures[idtest]
+    try:
+        return protocol.procedures[idtest]
+    except BaseException:
+        return None
 
 
 
