@@ -7,7 +7,6 @@ __author__ = 'vasilev_is'
 from classes import *
 import htmlgeneralfunctions as htmg
 import backend_manageProtocols as bck
-
 import cgitb, cgi, io, sys, os
 cgitb.enable()
 
