@@ -60,15 +60,12 @@ echo "<td>".$row['ProductName']."</td>\n";
 echo "<td>".$row['TestName']."</td>\n";
 echo "<td><a href='../python/FRprotocolViewEdit.py?id=$id'>Правка</a> </td>";
 echo "<td><input type='button' onclick=\"destroy('Вы уверенно хотите удалить данный протокол?', 'protocols.php?delid=".$id."' ) \"   value='Удаление'  > </td>";
-
-//href='protocols.php?delid=".$id."'
-
 echo "</tr>";
 }
 
 echo "</table>"; 
-echo "<a href=''> Создать протокол </a> &nbsp ";
-echo "<a href=''> Создать протокол из отчёта</a>  </div>";
+
+echo "<a href=''> Создать отчётную форму</a>  </div>";
 
 
 echo makefoot();

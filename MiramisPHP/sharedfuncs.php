@@ -1,4 +1,4 @@
-
+<?php
 function makefilterdiv ($vararray, $tablename)
 #функция генерирует див с фильтрами. На входе - словарь имя колонки mysql - название колонки текстом, имя таблицы в mysql
 #FEATURE:можно оптимизировать, так как на каждую колонку производится запрос к БД
@@ -27,9 +27,10 @@ foreach ($vararray as $i => $value)
 			while ($row=mysql_fetch_array($res))
 			{
 			echo "<option value='".$row[$i]."'>".$row[$i]."</option>\n";
+
 			}
 			echo "
-		</select>
+		</select> </br>
 		";
 }
 		echo "</br>
@@ -81,3 +82,4 @@ function filters()
 }
 
 #TODO: выделить фильтры и всё, что с ними связно, в отдельный файл PHP
+?>
