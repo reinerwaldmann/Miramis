@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Miramis.iml" filepath="$PROJECT_DIR$/.idea/Miramis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/MiramisNew.iml" filepath="$PROJECT_DIR$/.idea/MiramisNew.iml" />
     </modules>
   </component>
 </project>

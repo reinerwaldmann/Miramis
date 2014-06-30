@@ -37,7 +37,7 @@ echo "<h1 align='center'>Результаты</h1>\n\n";
 
 #здесь выводятся фильтры
 
-echo makefilterdiv($varr, 'results');
+echo makefilterdiv($varr, 'results', "results.php?Filter=yess");
 
 
 $query = "SELECT * FROM `results` ".filters();
@@ -46,6 +46,20 @@ $res = mysql_query($query);
 
 
 echo "<div align='left'> <table class='itemstable'>";
+echo "<tr>";
+echo "<td><b>ID</b></td>";
+echo "<td><b>Название изделия</b></td>";
+echo "<td><b>Название испытания</b></td>";
+echo "<td><b>Оператор</b></td>";
+echo "<td><b>Дата</b></td>";
+echo "<td><b>Серийный номер</b></td>";
+echo "<td><b>Номер партии</b></td>";
+echo "<td></td>";
+echo "<td></td>";
+
+echo "</tr>";
+
+
 
 while($row = mysql_fetch_array($res))
 {
@@ -69,8 +83,8 @@ echo "</tr>";
 }
 
 echo "</table>";
-echo "<a href=''> Создать протокол </a> &nbsp ";
-echo "<a href=''> Создать протокол из отчёта</a>  </div>";
+
+echo "<a href=''> Создать отчётную форму</a>  </div>";
 
 
 echo makefoot();

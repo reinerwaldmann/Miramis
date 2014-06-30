@@ -41,7 +41,7 @@ echo "<h1 align='center'>Протоколы</h1>\n\n";
 
 #здесь выводятся фильтры
 
-echo makefilterdiv($varr, 'protocols');
+echo makefilterdiv($varr, 'protocols', "protocols.php?Filter=yess");
 
 
 $query = "SELECT * FROM `protocols` ".filters();
@@ -49,6 +49,17 @@ $res = mysql_query($query);
 
 
 echo "<div align='left'> <table class='itemstable'>";
+
+echo "<tr>";
+echo "<td><b>ID</b></td>";
+echo "<td><b>Название изделия</b></td>";
+echo "<td><b>Название испытания</b></td>";
+echo "<td> </td>";
+echo "<td> </td>";
+
+echo "</tr>";
+
+
 
 while($row = mysql_fetch_array($res))
 {
@@ -65,8 +76,8 @@ echo "</tr>";
 
 echo "</table>"; 
 
-echo "<a href=''> Создать отчётную форму</a>  </div>";
-
+//echo "<a href=''> Создать протокол </a> &nbsp ";
+echo "<a href='../python/FRprotocolAdd.py'> Создать протокол из отчёта</a> </div>";
 
 echo makefoot();
 ?>

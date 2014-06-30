@@ -1,5 +1,5 @@
 <?php
-function makefilterdiv ($vararray, $tablename)
+function makefilterdiv ($vararray, $tablename, $action)
 #функция генерирует див с фильтрами. На входе - словарь имя колонки mysql - название колонки текстом, имя таблицы в mysql
 #FEATURE:можно оптимизировать, так как на каждую колонку производится запрос к БД
 
@@ -10,7 +10,7 @@ echo "
 	echo "<b> Фильтры <b>";
 
 	echo "
-	<form method='GET' action='protocols.php?Filter=yess'>
+	<form method='GET' action='$action'>
 		";
 
 

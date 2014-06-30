@@ -1,3 +1,7 @@
+#!C:\Python33\python.exe
+
+#-*- coding: utf-8
+
 __author__ = 'vasilev_is'
 from classes import *
 
@@ -5,6 +9,8 @@ def parseToResult (filename):
     """
     Парсит файл filename в AResult
     """
+    msg="" #сообщение, цепляемое к результату
+
     try:
         file=open(filename, "r")
     except:
@@ -51,25 +57,28 @@ def parseToResult (filename):
 
 
 def parceToPrRes (line):
-        rp=resultsOfProcedure()
-        listlines=line.split("\n")
-        rp.hasPassedProcedure=listlines[0].__contains__("PASS")
+    """
+    Парсит строку в результат  процедуры
+    """
+    rp=resultsOfProcedure()
+    listlines=line.split("\n")
+    rp.hasPassedProcedure=listlines[0].__contains__("PASS")
 
-        # print (listlines[0])
-        # return rp;
-        rp.number=int(listlines[0].split(":")[0].split(".")[1])
-         #или же поудалять все символы, которые не цифры
-        ind=0
-        for i in range (0, listlines.__len__()):
-            if (listlines[i].__contains__("Результаты измерений")):
-                ind=i
-                break
-        ind+=2
-        #print (listlines[ind])
-        value_names=listlines[ind][0: listlines[ind].rfind("#")].split("|")[1::]
-        ind+=2
-        rp.values1 = parseTable(line[line.rfind("Результаты измерений"):],'res')
-        return rp
+    # print (listlines[0])
+    # return rp;
+    rp.number=int(listlines[0].split(":")[0].split(".")[1])
+    #или же поудалять все символы, которые не цифры
+    ind=0
+    for i in range (0, listlines.__len__()):
+        if (listlines[i].__contains__("Результаты измерений")):
+            ind=i
+            break
+    ind+=2
+    #print (listlines[ind])
+    value_names=listlines[ind][0: listlines[ind].rfind("#")].split("|")[1::]
+    ind+=2
+    rp.values1 = parseTable(line[line.rfind("Результаты измерений"):],'res')
+    return rp
 
 
 #на вход принимает таблицу
@@ -163,7 +172,8 @@ def parseToAProtocol (file):
 
     ap=AProtocol()
     first_line=file.readline()
-    if first_line.__contains__("ИВЭП")!=1:
+    #if first_line.__contains__("ИВЭП")!=1:
+    if not "ИВЭП" in first_line:
         print ("Эта версия только для ИВЭП")
         exit(1)
     #парсим справочную часть
@@ -191,6 +201,111 @@ def parseToAProtocol (file):
 #    print (ap)
 
     return ap
+
+
+
+
+
+
+def parseToAProtocolCP1251(file):
+    """
+    Парсит в класс AProtocol, если входной файл записан в CP1251
+    на входе - дескриптор файла
+    """
+    try:
+
+        ap=AProtocol()
+        first_line=file.readline().decode("cp1251")
+        if first_line.__contains__("ИВЭП")!=1:
+            return None, "Эта версия только для ИВЭП"
+        #парсим справочную часть
+        for linex in file:
+            line = linex.decode("cp1251")[:-2]+"\n"
+            if line.__contains__("*"): # значит, дошли до главной части
+                break
+            linelst=line.strip().split(":")
+            if linelst[0].__contains__("Модель"):
+                ap.model=linelst[1].strip()
+            if linelst[0].__contains__("Имя программы"):
+                ap.typeOfTest=linelst[1].strip()
+
+        proclines=""
+        for linex in file:
+            line = linex.decode("cp1251")[:-2]+"\n"
+            proclines+=line
+
+
+        rrlist=proclines.split("********************************************************************************\n")[0:-1]
+
+
+        rpcseq=list(map(parseToProcedures, rrlist))
+        numseq=list(map (lambda  app: app.number, rpcseq))
+        ap.procedures=dict(zip(numseq, rpcseq))
+
+        #print   (ap.procedures.items().)
+        try:
+            ap.channelname=list(rpcseq[0].mode_channel.keys())
+        except BaseException:
+            ap.channelname=list()
+
+    except BaseException:
+        return None, "Some error occured"
+
+
+    return ap, ""
+
+
+
+
+
+def parseToAProtocolStr (instr):
+    """
+    Парсит в класс AProtocol
+    на входе - дескриптор файла
+    """
+
+    instr.split("\n")
+
+    ap=AProtocol()
+    first_line=file.readline()
+    #if first_line.__contains__("ИВЭП")!=1:
+    if not "ИВЭП" in first_line:
+        print ("Эта версия только для ИВЭП")
+        exit(1)
+    #парсим справочную часть
+    for line in file:
+        if line.__contains__("*"): # значит, дошли до главной части
+            break
+        linelst=line.strip().split(":")
+        if linelst[0].__contains__("Модель"):
+            ap.model=linelst[1].strip()
+        if linelst[0].__contains__("Имя программы"):
+            ap.typeOfTest=linelst[1].strip()
+
+    proclines=""
+    for line in file:
+        proclines+=line
+    rrlist=proclines.split("********************************************************************************\n")[0:-1]
+    rpcseq=list(map(parseToProcedures, rrlist))
+    numseq=list(map (lambda  app: app.number, rpcseq))
+    ap.procedures=dict(zip(numseq, rpcseq))
+
+    #print   (ap.procedures.items().)
+
+    ap.channelname=list(rpcseq[0].mode_channel.keys())
+
+#    print (ap)
+
+    return ap
+
+
+
+
+
+
+
+
+
 
 
 #Такая структура, как представлена, даёт возможность генерировать также и пустые объекты для  заполнения их руками
