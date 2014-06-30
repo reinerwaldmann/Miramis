@@ -37,18 +37,10 @@ CREATE TABLE `results` (
   `XML` text,
   `Text` text,
   `resultscol` varchar(45) DEFAULT NULL,
+  `hasPassedTest` int(11) DEFAULT '1',
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='table for results';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='table for results';
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `results`
---
-
-LOCK TABLES `results` WRITE;
-/*!40000 ALTER TABLE `results` DISABLE KEYS */;
-/*!40000 ALTER TABLE `results` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -59,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-05-21 11:41:46
+-- Dump completed on 2014-06-30 13:06:04

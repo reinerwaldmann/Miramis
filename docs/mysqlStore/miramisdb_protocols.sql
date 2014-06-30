@@ -28,21 +28,12 @@ CREATE TABLE `protocols` (
   `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ProductName` text,
   `TestName` text,
-  `Pickle` blob,
+  `Pickle` longblob,
   `XML` text,
   `Text` text,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Table of protocols';
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COMMENT='Table of protocols';
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `protocols`
---
-
-LOCK TABLES `protocols` WRITE;
-/*!40000 ALTER TABLE `protocols` DISABLE KEYS */;
-/*!40000 ALTER TABLE `protocols` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -53,4 +44,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-05-21 11:41:46
+-- Dump completed on 2014-06-30 13:06:05
