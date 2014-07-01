@@ -9,7 +9,8 @@ function makehead($pagename)
 	echo "<meta charset=\"utf-8\">\n";
 	echo "<link rel='stylesheet' type='text/css' href='main.css'>"; #ссылка на ксску
 	echo "<script type='text/javascript' src='scripts.js'></script>";
-	
+
+
 	echo "</head>\n";
 	echo "<body>\n";
 	

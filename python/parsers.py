@@ -4,6 +4,10 @@
 
 __author__ = 'vasilev_is'
 from classes import *
+import datetime as dt
+import dateutil.parser as dparser
+
+
 
 def parseToResult (filename):
     """
@@ -25,13 +29,28 @@ def parseToResult (filename):
     for line in file:
         if line.__contains__("*"): # значит, дошли до главной части
             break
+
         linelst=line.strip().split(":")
         if linelst[0].__contains__("Модель"):
             res.model=linelst[1].strip()
         if linelst[0].__contains__("Имя программы"):
             res.typeOfTest=linelst[1].strip()
         if linelst[0].__contains__("Дата"):
-            res.testDateTime=linelst[1].strip()
+
+
+            #res.testDateTime=linelst[1].strip()
+            res.testDateTime=line[line.index(":")+1::].strip().replace("/", "-")
+
+            #print (res.testDateTime)
+            date=dparser.parse(res.testDateTime)
+            #print(date)
+
+            res.testDateTime = date.__str__()
+
+
+
+
+
         if linelst[0].__contains__("Контр"):
                 res.operator=linelst[1].strip()
         if linelst[0].__contains__("Результат"):

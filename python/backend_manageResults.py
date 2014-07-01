@@ -27,8 +27,6 @@ import pickle
 
 
 
-
-#UNTESTED
 def  writeResultToDatabase(result, idresult=None):
     """
     Записать результат в базу данных
@@ -36,6 +34,10 @@ def  writeResultToDatabase(result, idresult=None):
     @idresult - если задано, то пишет на этот айди. Если таковой айди имеется в базе данных, то проиcходит обязательная перезапись
 
     """
+
+    if result==None:
+        return 1
+
     db=dbdesc()
     cursor=db.cursor()
     pickled=pickle.dumps(result)
@@ -84,7 +86,7 @@ def  writeResultToDatabase(result, idresult=None):
             # Rollback in case there is any error
             db.rollback()
             db.close()
-            return 1
+            return 2
 
     else:   #если  айди задан
         #то сперва надо удалить такой айди в базе, если он, правда, есть. Если такого нет, то надо выкинуть ошибку наверное (?)
@@ -96,7 +98,7 @@ def  writeResultToDatabase(result, idresult=None):
         except:
             db.rollback()
             db.close()
-            return 1  #ключевой момент - если не найдено такого айди, то вернуть один и ничего не делать
+            return 3  #ключевой момент - если не найдено такого айди, то вернуть один и ничего не делать
 
 
         #вкатываем протокол в базу данных через pickle
@@ -117,7 +119,7 @@ def  writeResultToDatabase(result, idresult=None):
             # Rollback in case there is any error
             db.rollback()
             db.close()
-            return 1
+            return 4
 
     # disconnect from server
     db.close()
