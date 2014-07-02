@@ -25,6 +25,11 @@ writeProtocolToDatabase(protocol, idprotocol=None): Записать прото�
     @idprotocol - айди протокола
     @idtest - айди испытания
 
+    getProtocolFromDatabaseParams (ProductName, TestName):
+    Получить протокол из базы данных
+    @ProductName - имя продукта
+    @TestName - имя теста
+
 
 """
 
@@ -181,5 +186,26 @@ def getProtocolFromDatabase (id):
     return pickle.loads(rows[0][3]), rows[0][1], rows[0][2]
 
 
+
+def getProtocolFromDatabaseParams (ProductName, TestName):
+    """
+    Получить протокол из базы данных
+    @ProductName - имя продукта
+    @TestName - имя теста
+    """
+    db=dbdesc()
+    cursor = db.cursor()
+    sql= "Select * from protocols where ProductName = {0} and TestName = {1};".format(ProductName, TestName)
+    cursor.execute (sql)  #может вытряжнуть какое-нибудь исключение
+
+    ## Dump the results to a string
+    rows = cursor.fetchall()
+
+    if (len(rows)==0):  #если такого нет
+        return None, "Error, no such protocol in database"
+
+    ## Get the results
+    result=rows[0]
+    return pickle.loads(rows[0][3]), rows[0][1], rows[0][2]
 
 
