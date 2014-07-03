@@ -55,7 +55,7 @@ def process():
         if rs==None:
             report+="[ERROR] "+st+" Не удалось распарсить результат имя файла="+name+"\n"
 
-        print (rs)
+       # print (rs)
         wr=bmr.writeResultToDatabase(rs);
         if wr:
             report+="[ERROR] "+st+" При записи в БД произошла ошибка код="+str(wr)+"\n"

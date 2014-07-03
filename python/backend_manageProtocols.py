@@ -75,7 +75,7 @@ def addTestToProtocol (idprotocol, procd, desiredid=None):
         id+=1
 
     procd.number=id
-    protocol.procedures[id+1]=procd
+    protocol.procedures[id]=procd
 
     return writeProtocolToDatabase(protocol, idprotocol)
 

@@ -76,6 +76,8 @@ def outNormalForm (id):
     return out
 
 
+
+
 def outFilledForm(id, procid):
     """
     Выводит заполненную форму
@@ -120,6 +122,10 @@ def outFilledForm(id, procid):
 
 
 def writeTestFromInputParameters(form):
+    """
+    @form форма
+    Вписывает параметры из формы в класс
+    """
 
     if "mode_common" in form and "mode_channel" in form and "normal_values" in form and "pars" in form and "name" in form:
         mode_common=form.getfirst("mode_common", "")

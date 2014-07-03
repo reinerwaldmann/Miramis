@@ -58,7 +58,7 @@ def make_html_view_edit_protocol(id, protocol, productname="", testname=""):
     for i in keys:
         p=protocol.procedures[i]
         res+="<tr>"+p.toHTML()
-        res+="<td> <input type='button' onclick=\"destroy('Вы уверенно хотите удалить данное испытание?', 'http://localhost/python/FRprotocolViewEdit.py?id="+str(id)+"&delid="+str(i)+"' ) \"   value='Удаление'  > </td>  "
+        res+="<td> <input type='button' onclick=\"destroy('Вы уверенно хотите удалить данное испытание?', 'FRprotocolViewEdit.py?id="+str(id)+"&delid="+str(i)+"' ) \"   value='Удаление'  > </td>  "
         res+="<td> <a href='FRtestedit.py?id="+str(id)+"&testedit="+str(i)+"'>Правка</a></td>"
         res+="</tr>"
 

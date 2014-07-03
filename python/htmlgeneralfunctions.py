@@ -10,6 +10,8 @@ def generateHTMLMetaHeader(title="Протокол испытаний", displaym
     <title> {0}  </title>
     <link rel="stylesheet" type="text/css" media="all" href="main.css" />
     <script type='text/javascript' src='../MiramisPHP/scripts.js'></script>
+    <script type='text/javascript' src='../MiramisPHP/functions.js'></script>
+
     </head>
     <body>
     """.format(title)

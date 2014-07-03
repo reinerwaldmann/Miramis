@@ -8,7 +8,6 @@ import htmlgeneralfunctions as htmg
 import backend_manageProtocols as bck
 import backend_manageResults as bmr
 import parsers as prs
-
 import cgitb, cgi, io, sys, os
 cgitb.enable()
 
@@ -19,15 +18,53 @@ cgitb.enable()
 """
 
 
-#TODO: Вывод группы  отчётных форм
-
-
-
 #начинаем создавать хытымыль-страницу
 #хытымыль страница состоит из шапки и главной части по одной классификации
 #и из программы испытаний и протокола испытаний по другой классификации
 #главная часть состоит из процедур, каждая из которых генерируется отдельно
 #каждая процедура состоит из левой и правой части. Левая часть заполняется из программы испытаний, правая часть заполняется из протокола испытаний
+
+
+def generateHTMLOLD (resultslist:list, protocol:AProtocol, form):
+    """
+    @resultslist список результатов
+    @protocol протокол
+
+    Генерирует тело таблицы
+    """
+    if (resultslist == None):
+        htmg.throwError("makereports", "Ошибка, None как список резльутатов")
+        return ""
+
+    if (protocol == None):
+        htmg.throwError("makereports", "Ошибка, None как протокол")
+        return ""
+
+    if (resultslist.__len__==0):
+        htmg.throwError("makereports", "Нет результатов в списке!")
+        return ""
+
+
+    res=generageHTMLProtocolHeader(resultslist.__len__(), resultslist[0], form)
+    #res+=generageHTMLProtocolHeader(resultslist[0])  #resultslist - это список результатов. Результатов всегда список, тогда как протокол - один
+    #таблица пошла
+
+    #Здесь можно напистаьпроверку на соответствие результатов протоколу
+
+    for i in protocol.procedures.keys():
+        p=protocol.procedures[i]
+        res+="<tr>"+p.toHTML()
+        for k in resultslist:
+            if i in k.proceduresResults.keys():
+                res+="<td>{0}</td>".format(k.proceduresResults[i].toHTML())
+            else:
+                res+="<td> </td>"
+        res+="</tr>"
+        #res+= """<tr> {0} <td> </td> <td> </td> <td> </td> </tr> """.format(p.toHTML())
+
+
+    res += htmg.generateHTMLFooterRep()
+    return res
 
 
 def generateHTML (resultslist:list, protocol:AProtocol, form):

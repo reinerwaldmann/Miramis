@@ -64,7 +64,7 @@ echo "<td>".$row['Operator']."</td>\n";
 echo "<td>".$row['Date']."</td>\n";
 echo "<td>".$row['SerialNumber']."</td>\n";
 echo "<td>".$row['BatchNumber']."</td>\n";
-echo "<td><a href='?id=$id'>Правка</a> </td>";
+echo "<td><a href='../python/FR_resultedit.py?id=$id'>Правка</a> </td>";
 echo "<td><input type='button' onclick=\"destroy('Вы уверенно хотите удалить данный результат?', 'results.php?delid=".$id."' ) \"   value='Удаление'  > </td>";
 echo "<td><input type='checkbox' name='checkbox_$id' value='Yes' /> </td>";
 //href='protocols.php?delid=".$id."'

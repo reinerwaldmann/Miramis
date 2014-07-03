@@ -21,6 +21,7 @@ import pickle
 
 
 
+
 """
 
 
@@ -124,7 +125,7 @@ def  writeResultToDatabase(result, idresult=None):
     return 0
 
 
-#UNTESTED
+
 def getResultFromDatabase(id):
 
     """
@@ -140,7 +141,7 @@ def getResultFromDatabase(id):
     rows = cursor.fetchall()
 
     if (len(rows)==0):  #если такого нет
-        return None, "Error, no such result in database"
+        return None, "Ошибка, нет такого результата в базе данных"
 
     ## Get the results
     result=rows[0]
@@ -148,4 +149,71 @@ def getResultFromDatabase(id):
 
 
 
+#UNTESTED
+def delItemFromResult(idresult, iditem):
+    """
+    Удаляет испытание из результата
+    @idresult - айди результата
+    @iditem - айди испытания
+    """
+
+    # получить результат
+    # снести в результате нужное испытание
+    # вкатать результат
+    # если на этапе ошибка - прерваться, вернуть 1
+
+    result = getResultFromDatabase(idresult)[0]
+    if result==None:
+        return 1
+    try:
+        del (result.proceduresResults[iditem])
+    except KeyError:
+        return 2
+    if writeResultToDatabase(result, idresult):
+        return 3
+
+    return 0
+
+
+#UNTESTED
+def getItemFromResult (idresult, iditem):
+    """
+    Возвращает объект испытания
+    @idresult - айди результата
+    @iditem - айди испытания
+    """
+    result = getResultFromDatabase(idresult)[0]
+    if result==None:
+        return 1
+    try:
+        return result.proceduresResults[iditem]
+    except BaseException:
+        return None
+
+
+#UNTESTED
+def addItemToResult (idresult, resulsOfProcedure, desiredid=None):
+    """Добавить испытание в результат
+    @idresult - айди результата
+    @desiredid - айди испытания. Если None, то добавляет. Если установлено, то перезаписывает
+    @resulsOfProcedure - результат процедуры
+
+    """
+    result = getResultFromDatabase(idresult)[0]
+    if result==None:
+        return 1
+
+    #вычисление максимального айди
+    id=desiredid
+
+    if (desiredid==None):
+        id=0
+        for i in result.proceduresResults.keys():
+            id=max(id, i)
+        id+=1
+
+    resulsOfProcedure.number=id
+    result.proceduresResults[id]=resulsOfProcedure
+
+    return  writeResultToDatabase(result, id)
 
