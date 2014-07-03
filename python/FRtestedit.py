@@ -32,6 +32,8 @@ def outGeneral(id):
 </head>
 <body>
 
+<a href='../MiramisPHP/protocols.php'> Обзор протоколов </a> &nbsp&nbsp&nbsp&nbsp <a href='../MiramisPHP/results.php'> Обзор результатов </a>
+
 <h2> Форма для редакции испытания </h2>
 
 <table border='1' style='width: 100%; padding: 0px;'  >

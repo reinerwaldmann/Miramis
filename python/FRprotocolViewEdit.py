@@ -95,12 +95,12 @@ form = cgi.FieldStorage()
 
 
 
-
+htmg.out (htmg.generateHTMLMetaHeader("Обзор протокола"))
 if "id" not in form:
     htmg.out (htmg.throwError("FRprotocolViewEdit.py", "Ошибка: не предоставлен id протокола", errortype=None))
 else:
     id=int(form.getfirst("id", ""))
-    htmg.out (htmg.generateHTMLMetaHeader("Обзор протокола"))
+
     if ("delid") in form:
         delid=int(form.getfirst("delid", ""))
         bck.delTestFromProtocol(id, delid)

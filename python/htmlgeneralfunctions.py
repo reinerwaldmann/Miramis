@@ -2,7 +2,7 @@ __author__ = 'vasilev_is'
 import sys
 
 #генерирует начало HTML-файла
-def generateHTMLMetaHeader(title="Протокол испытаний"):
+def generateHTMLMetaHeader(title="Протокол испытаний", displaymenu=1):
     res="""Content-Type: text/html;charset=utf-8\n\n
     <html lang="ru-RU">
     <head>
@@ -13,6 +13,12 @@ def generateHTMLMetaHeader(title="Протокол испытаний"):
     </head>
     <body>
     """.format(title)
+
+    if displaymenu==1:
+        res+="<a href='../MiramisPHP/protocols.php'> Обзор протоколов </a> &nbsp&nbsp&nbsp&nbsp <a href='../MiramisPHP/results.php'> Обзор результатов </a>";
+
+
+
     return res
 
 

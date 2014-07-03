@@ -72,6 +72,7 @@ def addTestToProtocol (idprotocol, procd, desiredid=None):
         id=0
         for i in protocol.procedures.keys():
             id=max(id, i)
+        id+=1
 
     procd.number=id
     protocol.procedures[id+1]=procd
@@ -195,7 +196,9 @@ def getProtocolFromDatabaseParams (ProductName, TestName):
     """
     db=dbdesc()
     cursor = db.cursor()
-    sql= "Select * from protocols where ProductName = {0} and TestName = {1};".format(ProductName, TestName)
+    sql= "Select * from protocols where ProductName = '{0}' and TestName = '{1}';".format(ProductName, TestName)
+
+
     cursor.execute (sql)  #может вытряжнуть какое-нибудь исключение
 
     ## Dump the results to a string

@@ -1,5 +1,3 @@
-from nose.util import ident_re
-
 __author__ = 'vasilev_is'
 
 from classes import *

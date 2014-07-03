@@ -1,4 +1,5 @@
 #!C:\Python33\python.exe
+
 #-*- coding: utf-8
 
 __author__ = 'vasilev_is'
@@ -29,7 +30,7 @@ cgitb.enable()
 #каждая процедура состоит из левой и правой части. Левая часть заполняется из программы испытаний, правая часть заполняется из протокола испытаний
 
 
-def generateHTML (resultslist:list, protocol:AProtocol):
+def generateHTML (resultslist:list, protocol:AProtocol, form):
     """
     @resultslist список результатов
     @protocol протокол
@@ -49,17 +50,20 @@ def generateHTML (resultslist:list, protocol:AProtocol):
         return ""
 
 
-    res=htmg.generateHTMLMetaHeader() + generageHTMLProtocolHeader(resultslist.__len__(), resultslist[0])
+    res=generageHTMLProtocolHeader(resultslist.__len__(), resultslist[0], form)
     #res+=generageHTMLProtocolHeader(resultslist[0])  #resultslist - это список результатов. Результатов всегда список, тогда как протокол - один
     #таблица пошла
 
     #Здесь можно напистаьпроверку на соответствие результатов протоколу
 
-    for i in (1,protocol.procedures.__len__()):
+    for i in protocol.procedures.keys():
         p=protocol.procedures[i]
         res+="<tr>"+p.toHTML()
         for k in resultslist:
-            res+="<td>{0}</td>".format(k.proceduresResults[p.number].toHTML())
+            if i in k.proceduresResults.keys():
+                res+="<td>{0}</td>".format(k.proceduresResults[i].toHTML())
+            else:
+                res+="<td> </td>"
         res+="</tr>"
         #res+= """<tr> {0} <td> </td> <td> </td> <td> </td> </tr> """.format(p.toHTML())
 
@@ -69,14 +73,17 @@ def generateHTML (resultslist:list, protocol:AProtocol):
 
 
 
-def generageHTMLProtocolHeader(numOfProducts, result):
+def generageHTMLProtocolHeader(numOfProducts, result, form):
     """
     @numOfProducts число изделий
     @result один из результатов (оттуда списывается модель и дата теста)
     Создаёт голову таблицы
     """
+
+    typeofthetest=form.getfirst("field_testtype", "")
+
     res="<div align='center'> <p>ПРОТОКОЛ №  от "+result.testDateTime+"</p>  "
-    res+="<p> Каких-то испытаний, установить!!</p>"
+    res+="<p>"+typeofthetest+"</p>"
     res+="<p>"+result.model+"</p>"
 
     strnumprs=""
@@ -138,7 +145,7 @@ def outreport (residlist, form):
     protocol=prot[0]
 
 
-    return generateHTML (reslist, protocol)
+    return generateHTML (reslist, protocol, form), errlog
 
 
 
@@ -150,14 +157,24 @@ def outreport (residlist, form):
 
 def outreportsgroup (residlist, form):
 
+    step=int(form.getfirst("field_step", ""))
+
+
     res=str()
-#TODO: требуется распил на подгруппы
-    #дальше тут будет распил на группы
-    res+=outreport (residlist, form)
-    return res
+    err=str()
+
+    for i in range (0, len(residlist), step):
+        outr=outreport(residlist[i:i+step], form)
+        res+=outr[0]+"<br style='page-break-after: always'> "
+        err+=outr[1]
 
 
-htmg.out (htmg.generateHTMLMetaHeader("Вывод отчётной формы"))
+    return res + err
+
+
+
+
+htmg.out (htmg.generateHTMLMetaHeader("Вывод отчётной формы", 0))
 
 #получение списка результатов для построения отчётов
 form = cgi.FieldStorage()

@@ -96,6 +96,10 @@ divf.innerHTML=\"<div style='border: 1px solid; width: 500px; padding: 10px;'> \
 \
     <table>  \
         <tr> \
+            <td> <label for='field_step'>Количество отчётов на страницу:</label> </td>   \
+            <td> <input type='number' name='field_step'  value=5  min=1 max=20 >  </td>   \
+        </tr>   \
+        <tr> \
             <td> <label for='field_testtype'>Вид испытаний:</label> </td>   \
             <td> <input type='text' name='field_testtype' > </td>   \
         </tr>   \
