@@ -87,6 +87,7 @@ def  writeResultToDatabase(result, idresult=None):
             db.close()
             return 2
 
+
     else:   #если  айди задан
         #то сперва надо удалить такой айди в базе, если он, правда, есть. Если такого нет, то надо выкинуть ошибку наверное (?)
 
@@ -101,24 +102,24 @@ def  writeResultToDatabase(result, idresult=None):
 
 
         #вкатываем протокол в базу данных через pickle
-        sql = """INSERT INTO results(ProductName, TestName, Operator, Date, SerialNumber, BatchNumber, Pickle, hasPassedTest)
+        sql = """INSERT INTO results(ID, ProductName, TestName, Operator, Date, SerialNumber, BatchNumber, Pickle, hasPassedTest)
             VALUES (%(ID)s,  %(model)s, %(testname)s ,  %(Operator)s, %(Date)s, %(SerialNumber)s, %(BatchNumber)s, %(pickl)s, %(hasPassedTest)s  )
             """
 
 
         #print (sql)
     # исполняем SQL-запрос
-        try:
-            cursor.execute(sql,  {'ID':idresult, 'model':result.model, 'testname':result.typeOfTest,   'Operator':result.operator,
+        #try:
+        cursor.execute(sql,  {'ID':str(idresult), 'model':result.model, 'testname':result.typeOfTest,   'Operator':result.operator,
                                   'Date':result.testDateTime, 'SerialNumber':result.numOfProduct, 'BatchNumber':result.numOfBatch,
                                   'pickl':pickled, 'hasPassedTest':result.hasPassedTest})
 
-            db.commit()
-        except:
+        db.commit()
+        #except:
             # Rollback in case there is any error
-            db.rollback()
-            db.close()
-            return 4
+        #    db.rollback()
+        #    db.close()
+        #    return 4
 
     # disconnect from server
     db.close()

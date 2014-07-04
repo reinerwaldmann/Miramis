@@ -75,3 +75,51 @@ def outFilledFormResult(resultsOfProcedure):
     return out
 
 
+def outGeneral(id):
+    pass
+
+
+def writeTestFromInputParameters(form):
+    pass
+
+
+
+#у этой страницы могут быть три параметра - id, то есть айди протокола, есть всегда и может быть idtest - айди испытания
+#ещё параметр saveid - тогда значит надо сохранить (т. е. добавить или перезаписать) введённое испытание
+
+form = cgi.FieldStorage()
+
+if "saveid" in form:
+    htmg.out ("Content-Type: text/html;charset=utf-8\n\n")
+    htmg.out(writeTestFromInputParameters(form))
+    exit(0)
+
+#вызвать сохраение данных и выйти из скрипта!
+
+if "id" not in form:
+    htmg.out(htmg.generateHTMLMetaHeader())
+    htmg.out(htmg.throwError("FR_oneresultedit.py", "Не получен ID результата"))
+    htmg.out(htmg.generateHTMLFooter())
+    exit(0) #а  можно ли вообще так выходить из cgi?
+
+id=int(form.getfirst("id", ""))
+htmg.out(outGeneral(id))
+
+if "testedit" in form:
+    testedit=int(form.getfirst("testedit", ""))
+    htmg.out(outFilledForm (id, testedit))
+else:
+    htmg.out(outNormalForm (id))
+
+htmg.out(htmg.generateHTMLFooter())
+
+
+
+
+
+
+
+
+
+
+

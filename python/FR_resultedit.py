@@ -10,17 +10,68 @@ import backend_manageResults as bmr
 import cgitb, cgi, io, sys, os
 cgitb.enable()
 
+#mätrapporter ledningssystem   - på svenska
+
+def insertTestsAccToProtocol(idres):
+    """
+    Вставляет в результат пустые результаты испытаний, согласно протоколу
+    @idres - айди результата
+    """
+    resultt = bmr.getResultFromDatabase(idres)
+    if resultt[0]==None:
+        return 1, "Ошибка получения результата из БД idres="+str(idres)
+
+    result = resultt[0]
+    protocolt = bck.getProtocolFromDatabaseParams (result.model, result.typeOfTest)
+
+    if protocolt[0]==None:
+        return 2, "Ошибка получения протокола из БД idres="+protocolt[1]
+
+    protocol = protocolt[0]
+
+    for procedurekey in protocol.procedures: #для каждой процедуры из списка оных в протоколе
+        if not procedurekey in result.proceduresResults.keys(): #если процедура прописана в протоколе, но не имеется  в результате
+            protocolitem = protocol.procedures[procedurekey] #получаем описание процедуры в протоколе
+            newrp = resultsOfProcedure() #создаём объект результата процедуры
+            newrp.number=procedurekey #копируем номер
+            newrp.hasPassedProcedure=False #устанавливаем флаг, успешна ли процедура
+            newrp.values1=dict() #объявляем значения словарём
+
+            #заполнение значений
+            for channel in protocolitem.normal_values: #для каждого канала
+                newrp.values1[channel]=dict() #объявляем  словарём
+                for possibleres in protocolitem.listOfPossibleResults: #и для каждого возможного  результата
+                    newrp.values1[channel][possibleres]=0 #впихиваем нулевое значение
+
+            result.proceduresResults[procedurekey]=newrp #теперь вгоняем новый результат в процидурку
+    return bmr.writeResultToDatabase(result, idres) # и пишем в базу!
 
 
-def outEditFormForResult(result: AResult, id):
+def outResultsOfProcedureForm (rop: resultsOfProcedure, prefix: str):
+    """
+    Выводит форму редакции одного результата как часть формы
+    """
+    outstr=""
+    for channel in rop.values1:
+        outstr+="<b>{0}</b><br/>\n".format(channel)
+        outstr+="<table>\n"
+        for parameter in rop.values1[channel]:
+
+            inpstr="<input type='text' name='{0}' value='{1}' >".format(str(prefix)+"_"+channel+"_"+parameter, str(rop.values1[channel][parameter]))
+            outstr+="<tr> <td> {0} </td> <td> {1} </td> </tr> \n".format(parameter, inpstr)
+
+        outstr+="</table>\n"
+    return outstr
+
+
+
+def outEditFormForResultOld(result: AResult, id):
+
+
     res=str()
-
-
     res+="<h1>Правка результата</h1>"
-
     #вывод справочной части
     st="<b>{0}<b>: {1}<br/>\n"
-
     res+=st.format("Модель", result.model)
     res+=st.format("Вид теста", result.typeOfTest)
     res+=st.format("Оператор", result.operator)
@@ -28,60 +79,156 @@ def outEditFormForResult(result: AResult, id):
     res+=st.format("Номер изделия", str(result.numOfProduct))
     res+=st.format("Номер партии", str(result.numOfBatch))
     res+=st.format("Прошёл ли тест", str(result.hasPassedTest))
-
-
     #вывод таблицы результатов
-
     res+="<br/><br/>"
-    res+="<table border=1>\n"
-
+    res+="<form action='FR_resultedit.py?id={0}&saveid={1}' method='post'> <table border=1>\n".format(str(id), str(id))
     res+="""
     <tr>
     <th>Номер результата</th>
-
     <th>Пройдено ли испытание</th>
-
     <th>Результаты испытания</th>
 
-    <th>Правка</th>
-
     <th>Удаление</th>
-
     </tr>"""
-
-
-
-
     for key, val in result.proceduresResults.items():
         res+="<tr>\n"
-
-        interactive_form=val.toHTML()
-
-
+        interactive_form=outResultsOfProcedureForm (val, key)
         delbtn=" <input type='button' onclick=\"destroy('Вы уверенно хотите удалить данный результат?', 'FR_resultedit.py?id="+str(id)+"&delid="+str(key)+"' ) \"   value='Удаление'  >"
-
-        res+="""<td> {0} </td> <td> {1} </td> <td> {2} </td> <td> {3} </td> <td> {4} </td>
-        """.format (str(val.number)+"_"+str(key),  {True: "Пройдено", False: "Не пройдено"}[val.hasPassedProcedure], interactive_form,
-                    "<a href='FR_oneresultedit.py?id="+str(id)+"&editid="+str(key)+"'>Правка</a>", delbtn)
+        res+="""<td> {0} </td> <td> {1} </td> <td> {2} </td> <td> {3} </td>
+        """.format (str(key),  {True: "Пройдено", False: "Не пройдено"}[val.hasPassedProcedure], interactive_form,
+                     delbtn)
         res+="</tr>\n"
-
-
-
-
+    res+="</table> <br/> <input type='submit' value='Сохранить'>    </form>"
+    res+="<a href='FR_resultedit.py?id={0}&magic={1}'> Добавить надостающие испытания в результат из протокола </a>".format(id, id)
     return res
+
+
+def outEditFormForResult(result: AResult, id):
+
+    """
+    Выводит форму отображения и редакции результата.
+    в этой версии выводит вместе с данными из протокола,  такими, как название и такое прочее
+    """
+
+    protocolt = bck.getProtocolFromDatabaseParams (result.model, result.typeOfTest)
+
+    if protocolt[0]==None:
+        htmg.out (htmg.throwError("FR_resultedit.py", "Ошибка при поиске протокола, соответствующего данному результату "+protocolt[1]))
+        return outEditFormForResultOld(result, id)
+
+
+    protocol = protocolt[0]
+
+    res=str()
+    res+="<h1>Правка результата</h1>"
+    #вывод справочной части
+    st="<b>{0}<b>: {1}<br/>\n"
+    res+=st.format("Модель", result.model)
+    res+=st.format("Вид теста", result.typeOfTest)
+    res+=st.format("Оператор", result.operator)
+    res+=st.format("Дата и время теста", result.testDateTime)
+    res+=st.format("Номер изделия", str(result.numOfProduct))
+    res+=st.format("Номер партии", str(result.numOfBatch))
+    res+=st.format("Прошёл ли тест", str(result.hasPassedTest))
+    #вывод таблицы результатов
+    res+="<br/><br/>"
+    res+="<form action='FR_resultedit.py?id={0}&saveid={1}' method='post'> <table border=1>\n".format(str(id), str(id))
+    res+="""
+    <tr>
+    <th>Название испытания</th>
+    <th>Режим испытания</th>
+    <th>Нормы на испытание</th>
+    <th>Пройдено ли испытание</th>
+    <th>Результаты испытания</th>
+
+    <th>Удаление</th>
+    </tr>"""
+    for key, val in result.proceduresResults.items():
+        res+="<tr>\n"
+        interactive_form=outResultsOfProcedureForm (val, key)
+        delbtn=" <input type='button' onclick=\"destroy('Вы уверенно хотите удалить данный результат?', 'FR_resultedit.py?id="+str(id)+"&delid="+str(key)+"' ) \"   value='Удаление'  >"
+        res+="""{0} <td> {1} </td> <td> {2} </td> <td> {3} </td>
+        """.format (protocol.procedures[key].toHTML(0), {True: "Пройдено", False: "Не пройдено"}[val.hasPassedProcedure], interactive_form,
+                     delbtn)
+        res+="</tr>\n"
+    res+="</table> <br/> <input type='submit' value='Сохранить'>    </form>"
+    res+="<a href='FR_resultedit.py?id={0}&magic={1}'> Добавить надостающие испытания в результат из протокола </a>".format(id, id)
+    return res
+
+
+def savedata (saveid, form):
+    resultt = bmr.getResultFromDatabase(saveid)
+    if resultt[0]==None:
+        return 1, "Ошибка получения результата из БД saveid="+str(saveid)
+    import copy
+    result=copy.deepcopy(resultt[0])
+
+    for key in result.proceduresResults:
+        for channel in result.proceduresResults[key].values1:
+            for parameter in result.proceduresResults[key].values1[channel]:
+
+                inpstr=str(key)+"_"+channel+"_"+parameter
+                if inpstr in form:
+                    try:
+                        result.proceduresResults[key].values1[channel][parameter]=float(form.getfirst(inpstr, ""))
+
+                    except BaseException:
+                        return 2, "ошибка при записи значения"
+                else:
+                    return 3, "ошибка при записи значения, возможно значение не задано"
+
+
+
+    wrtdb=bmr.writeResultToDatabase(result, idresult=saveid)
+    if wrtdb:
+        return 4, "Ошибка записи р. в БД "+str(wrtdb)
+
+
+
+#    inpstr="<input type='text' name='{0}' value='{1}' >".format(str(prefix)+"_"+channel+"_"+parameter, str(rop.values1[channel][parameter]))
+
+
+    return 0, "" #признак успешности операции
+
 
 
 
 htmg.out (htmg.generateHTMLMetaHeader("Правка результата")+"<br/><br/>" )
-
-
 form = cgi.FieldStorage()
 if "id" not in form:
     htmg.out (htmg.throwError("FR_resultedit.py", "Ошибка: не предоставлен id результата", errortype=None))
 
-
 else:
     id=int(form.getfirst("id", ""))
+
+
+    if "magic" in form:
+        magicres = insertTestsAccToProtocol(id)
+        if magicres:
+            htmg.out (htmg.throwError("FR_resultedit.py", "Ошибка при добавлении недостающих испытаний "+magicres, errortype=None))
+
+
+
+    if "delid" in form:  #запустить сохранение
+        delid=int(form.getfirst("delid", ""))
+
+        dlitem=bmr.delItemFromResult(id, delid)
+        if dlitem:
+            htmg.out (htmg.throwError("FR_resultedit.py", "Ошибка при удалении результата испытания: "+dlitem, errortype=None))
+
+
+
+
+    if "saveid" in form:  #запустить сохранение
+        saveid=int(form.getfirst("saveid", ""))
+
+        svd=savedata (saveid, form)
+        if svd[0]:
+            htmg.out (htmg.throwError("FR_resultedit.py", "Ошибка при сохранении данных: "+svd[1], errortype=None))
+        #else:
+        #    htmg.out (htmg.throwError("FR_resultedit.py", "Данные сохранены успешно!"+svd[1], errortype=None))
+
+
     result = bmr.getResultFromDatabase(id)
 
     if result[0]==None:

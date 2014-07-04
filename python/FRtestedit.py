@@ -148,7 +148,7 @@ def writeTestFromInputParameters(form):
 
 
 
-        retval=bck.addTestToProtocol (saveid, prc, desiredid=None) #Добавить испытание в протокол
+        retval=bck.addTestToProtocol (saveid, prc, desiredid=saveid) #Добавить испытание в протокол
         if not retval:
             return "Испытание сохранено успешно! id="+str(saveid)
         else:

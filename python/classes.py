@@ -34,7 +34,7 @@ class Procedures(BaseStrReturn):
     normal_values=dict(dict()) # словарь словарей значений нормативов название канала-название параметра-строка больше-меньше (значение параметра)
     listOfPossibleResults=list()  # список полей результатов, каковые должны быть отражены в протоколе
 
-    def toHTML(self):      #переводит подержимое в левую половину строки в протоколе (первые три ячейки)
+    def toHTML(self, out3=1):      #переводит подержимое в левую половину строки в протоколе (первые три ячейки)
         try:
             """
             Производит html-представление в виде нескольких ячеек
@@ -66,12 +66,16 @@ class Procedures(BaseStrReturn):
             res+="<td >{0}</td>\n".format(norms)
 
 
+
             #выводим четвёртую полонку - названия величин
             valnames=""
             for km in self.listOfPossibleResults:
                 valnames+=km+"</br>"
 
-            res+="<td>{0}</td>".format(valnames)
+            if out3:
+                res+="<td>{0}</td>".format(valnames)
+
+
             return res
         except BaseException:
             return ""
