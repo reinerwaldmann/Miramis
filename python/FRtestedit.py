@@ -14,10 +14,11 @@ cgitb.enable()
 Файл, предоставляющий доступ к редакции одного испытания
 """
 
-def outGeneral(id):
+def outGeneral(id, saveitemid=None):
     """
     Выводит то, что должно выводиться по-любому
     @id - айди протокола
+    @sh_saveid - отображать форму для редакции, если установлена в 0 - отображать форму для создания
     """
     out="""Content-Type: text/html;charset=utf-8\n\n
     <html lang="ru-RU">
@@ -55,7 +56,15 @@ def outGeneral(id):
       </tbody>
 </table>"""
 
-    out+="<input type='button' onclick=\"saveData('FRtestedit.py?saveid="+str(id)+"'); \"  value='Сохранить данные' >"
+
+    if saveitemid==None: #если это форма создания
+        out+="<input type='button' onclick=\"saveData('FRtestedit.py?saveid="+str(id)+"'); \"  value='Сохранить данные' >"
+    else: # если  это форма правки
+        out+="<input type='button' onclick=\"saveData('FRtestedit.py?saveitemid="+str(saveitemid)+"&saveid="+str(id)+"'); \"  value='Сохранить данные' >"
+#то добавить идентификатор теста, который правим
+
+
+
     out+="<input type='button' onclick='javascript:history.go(-1);'  value='Отмена' >"
     return out
 
@@ -134,10 +143,7 @@ def writeTestFromInputParameters(form):
         pars=form.getfirst("pars", "")
         name=form.getfirst("name", "")
 
-        saveid=int(form.getfirst("saveid", ""))
-
         prc=Procedures()
-
         prc.number=0
         prc.name=name
         prc.mode_common=eval(mode_common)
@@ -145,10 +151,16 @@ def writeTestFromInputParameters(form):
         prc.normal_values=eval(normal_values)
         prc.listOfPossibleResults=eval(pars)
 
+        saveid=int(form.getfirst("saveid", ""))
 
 
+        if "saveitemid" in form: #если это правка, и надо поправить
+            saveitemid = int(form.getfirst("saveitemid", ""))
+            retval=bck.addTestToProtocol (saveid, prc, desiredid=saveitemid) #Добавить испытание в протокол
+        else:
+            retval=bck.addTestToProtocol (saveid, prc) #Добавить испытание в протокол
 
-        retval=bck.addTestToProtocol (saveid, prc, desiredid=saveid) #Добавить испытание в протокол
+
         if not retval:
             return "Испытание сохранено успешно! id="+str(saveid)
         else:
@@ -166,7 +178,7 @@ def writeTestFromInputParameters(form):
 
 form = cgi.FieldStorage()
 
-if "saveid" in form:
+if "saveid" in form:  #если предлагается сохранить испытание в протокол. saveid - идентификатор протокола.
     htmg.out ("Content-Type: text/html;charset=utf-8\n\n")
     htmg.out(writeTestFromInputParameters(form))
     exit(0)
@@ -180,20 +192,22 @@ if "id" not in form:
     exit(0) #а  можно ли вообще так выходить из cgi?
 
 id=int(form.getfirst("id", ""))
-htmg.out(outGeneral(id))
 
 if "testedit" in form:
     testedit=int(form.getfirst("testedit", ""))
+    htmg.out(outGeneral(id, testedit))
     htmg.out(outFilledForm (id, testedit))
 else:
+    htmg.out(outGeneral(id))
     htmg.out(outNormalForm (id))
 
 htmg.out(htmg.generateHTMLFooter())
 
 
 
+#Dagmar
 
 
-
-
-
+#
+# позвонить, мол  сначала в офис, потом
+# на поля

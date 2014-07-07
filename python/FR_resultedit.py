@@ -64,6 +64,15 @@ def outResultsOfProcedureForm (rop: resultsOfProcedure, prefix: str):
     return outstr
 
 
+# <input type="radio" name="browser" value="ie"> Internet Explorer<Br>
+#    <input type="radio" name="browser" value="opera"> Opera<Br>
+
+def outfilledformforpassed(rop: resultsOfProcedure, prefix: str):
+    """
+    Вывести форму для редакции "Пройдено - не пройдено"
+    """
+    pass
+
 
 def outEditFormForResultOld(result: AResult, id):
 
