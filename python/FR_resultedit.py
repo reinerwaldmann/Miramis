@@ -64,14 +64,29 @@ def outResultsOfProcedureForm (rop: resultsOfProcedure, prefix: str):
     return outstr
 
 
+
 # <input type="radio" name="browser" value="ie"> Internet Explorer<Br>
 #    <input type="radio" name="browser" value="opera"> Opera<Br>
+# format(str(prefix)+"_"+channel+"_"+parameter, str(rop.values1[channel][parameter]))
 
-def outfilledformforpassed(rop: resultsOfProcedure, prefix: str):
+
+
+def outfilledformforpassed(keyOfProcedure, hasPassedProcedure):
     """
     Вывести форму для редакции "Пройдено - не пройдено"
     """
-    pass
+    name=str(keyOfProcedure)+"_"+"hasPassedProcedure"
+    if hasPassedProcedure:
+        return """
+         <input type='radio' name='{0}' value='1' checked='checked'> Прошёл <Br>
+         <input type='radio' name='{0}' value='0'> Не прошёл <Br>
+        """.format(name)
+    else:
+        return """
+         <input type='radio' name='{0}' value='1'> Прошёл <Br>
+         <input type='radio' name='{0}' value='0' checked='checked'> Не прошёл <Br>
+        """.format(name)
+
 
 
 def outEditFormForResultOld(result: AResult, id):
@@ -157,8 +172,11 @@ def outEditFormForResult(result: AResult, id):
         interactive_form=outResultsOfProcedureForm (val, key)
         delbtn=" <input type='button' onclick=\"destroy('Вы уверенно хотите удалить данный результат?', 'FR_resultedit.py?id="+str(id)+"&delid="+str(key)+"' ) \"   value='Удаление'  >"
         res+="""{0} <td> {1} </td> <td> {2} </td> <td> {3} </td>
-        """.format (protocol.procedures[key].toHTML(0), {True: "Пройдено", False: "Не пройдено"}[val.hasPassedProcedure], interactive_form,
+        """.format (protocol.procedures[key].toHTML(0), outfilledformforpassed(key, val.hasPassedProcedure), interactive_form,
                      delbtn)
+
+        #{True: "Пройдено", False: "Не пройдено"}[val.hasPassedProcedure]
+
         res+="</tr>\n"
     res+="</table> <br/> <input type='submit' value='Сохранить'>    </form>"
     res+="<a href='FR_resultedit.py?id={0}&magic={1}'> Добавить надостающие испытания в результат из протокола </a>".format(id, id)
@@ -177,9 +195,14 @@ def savedata (saveid, form):
             for parameter in result.proceduresResults[key].values1[channel]:
 
                 inpstr=str(key)+"_"+channel+"_"+parameter
-                if inpstr in form:
+                ifpassedstr = str(key)+"_hasPassedProcedure"
+                if inpstr in form and ifpassedstr in form:
                     try:
                         result.proceduresResults[key].values1[channel][parameter]=float(form.getfirst(inpstr, ""))
+                        result.proceduresResults[key].hasPassedTest=int(form.getfirst(ifpassedstr, ""))==1
+
+                        form.getfirst(inpstr, "")
+
 
                     except BaseException:
                         return 2, "ошибка при записи значения"
