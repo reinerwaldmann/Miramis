@@ -40,7 +40,7 @@ $query = "SELECT * FROM `results` ".filters();
 $res = mysql_query($query);
 
 
-echo "<div align='left'> <form action='../python/FR_makereports.py' method='post'>    <table class='itemstable'>";
+echo "<div align='left'> <form action='../python/FR_makereports.py' method='post'>    <table id='itemstableid'  class='itemstable'>";
 echo "<tr>";
 echo "<td><b>ID</b></td>";
 echo "<td><b>Название изделия</b></td>";
@@ -51,6 +51,10 @@ echo "<td><b>Серийный номер</b></td>";
 echo "<td><b>Номер партии</b></td>";
 echo "<td></td>";
 echo "<td></td>";
+//echo "<td> <input type='button' onclick=\"checkAll ('itemstableid', 9)\"> </td>";
+
+
+echo "<td> <input type='checkbox' onclick=\"checkAll ('itemstableid', 9)\"> </td>";
 echo "</tr>";
 
 while($row = mysql_fetch_array($res))
