@@ -190,19 +190,39 @@ def savedata (saveid, form):
     import copy
     result=copy.deepcopy(resultt[0])
 
+
     for key in result.proceduresResults:
+
+
+        ifpassedstr = str(key)+"_hasPassedProcedure"
+        if ifpassedstr in form:
+
+            try:
+                result.proceduresResults[key].hasPassedProcedure=int(form.getfirst(ifpassedstr, ""))==1
+
+
+
+                # if int(form.getfirst(ifpassedstr, ""))==1:
+                #     result.proceduresResults[key].hasPassedProcedure=True
+                # else:
+                #     result.proceduresResults[key].hasPassedProcedure=False
+                #
+
+
+            except BaseException:
+                return 2, "ошибка при записи значения"
+        else:
+            return 3, "ошибка при записи значения, возможно значение не задано"
+
+
         for channel in result.proceduresResults[key].values1:
             for parameter in result.proceduresResults[key].values1[channel]:
 
                 inpstr=str(key)+"_"+channel+"_"+parameter
-                ifpassedstr = str(key)+"_hasPassedProcedure"
-                if inpstr in form and ifpassedstr in form:
+
+                if inpstr in form:
                     try:
                         result.proceduresResults[key].values1[channel][parameter]=float(form.getfirst(inpstr, ""))
-                        result.proceduresResults[key].hasPassedTest=int(form.getfirst(ifpassedstr, ""))==1
-
-                        form.getfirst(inpstr, "")
-
 
                     except BaseException:
                         return 2, "ошибка при записи значения"
