@@ -1,3 +1,4 @@
+#!/usr/bin/python3.4
 from python.classes import AProtocol
 
 __author__ = 'vasilev_is'

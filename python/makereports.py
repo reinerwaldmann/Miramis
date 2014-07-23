@@ -1,3 +1,4 @@
+#!/usr/bin/python3.4
 __author__ = 'vasilev_is'
 
 from classes import *

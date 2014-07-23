@@ -1,4 +1,4 @@
-#!C:\Python33\python.exe
+#!/usr/bin/python3.4
 
 #-*- coding: utf-8
 
