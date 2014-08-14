@@ -9,4 +9,13 @@ $dbh = mysql_connect($host, $user, $pswd) or die("Не могу соединит
 mysql_select_db($database) or die("Не могу подключиться к базе.");
 
 
+
+$query = "SET NAMES utf8";
+$res = mysql_query($query);
+
+
+
+
+
+
 ?>

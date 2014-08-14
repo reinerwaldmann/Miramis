@@ -125,6 +125,7 @@ def writeProtocolToDatabase(protocol, idprotocol=None):
     # исполняем SQL-запрос
         try:
             cursor.execute(sql,  {'model':protocol.model, 'testname':protocol.typeOfTest, 'pickl': pickled})
+            #cursor.execute(sql,  {'model':"проверка", 'testname':protocol.typeOfTest, 'pickl': pickled})
             db.commit()
         except:
             # Rollback in case there is any error

@@ -18,9 +18,13 @@ import shutil
 import datetime
 import time
 
-watchfolder="C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\groupadd_reswatchfolder\\"
-putfolder="C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\groupadd_resputfolder\\"
-logfile="C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\groupadd_log.txt"
+# watchfolder="C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\groupadd_reswatchfolder\\"
+# putfolder="C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\groupadd_resputfolder\\"
+# logfile="C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\groupadd_log.txt"
+
+watchfolder="/home/r_uploader/groupadd_reswatchfolder/"
+putfolder="/home/r_uploader/groupadd_resputfolder/"
+logfile="/var/log/miramis/report_groupadd.txt"
 
 
 
@@ -52,20 +56,30 @@ def process():
 
         st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
 
-        rs = prs.parseToResult (watchfolder+name)
+        rs = prs.parseToResultCP1251 (watchfolder+name)
         if rs==None:
             report+="[ERROR] "+st+" Не удалось распарсить результат имя файла="+name+"\n"
 
        # print (rs)
-        wr=bmr.writeResultToDatabase(rs);
-        if wr:
-            report+="[ERROR] "+st+" При записи в БД произошла ошибка код="+str(wr)+"\n"
-        else: #если всё хорошо, записали в базу данных
+
+
+        #сперва попробуем перенести файл
+        mvs=1
+        try:
             shutil.move(watchfolder+name, putfolder)
+        except BaseException:
+            log ("[ERROR]"+st+"Проблема при перемещении файла, возможно дублирование отчёта")
+            print ("[ERROR]"+st+"Проблема при перемещении файла, возможно дублирование отчёта")
+            mvs=0
+
+        if mvs:
+            wr=bmr.writeResultToDatabase(rs);
+            if wr:
+                report+="[ERROR] "+st+" При записи в БД произошла ошибка код="+str(wr)+"\n"
 
             report+="\t"+st+"Запись в БД произошла успешно "+name+"\n"
 
-        #копирование сделать в другую папку
+
     log (report)
 
 

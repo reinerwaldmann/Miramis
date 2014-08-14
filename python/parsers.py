@@ -10,6 +10,72 @@ import dateutil.parser as dparser
 
 
 
+
+def parseToResultCP1251 (filename):
+    """
+    Парсит файл filename в AResult
+    """
+    msg="" #сообщение, цепляемое к результату
+
+    try:
+        file=open(filename, "rb")
+    except:
+        print("Error while opening file")
+        return None
+    res=AResult()
+    first_line=file.readline().decode("cp1251")
+    if first_line.__contains__("ИВЭП")!=1:
+        print ("Эта версия только для ИВЭП")
+        exit(1)
+    #парсим справочную часть
+    for linex in file:
+        line = linex.decode("cp1251")
+        if line.__contains__("*"): # значит, дошли до главной части
+            break
+
+        linelst=line.strip().split(":")
+        if linelst[0].__contains__("Модель"):
+            res.model=linelst[1].strip()
+        if linelst[0].__contains__("Имя программы"):
+            res.typeOfTest=linelst[1].strip()
+        if linelst[0].__contains__("Дата"):
+            #res.testDateTime=linelst[1].strip()
+            res.testDateTime=line[line.index(":")+1::].strip().replace("/", "-")
+            #print (res.testDateTime)
+            date=dparser.parse(res.testDateTime)
+            #print(date)
+            res.testDateTime = date.__str__()
+
+        if linelst[0].__contains__("Контр"):
+                res.operator=linelst[1].strip()
+        if linelst[0].__contains__("Результат"):
+                res.hasPassedTest=linelst[1].__contains__("PASS")
+        if linelst[0].__contains__("Серийный номер"):
+                res.numOfProduct = linelst[1].strip()
+        if linelst[0].__contains__("Номер партии"):
+               res.numOfBatch = linelst[1].strip()
+
+    proclines=""
+    for line in file:
+        proclines+=line.decode("cp1251")
+
+    #получили последовательность объектов resultsOfProcedure, применив парсинговую функцию
+    ## ко всем строчкам, относившимся к результатам
+    #срез потому, что иначе последним в сплите идёт пустая строка - ибо последняя процедура
+    # в конце файла также имеет строчку из звёздочек с \n
+    rrlist=proclines.split("********************************************************************************\r\n")[0:-1]
+    rpcseq=list(map(parceToPrRes, rrlist))
+    numseq=list(map (lambda  rpc: rpc.number, rpcseq))
+    res.proceduresResults=dict(zip(numseq, rpcseq))
+    return res
+
+
+
+
+
+
+
+
 def parseToResult (filename):
     """
     Парсит файл filename в AResult
