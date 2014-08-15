@@ -16,6 +16,9 @@ class AProtocol(BaseStrReturn):
     model=str()
     typeOfTest=str()
     channelname=list()
+
+
+
     procedures=dict()  # словарь номер процедуры - процедура
 
     def __str__(self):

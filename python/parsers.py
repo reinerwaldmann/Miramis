@@ -276,6 +276,7 @@ def parseToAProtocol (file):
     for line in file:
         proclines+=line
     rrlist=proclines.split("********************************************************************************\n")[0:-1]
+
     rpcseq=list(map(parseToProcedures, rrlist))
     numseq=list(map (lambda  app: app.number, rpcseq))
     ap.procedures=dict(zip(numseq, rpcseq))
@@ -330,7 +331,10 @@ def parseToAProtocolCP1251(file):
 
         #print   (ap.procedures.items().)
         try:
+        #    ap.channelname=list(rpcseq[0].mode_channel.keys())
             ap.channelname=list(rpcseq[0].mode_channel.keys())
+
+
         except BaseException:
             ap.channelname=list()
 
@@ -378,7 +382,13 @@ def parseToAProtocolStr (instr):
 
     #print   (ap.procedures.items().)
 
-    ap.channelname=list(rpcseq[0].mode_channel.keys())
+    #ap.channelname=list(rpcseq[0].mode_channel.keys())
+
+    try:
+        ap.channelname=list(rpcseq[0].mode_channel.keys())
+    except BaseException:
+        ap.channelname=list()
+
 
 #    print (ap)
 
