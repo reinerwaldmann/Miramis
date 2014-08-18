@@ -35,8 +35,16 @@ class Procedures(BaseStrReturn):
     name=""  # имя процедуры
     mode_common=dict() # словарь общих режимов имя-значение
     mode_channel=dict(dict()) # словарь словарей режимов по каналам (имя канала - имя параметра - значение)
-    normal_values=dict(dict()) # словарь словарей значений нормативов название канала-название параметра-строка больше-меньше (значение параметра)
-    listOfPossibleResults=list()  # список полей результатов, каковые должны быть отражены в протоколе
+
+    normal_values=dict(dict()) # словарь словарей значений нормативов название канала-название параметра-строка больше-меньше (значение параметра) поканальный
+    normal_values_common=dict(dict()) # словарь словарей значений нормативов название канала-название параметра-строка больше-меньше (значение параметра) общий
+
+
+    listOfPossibleResults=list()  # список полей результатов, каковые должны быть отражены в протоколе поканальные
+    listOfPossibleResultsCommon=list()  # список полей результатов, каковые должны быть отражены в протоколе общие
+
+
+
 
     def toHTML(self, out3=1):      #переводит подержимое в левую половину строки в протоколе (первые три ячейки)
         try:
@@ -67,6 +75,13 @@ class Procedures(BaseStrReturn):
                 for k, v in  self.normal_values[k].items():
                     norms+="{0}:</br>{1}</br>\n".format(k, v)
             #res+="<td rowspan={0}>{1}</td>\n".format(nopr, norms)
+
+            for k in self.normal_values_common.keys():
+                norms+="{0}: </br>".format(k)
+                for k, v in  self.normal_values_common[k].items():
+                    norms+="{0}:</br>{1}</br>\n".format(k, v)
+
+
             res+="<td >{0}</td>\n".format(norms)
 
 
@@ -75,7 +90,8 @@ class Procedures(BaseStrReturn):
             valnames=""
             for km in self.listOfPossibleResults:
                 valnames+=km+"</br>"
-
+            for km in self.listOfPossibleResultsCommon:
+                valnames+=km+"</br>"
             if out3:
                 res+="<td>{0}</td>".format(valnames)
 
@@ -112,6 +128,8 @@ class resultsOfProcedure(BaseStrReturn):
     hasPassedProcedure=bool()
     values1=dict()  #словарь словарей название канала - название параметра - значение
 
+    values_common=dict()  #словарь название параметра-значение для общих величин
+
     def __str__(self):
         res = BaseStrReturn.__str__(self)   #по непонятной причине, BaseStrReturn отказывается выводить словарь словарей
         return res
@@ -128,6 +146,11 @@ class resultsOfProcedure(BaseStrReturn):
             valrepr+="{0}: </br>".format(k)
             for k, v in  self.values1[k].items():
                 valrepr+="{0}={1}</br>\n".format(k, v)
+
+        valrepr+="{0}: </br>".format("Общие")
+        for k in self.values_common.keys():
+            valrepr+="{0}={1}</br>\n".format(k, self.values_common[k])
+
         res+=valrepr
 
         return res

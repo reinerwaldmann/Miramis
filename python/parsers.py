@@ -117,7 +117,6 @@ def parseToResult (filename):
 
 
 
-
         if linelst[0].__contains__("Контр"):
                 res.operator=linelst[1].strip()
         if linelst[0].__contains__("Результат"):
@@ -161,7 +160,7 @@ def parceToPrRes (line):
             break
     ind+=2
     #print (listlines[ind])
-    value_names=listlines[ind][0: listlines[ind].rfind("#")].split("|")[1::]
+    value_names=listlines[ind][0: listlines[ind].rfind("#")].split("$")[1::]
     ind+=2
     rp.values1 = parseTable(line[line.rfind("Результаты измерений"):],'res')
     return rp
@@ -169,9 +168,9 @@ def parceToPrRes (line):
 
 #на вход принимает таблицу
   # --------------------------
-  # Выходной канал ИВЭП | Iвых, А
+  # Выходной канал ИВЭП $ Iвых, А
   # -------------------  -------
-  # 1 канал +5 В        |   3.000
+  # 1 канал +5 В        $   3.000
 #На выходе словарь словарей - имя канала - название параметра - значение
 
 def parseTable (line, type):
@@ -182,21 +181,24 @@ def parseTable (line, type):
     listlines=line.split("\n")
     ind=1
     namesline=listlines[ind]
-    value_names = {
-    'res': lambda namesline: namesline[0: namesline.rfind("#")].split("|")[1::], #вариант для результатов
-    'norm': lambda namesline: namesline[namesline.rfind("#")+1:].strip().split("|"), #вариант для норм
-    'mode': lambda namesline: namesline.split("|")[1::] #вариант для режима измерения
+    value_names = { #названия значений
+    'res': lambda namesline: namesline[0: namesline.rfind("#")].split("$")[1::], #вариант для результатов
+    'norm': lambda namesline: namesline[namesline.rfind("#")+1:].strip().split("$"), #вариант для норм
+    'mode': lambda namesline: namesline.split("$")[1::] #вариант для режима измерения
     }[type](namesline)
- # print (listlines[ind][listlines[ind].rfind("#"):].split("|")) #вариант для норм
+ # print (listlines[ind][listlines[ind].rfind("#"):].split("$")) #вариант для норм
     ind+=2
     rp=dict()
     while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
+        #if not listlines[ind].strip():  #защита от пустых строк
+        #    ind+=1
+
         listnamesvals = {
-            'res': lambda resline: resline[0: resline.rfind("#")].split("|"),
-            'norm': lambda resline: resline[resline.rfind("#")+1:].split("|"),
-            'mode': lambda resline: resline.split("|")
+            'res': lambda resline: resline[0: resline.rfind("#")].split("$"),
+            'norm': lambda resline: resline[resline.rfind("#")+1:].split("$"),
+            'mode': lambda resline: resline.split("$")
         }[type](listlines[ind])
-        channame=listlines[ind] [0: listlines[ind].rfind("#")].split("|")[0].strip()
+        channame=listlines[ind] [0: listlines[ind].rfind("#")].split("$")[0].strip()
         listvals= {
             'res' : listnamesvals[1::],
             'norm': listnamesvals,
@@ -338,7 +340,7 @@ def parseToAProtocolCP1251(file):
         except BaseException:
             ap.channelname=list()
 
-    except BaseException:
+    except BaseException as e:
         return None, "Some error occured"
 
 

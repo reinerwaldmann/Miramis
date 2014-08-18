@@ -27,7 +27,7 @@ def upload_protocol():
         ap = prs.parseToAProtocolCP1251(fileitem.file) #распарсили протокол
 
         if ap[0]==None:  #ошибка при парсинге протокола
-            htmg.out("<script>  alert(\"Произошла ошибка при загрузке протокола err="+ap[1] + "\"); </script>")
+            htmg.out("<script>  alert(\"Произошла ошибка при загрузке протокола  на этапе парсинга err="+ap[1] + "\"); </script>")
             show_form()
             return
 
