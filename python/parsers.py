@@ -2,6 +2,7 @@
 #!C:\Python33\python.exe
 
 #-*- coding: utf-8
+from itertools import starmap
 
 __author__ = 'vasilev_is'
 from classes import *
@@ -181,32 +182,59 @@ def parseTable (line, type):
     listlines=line.split("\n")
     ind=1
     namesline=listlines[ind]
+
+    #эта конструкция - аналог switch
     value_names = { #названия значений
     'res': lambda namesline: namesline[0: namesline.rfind("#")].split("$")[1::], #вариант для результатов
+    'rescom': lambda namesline: namesline[0: namesline.rfind("#")].split("$"), #вариант для результатов
+
     'norm': lambda namesline: namesline[namesline.rfind("#")+1:].strip().split("$"), #вариант для норм
+    'normcom': lambda namesline: namesline[namesline.rfind("#")+1:].strip().split("$"), #вариант для норм общих
+
     'mode': lambda namesline: namesline.split("$")[1::] #вариант для режима измерения
+
+    #norm и normcom совпадают!
     }[type](namesline)
+
+
+
  # print (listlines[ind][listlines[ind].rfind("#"):].split("$")) #вариант для норм
     ind+=2
     rp=dict()
     while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
-        #if not listlines[ind].strip():  #защита от пустых строк
-        #    ind+=1
 
         listnamesvals = {
             'res': lambda resline: resline[0: resline.rfind("#")].split("$"),
+            'rescom': lambda resline: resline[0: resline.rfind("#")].split("$"),
             'norm': lambda resline: resline[resline.rfind("#")+1:].split("$"),
+            'normcom': lambda resline: resline[resline.rfind("#")+1:].split("$"),
             'mode': lambda resline: resline.split("$")
         }[type](listlines[ind])
+
+
         channame=listlines[ind] [0: listlines[ind].rfind("#")].split("$")[0].strip()
         listvals= {
             'res' : listnamesvals[1::],
+            'rescom' : listnamesvals,
             'norm': listnamesvals,
+            'normcom': listnamesvals,
             'mode': listnamesvals[1::]
         }[type]
+
+
+
 #ПИТОН - САМЫЙ ОМСКИЙ ЯЗЫК ВСЕХ ВРЕМЁН И НАРОДОВ!!! ЛЯМБДЫ ВО ВСЕ ПОЛЯ!!!!!!!!!!!
         valsdict=dict(zip(value_names, map (lambda d: d.strip(), listvals)))
         #valsdict=dict(zip(value_names, listvals))
+
+
+        if "rescom" in type: #если считываем общие результаты, слить первую строчку сразу
+            return valsdict
+
+        if "normcom" in type:
+            return valsdict
+
+
         rp[channame]=valsdict
         ind+=1
         #print (rp.number)
@@ -235,14 +263,34 @@ def parseToProcedures (line):
     linemodetable = linemodetable[linemodetable.find("--"):-1]
     rtp.mode_channel = parseTable(linemodetable,'mode')
 
-    #Получили строку результатов измерений, и распарсили ей, считав только нормативы
-    rtp.normal_values = parseTable(line[line.rfind("Результаты измерений"):],'norm')
 
-    #Получаем  строку названий возможных результатов
-    possibleResults = list ( parseTable(line[line.rfind("Результаты измерений"):],'res').values()  )
+    strWithTables = line[line.rfind("Результаты измерений"):]  #строка, в которой находятся таблицы с результатами (возможно, одна  таблица)
 
-    rtp.listOfPossibleResults=list(  possibleResults[0].keys())
+    if "\n\n" in strWithTables : #если оная таблица содержит в себе пустую строку
+        #Если в ней есть пустая строка, то считать случай 3 - есть и поканальный, и общий режимы
+        #TODO но пока не  реализовно защиты от случайно впиленной пустой строки в конце, или чего-то подобного
+        twotableslist = strWithTables.split("\n\n")
 
+        #Здесь запилить парсинг общей таблицы
+
+
+        comtable =twotableslist[0][twotableslist[0].find('\n')+1::  ]+"\n"
+        rtp.normal_values_common = parseTable(comtable,"normcom") #распарсили нормы общие
+        rtp.listOfPossibleResultsCommon = list (parseTable(comtable,"rescom").keys()) #распарсили результаты общие
+        rtp.normal_values = parseTable(twotableslist[1],'norm') #распарсили нормы поканальные
+        rtp.listOfPossibleResults = list( list ( parseTable(twotableslist[1],'res').values())[0].keys()) #распарсили результаты поканальные
+
+    else:
+        if "Выходной канал" in strWithTables: #если данные только поканальные
+            #Получили строку результатов измерений, и распарсили ей, считав только нормативы
+            rtp.normal_values = parseTable(line[line.rfind("Результаты измерений"):],'norm')
+            #Получаем  строку названий возможных результатов
+            possibleResults = list ( parseTable(line[line.rfind("Результаты измерений"):],'res').values()  )
+            rtp.listOfPossibleResults=list(  possibleResults[0].keys())
+
+        else: #если есть только общие данные
+            rtp.normal_values_common = parseTable(strWithTables,"normcom") #распарсили нормы общие
+            rtp.listOfPossibleResultsCommon = list (parseTable(strWithTables,"rescom").keys()) #распарсили результаты общие
 
     #Получили строку режимов просто
     linecommonmode = line[line.find("Режим измерения"): line.find("--",line.find('Режим измерения')) ]
@@ -290,12 +338,6 @@ def parseToAProtocol (file):
 #    print (ap)
 
     return ap
-
-
-
-
-
-
 def parseToAProtocolCP1251(file):
     """
     Парсит в класс AProtocol, если входной файл записан в CP1251
@@ -345,11 +387,6 @@ def parseToAProtocolCP1251(file):
 
 
     return ap, ""
-
-
-
-
-
 def parseToAProtocolStr (instr):
     """
     Парсит в класс AProtocol
@@ -399,13 +436,6 @@ def parseToAProtocolStr (instr):
 
 
 
-
-
-
-
-
-
-
 #Такая структура, как представлена, даёт возможность генерировать также и пустые объекты для  заполнения их руками
 #Заполненность объектов может быть любой, от никакой вообще (пустой объект) и до полной.
 
@@ -423,6 +453,20 @@ def parseToAProtocolStr (instr):
 #     filename="protocolCP1251.txt"
 
 
+
+
+#тестовая хрень
+
+def test ():
+    f = open ("G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\nocommon1.txt", "rt")
+    print (parseToAProtocol(f).procedures[8].toHTML())
+    #print (parseToAProtocol(f).__str__())
+
+
+
+
+
+#test()
 
 
 
