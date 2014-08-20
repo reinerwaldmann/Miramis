@@ -111,17 +111,43 @@ def outFilledForm(id, procid):
     # listOfPossibleResults=list()  # список полей результатов, каковые должны быть отражены в протоколе
     out+="var name=\""+proc.name+"\";\n"
     out+="var pars="+proc.listOfPossibleResults.__str__()+";\n"
+    out+="var listOfPossibleResultsCommon="+proc.listOfPossibleResultsCommon.__str__()+";\n"
+
+
 
     out+="var mode_common="+proc.mode_common.__str__()+";\n"
     out+="var mode_channel="+proc.mode_channel.__str__()+";\n"
-    out+="var normal_values="+proc.normal_values.__str__()+";\n"
+
+    if proc.normal_values:
+        out+="var normal_values="+proc.normal_values.__str__()+";\n"
+
+
+
+    out+="var normal_values_common="+proc.normal_values_common.__str__()+";\n"
+
+
+
     out+="""
+    fillListform(listOfPossibleResultsCommon, 'listOfPossibleResultsCommon');
     fillListform(pars, 'pars');
+
+
     fillDictForm (mode_common, 'mode_common');
     fillDict2DictForm (mode_channel, 'mode_channel');
-    fillDict2DictForm (normal_values, 'normal_values');
+
+    fillDictForm (normal_values_common, 'normal_values_common');
+    """
+    if proc.normal_values:
+        out+="fillDict2DictForm (normal_values, 'normal_values');"
+
+
+    out+="""
     setname(name, 'name');
     """
+
+
+#addListform('listOfPossibleResultsCommon', 'pars_contedor');
+#addDictForm('normal_values_common','normal_values_contendor', 'Общие нормы:');
 
     out+="</script>\n";
 

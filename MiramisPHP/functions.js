@@ -133,16 +133,16 @@
             return res
     }
 
-function addDictForm (formid, parentdivid)
+function addDictForm (formid, parentdivid, header='')
 //добавляет форму редакции словаря
 //formid - айди новой формы, то есть дива
 //parentdivid - айди родительского элемента, используется обычно div, теоретически возможна работа с другими контейнерными элементами
 //получается два вложенных дива - снаружи родительский, внутри див формы
 {
-document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+addDictFormStr (formid);
+document.getElementById(parentdivid).innerHTML=document.getElementById(parentdivid).innerHTML+addDictFormStr (formid,0,  header);
 }
 
-function addDictFormStr (formid, isInDict2Dict)
+function addDictFormStr (formid, isInDict2Dict, header='')
 //возвращает строку формы редакции словаря
 //formid - айди новой формы, то есть дива
 //Если параметр isInDict2Dict установлен в 1, то эта форма является частью dict2dict, и на кнопке должна быть надпись "добавить поле в категорию"
@@ -150,7 +150,11 @@ function addDictFormStr (formid, isInDict2Dict)
 buttonCaption="Добавить поле";
 if (isInDict2Dict==1) buttonCaption="Добавить поле в категорию";
 
-var table = " <table id='"+ formid +"' border='0'> "+
+hdr='';
+if (header) hdr ='<p>'+header+'</p>';
+
+
+var table = hdr+ " <table id='"+ formid +"' border='0'> "+
     "<tbody>"+
     "<col class='c1'><col span='2'>"+
     " <tr> </tr> "+
@@ -197,7 +201,7 @@ document.getElementById(parentdivid).innerHTML=document.getElementById(parentdiv
 }
 
 
-function addDict2DictFormChannels (formid, parentdivid, channellist)
+function addDict2DictFormChannels (formid, parentdivid, channellist, header='')
 //добавляет форму словаря словарей, при этом создавая поля верхнего уровня с именами, взятыми из списка channellist.
 //В данной версии названия каналов в этой форме не изменяются!
 //formid - айди новой формы, то есть дива
@@ -208,7 +212,21 @@ function addDict2DictFormChannels (formid, parentdivid, channellist)
     formdiv.className='dict2dictformdiv';
     formdiv.id=formid;
 
+
+
+
     parentdiv=document.getElementById(parentdivid);
+
+
+
+    if (header){
+
+        var element = document.createElement('p');
+        element.appendChild(document.createTextNode(header));
+        parentdiv.appendChild (element)
+
+    }
+
     parentdiv.appendChild(formdiv);
 
 
@@ -414,22 +432,33 @@ function ListformMakeResString(dicttableId )  //в таблице 1 строка
 //dicttableId - айди формы
 //возвращает строку результата
     {
+
+
             var table=document.getElementById(dicttableId );    // Получаем указатель нужной нам таблицы
             var numrows =table.rows.length;
             var res="[";
             if (numrows==1) return "[]";  //если нет полей, то вернуть пустую строку
+
+
+
             maxid=getMaxRowIdInTable(dicttableId);
             for (var i=0; i<maxid; i++)
             {
                 item = document.getElementById(dicttableId+"_item["+i+"]");
 
+
+
                 if (item!=null)
                 {
+
                     itemval=item.value.trim();
+                    alert (itemval);
 
                     if (itemval)
                     {
                         res+="'"+itemval+"'";
+
+
 
                         if (i!=maxid-1)
                             { res+=" ,";}
@@ -445,6 +474,8 @@ function ListformMakeResString(dicttableId )  //в таблице 1 строка
             }
 
             res+="]";
+
+
 
             return res
     }
@@ -481,9 +512,23 @@ function add_forms_to_table(channellist)
 //добавление форм в таблицу
 //channellist - список каналов, на основе которых формируются формы
 {
-    addDictForm('mode_common','mode_contendor');
-    addDict2DictFormChannels ('mode_channel','mode_contendor', channellist );
-    addDict2DictFormChannels('normal_values','normal_values_contendor', channellist);
+    addDictForm('mode_common','mode_contendor', 'Общие режимы');
+    addDict2DictFormChannels ('mode_channel','mode_contendor', channellist, 'Поканальные режимы' );
+
+    addDict2DictFormChannels('normal_values','normal_values_contendor', channellist, 'Поканальные нормы:');
+    addDictForm('normal_values_common','normal_values_contendor', 'Общие нормы:');
+
+
+
+
+
+    div = document.getElementById('pars_contedor');
+    div.innerHTML=div.innerHTML+"Общие измерения:<br/>";
+
+    addListform('listOfPossibleResultsCommon', 'pars_contedor');
+
+    div.innerHTML=div.innerHTML+"<br/>Поканальные измерения:<br/>";
+
     addListform('pars', 'pars_contedor');
 }
 
@@ -495,24 +540,31 @@ var request;
    //actionserver - URL куда посылать
 
    //так как пересылка идёт AJAX-ом, то URL должен быть в том же домене, что и страница, вызвавшая данную функцию
+   //Данные - что посылать описываются в данной функции
 
 	{
 
     var method="POST";
     var name=document.getElementById("name").value;
     var mode_common=collectDataFromDictTable ('mode_common');
-
     var mode_channel=dict2dictMakeResString ('mode_channel');
+
     var normal_values=dict2dictMakeResString ('normal_values');
+    var normal_values_common=collectDataFromDictTable ('normal_values_common');
+
 
     var pars=ListformMakeResString ('pars');
+    var listOfPossibleResultsCommon=ListformMakeResString ('listOfPossibleResultsCommon');
 
 
      var params = 'name=' + encodeURIComponent(name) +
                 '&mode_common=' + encodeURIComponent(mode_common)+
                 '&mode_channel=' + encodeURIComponent(mode_channel)+
                 '&normal_values=' + encodeURIComponent(normal_values)+
-                '&pars=' + encodeURIComponent(pars);
+                '&normal_values_common=' + encodeURIComponent(normal_values_common)+
+                '&pars=' + encodeURIComponent(pars)+
+                '&listOfPossibleResultsCommon=' + encodeURIComponent(listOfPossibleResultsCommon)
+                ;
 
 
 

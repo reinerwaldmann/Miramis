@@ -292,6 +292,7 @@ def parseToProcedures (line):
             rtp.normal_values_common = parseTable(strWithTables,"normcom") #распарсили нормы общие
             rtp.listOfPossibleResultsCommon = list (parseTable(strWithTables,"rescom").keys()) #распарсили результаты общие
 
+
     #Получили строку режимов просто
     linecommonmode = line[line.find("Режим измерения"): line.find("--",line.find('Режим измерения')) ]
     listcommonmode=linecommonmode.split('\n')[1:-1]
