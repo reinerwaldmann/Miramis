@@ -162,12 +162,17 @@ def writeTestFromInputParameters(form):
     Вписывает параметры из формы в класс
     """
 
-    if "mode_common" in form and "mode_channel" in form and "normal_values" in form and "pars" in form and "name" in form:
+    if "mode_common" in form and "mode_channel" in form and "normal_values" in form and "pars" in form and "name" in form and "normal_values_common" in form and "listOfPossibleResultsCommon" in form:
         mode_common=form.getfirst("mode_common", "")
         mode_channel=form.getfirst("mode_channel", "")
         normal_values=form.getfirst("normal_values", "")
         pars=form.getfirst("pars", "")
         name=form.getfirst("name", "")
+
+        normal_values_common=form.getfirst("normal_values_common", "")
+        listOfPossibleResultsCommon=form.getfirst("listOfPossibleResultsCommon", "")
+
+
 
         prc=Procedures()
         prc.number=0
@@ -176,6 +181,11 @@ def writeTestFromInputParameters(form):
         prc.mode_channel=eval(mode_channel)
         prc.normal_values=eval(normal_values)
         prc.listOfPossibleResults=eval(pars)
+
+        prc.normal_values_common=eval(normal_values_common)
+        prc.listOfPossibleResultsCommon=eval(listOfPossibleResultsCommon)
+
+
 
         saveid=int(form.getfirst("saveid", ""))
 

@@ -8,7 +8,7 @@ __author__ = 'vasilev_is'
 from classes import *
 import datetime as dt
 import dateutil.parser as dparser
-
+import copy
 
 
 
@@ -69,10 +69,6 @@ def parseToResultCP1251 (filename):
     numseq=list(map (lambda  rpc: rpc.number, rpcseq))
     res.proceduresResults=dict(zip(numseq, rpcseq))
     return res
-
-
-
-
 
 
 
@@ -264,15 +260,28 @@ def parseToProcedures (line):
     rtp.mode_channel = parseTable(linemodetable,'mode')
 
 
+
     strWithTables = line[line.rfind("Результаты измерений"):]  #строка, в которой находятся таблицы с результатами (возможно, одна  таблица)
 
+
+
+    #поиск пустой строки
+    #detector_two_tables=0
+
+    #for line in listlines:
+     #    if line.strip()=="\n":
+     #        detector_two_tables=1
+
+
     if "\n\n" in strWithTables : #если оная таблица содержит в себе пустую строку
+    #if detector_two_tables:
         #Если в ней есть пустая строка, то считать случай 3 - есть и поканальный, и общий режимы
         #TODO но пока не  реализовно защиты от случайно впиленной пустой строки в конце, или чего-то подобного
         twotableslist = strWithTables.split("\n\n")
 
-        #Здесь запилить парсинг общей таблицы
+         #Здесь запилить парсинг общей таблицы
 
+        print (rtp.number)
 
         comtable =twotableslist[0][twotableslist[0].find('\n')+1::  ]+"\n"
         rtp.normal_values_common = parseTable(comtable,"normcom") #распарсили нормы общие
@@ -459,15 +468,21 @@ def parseToAProtocolStr (instr):
 #тестовая хрень
 
 def test ():
-    f = open ("G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\nocommon1.txt", "rt")
-    print (parseToAProtocol(f).procedures[8].toHTML())
-    #print (parseToAProtocol(f).__str__())
+    filename="G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\1б.txt"
+
+    #f = open ("G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\nocommon1.txt", "rt")
+
+    f = open (filename)
+    print (parseToAProtocol(f).procedures[9].__str__())
+
+    #print (parseToResult(filename).proceduresResults[8].__str__())
 
 
 
 
 
-#test()
+
+test()
 
 
 

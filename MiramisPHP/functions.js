@@ -437,25 +437,21 @@ function ListformMakeResString(dicttableId )  //в таблице 1 строка
             var table=document.getElementById(dicttableId );    // Получаем указатель нужной нам таблицы
             var numrows =table.rows.length;
             var res="[";
-            if (numrows==1) return "[]";  //если нет полей, то вернуть пустую строку
-
-
+            if (numrows==0) return "[]";  //если нет полей, то вернуть пустую строку
 
             maxid=getMaxRowIdInTable(dicttableId);
             for (var i=0; i<maxid; i++)
             {
                 item = document.getElementById(dicttableId+"_item["+i+"]");
 
-
-
                 if (item!=null)
                 {
 
                     itemval=item.value.trim();
-                    alert (itemval);
 
                     if (itemval)
                     {
+
                         res+="'"+itemval+"'";
 
 
