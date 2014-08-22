@@ -60,6 +60,21 @@ def outResultsOfProcedureForm (rop: resultsOfProcedure, prefix: str):
             outstr+="<tr> <td> {0} </td> <td> {1} </td> </tr> \n".format(parameter, inpstr)
 
         outstr+="</table>\n"
+
+    outstr+="<table>\n"
+
+
+    if rop.values_common:
+        outstr+="<b>{0}</b><br/>\n".format("Общие:")
+    for parameter in rop.values_common:
+
+        inpstr="<input type='text' name='{0}' value='{1}' >".format(str(prefix)+"_"+"common&&&"+"_"+parameter, str(rop.values_common[parameter]))
+        outstr+="<tr> <td> {0} </td> <td> {1} </td> </tr> \n".format(parameter, inpstr)
+
+    outstr+="</table>\n"
+
+
+
     return outstr
 
 
@@ -228,6 +243,17 @@ def savedata (saveid, form):
                 else:
                     return 3, "ошибка при записи значения, возможно значение не задано"
 
+
+        for parameter in result.proceduresResults[key].values_common:
+            inpstr=str(key)+"_"+"common&&&"+"_"+parameter
+            if inpstr in form:
+                    try:
+                        result.proceduresResults[key].values_common[parameter]=float(form.getfirst(inpstr, ""))
+
+                    except BaseException:
+                        return 4, "ошибка при записи значения (общего)"
+            else:
+                return 5, "ошибка при записи значения (общего), возможно значение не задано"
 
 
     wrtdb=bmr.writeResultToDatabase(result, idresult=saveid)

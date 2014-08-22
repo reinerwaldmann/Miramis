@@ -150,16 +150,49 @@ def parceToPrRes (line):
     # return rp;
     rp.number=int(listlines[0].split(":")[0].split(".")[1])
     #или же поудалять все символы, которые не цифры
-    ind=0
-    for i in range (0, listlines.__len__()):
-        if (listlines[i].__contains__("Результаты измерений")):
-            ind=i
-            break
-    ind+=2
-    #print (listlines[ind])
-    value_names=listlines[ind][0: listlines[ind].rfind("#")].split("$")[1::]
-    ind+=2
-    rp.values1 = parseTable(line[line.rfind("Результаты измерений"):],'res')
+
+
+
+
+    strWithTables = line[line.rfind("Результаты измерений"):]  #строка, в которой находятся таблицы с результатами (возможно, одна  таблица)
+
+
+    if "\n\r\n" in strWithTables : #если оная таблица содержит в себе пустую строку
+    #if detector_two_tables:
+        #Если в ней есть пустая строка, то считать случай 3 - есть и поканальный, и общий режимы
+        #TODO но пока не  реализовно защиты от случайно впиленной пустой строки в конце, или чего-то подобного
+        twotableslist = strWithTables.split("\n\r\n")
+
+         #Здесь запилить парсинг общей таблицы
+
+        comtable =twotableslist[0][twotableslist[0].find('\n')+1::  ]+"\n" #таблица с общими результатами
+
+        rp.values_common = parseTable(comtable,"rescom") #распарсили результаты общие
+        rp.values1 = parseTable(twotableslist[1],'res') #распарсили результаты поканальные
+
+
+
+    else:
+        if "Выходной канал" in strWithTables: #если данные только поканальные
+            #Получили строку результатов измерений, и распарсили ей, считав только нормативы
+            rp.values1 = parseTable(line[line.rfind("Результаты измерений"):],'res') #распарсили результаты поканальные
+
+        else: #если есть только общие данные
+            rp.values_common = parseTable(strWithTables,"rescom") #распарсили результаты общие
+
+
+
+    #в этом месте пытается найти результаты измерений
+    # ind=0
+    # for i in range (0, listlines.__len__()):
+    #     if (listlines[i].__contains__("Результаты измерений")):
+    #         ind=i
+    #         break
+    # ind+=2
+    # #print (listlines[ind])
+    # value_names=listlines[ind][0: listlines[ind].rfind("#")].split("$")[1::]
+    # ind+=2
+    # rp.values1 = parseTable(line[line.rfind("Результаты измерений"):],'res')
     return rp
 
 
@@ -237,8 +270,6 @@ def parseTable (line, type):
     return rp
 
 
-
-
 def parseToProcedures (line):
     """
     Парсит в класс Procedures
@@ -259,18 +290,7 @@ def parseToProcedures (line):
     linemodetable = linemodetable[linemodetable.find("--"):-1]
     rtp.mode_channel = parseTable(linemodetable,'mode')
 
-
-
     strWithTables = line[line.rfind("Результаты измерений"):]  #строка, в которой находятся таблицы с результатами (возможно, одна  таблица)
-
-
-
-    #поиск пустой строки
-    #detector_two_tables=0
-
-    #for line in listlines:
-     #    if line.strip()=="\n":
-     #        detector_two_tables=1
 
 
     if "\n\n" in strWithTables : #если оная таблица содержит в себе пустую строку
@@ -468,21 +488,22 @@ def parseToAProtocolStr (instr):
 #тестовая хрень
 
 def test ():
-    filename="G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\1б.txt"
+    #filename="G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\1б.txt"
 
     #f = open ("G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\nocommon1.txt", "rt")
+    filename = "G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\nocommon1.txt"
 
-    f = open (filename)
-    print (parseToAProtocol(f).procedures[9].__str__())
+    #f = open (filename)
+#    print (parseToAProtocol(f).procedures[9].__str__())
 
-    #print (parseToResult(filename).proceduresResults[8].__str__())
-
-
-
+    print (parseToResult(filename).proceduresResults[8].toHTML())
 
 
 
-test()
+
+
+
+#test()
 
 
 
