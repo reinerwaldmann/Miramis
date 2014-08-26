@@ -37,7 +37,7 @@ class ReportFormParameters (BaseStrReturn):
     """
     dictOfProceduresParameters  = dict () #словарь айди процедуры - класс параметров процедуры
 
-class ProcedureParameters (BaseStrReturn):
+class ProcedureReportFormParameters (BaseStrReturn):
     """
     Содержит в себе информцию о спрятываемых параметрах применительно к одной процедурке
     """
