@@ -21,11 +21,33 @@ class AProtocol(BaseStrReturn):
 
     procedures=dict()  # словарь номер процедуры - процедура
 
+    dictOfReportFormParameters = dict() #Словарь классов параметров отчётных форм 'название' - класс
+
+
     def __str__(self):
         res=BaseStrReturn.__str__(self)
         for key, val in self.procedures.items():
             res+=str(key)+" : "+val.__str__().replace("\n", "\n\t")   #выводим с отступом
         return res
+
+
+class ReportFormParameters (BaseStrReturn):
+    """
+    Содержит в себе информацию о параметрах выходных отчётных форм
+    """
+    dictOfProceduresParameters  = dict () #словарь айди процедуры - класс параметров процедуры
+
+class ProcedureParameters (BaseStrReturn):
+    """
+    Содержит в себе информцию о спрятываемых параметрах применительно к одной процедурке
+    """
+    listOfHiddenCommonParameters = list()
+    listOfHiddenPerchannelParameters = list()
+
+
+
+
+
 
 class Procedures(BaseStrReturn):
     """
@@ -42,6 +64,8 @@ class Procedures(BaseStrReturn):
 
     listOfPossibleResults=list()  # список полей результатов, каковые должны быть отражены в протоколе поканальные
     listOfPossibleResultsCommon=list()  # список полей результатов, каковые должны быть отражены в протоколе общие
+
+
 
 
 
