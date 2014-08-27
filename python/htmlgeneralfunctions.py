@@ -9,13 +9,16 @@ def generateHTMLMetaHeader(title="Протокол испытаний", displaym
     <head>
     <meta charset="UTF-8" />
     <title> {0}  </title>
-    <link rel="stylesheet" type="text/css" media="all" href="main.css" />
+
     <script type='text/javascript' src='../MiramisPHP/scripts.js'></script>
     <script type='text/javascript' src='../MiramisPHP/functions.js'></script>
 
     </head>
     <body>
     """.format(title)
+
+
+    #<link rel="stylesheet" type="text/css" media="all" href="http://192.168.111.15/MiramisPHP/main.css" />
 
     if displaymenu==1:
         res+="<a href='../MiramisPHP/protocols.php'> Обзор протоколов </a> &nbsp&nbsp&nbsp&nbsp <a href='../MiramisPHP/results.php'> Обзор результатов </a>";
