@@ -20,11 +20,26 @@ cgitb.enable()
 """
 #[FRONTEND DIRECT]
 
+
+
+def outReportsParametersCombo (protocol: AProtocol, id):
+    res=str()
+    res+="<h3>Параметры выходных отчётов </h3>"
+    res+="""\n\n<form action = 'FR_ReportParametersEdit.py?id={0}'  method='GET' > \n <select name='name'>"""
+    for key in protocol.dictOfReportFormParameters.keys():
+        res+="<option value = '{0}'> {0} </option> \n".format(key)
+    #res+="<option value = {0} > {1} </option> \n".format("", "Создать параметры")
+    res+= "</select> <br/> <input type='submit' value='Редактировать' > <input type='hidden' name='id' value='{0}'>  </form>".format(id)
+    res+= "<br/> <input type='button' value='Создать' onclick=\"location.href = 'FR_ReportParametersEdit.py?id={0}'       \"> ".format(id)
+    return res
+
+
+
 def view_protocol_by_id(id):
     gotval = bck.getProtocolFromDatabase (id)
     if gotval[0]==None:
         return htmg.throwError("FRProtocolViewEdit", "В базе данных нет такого протокола id="+str(id))
-    return make_html_view_edit_protocol(id, gotval[0], gotval[1], gotval[2])
+    return make_html_view_edit_protocol(id, gotval[0], gotval[1], gotval[2]) + outReportsParametersCombo (gotval[0], id)
 
 
 def make_html_view_edit_protocol(id, protocol, productname="", testname=""):
@@ -93,27 +108,31 @@ form = cgi.FieldStorage()
 
 
 
+
+
 htmg.out (htmg.generateHTMLMetaHeader("Обзор протокола"))
 if "id" not in form:
     htmg.out (htmg.throwError("FRprotocolViewEdit.py", "Ошибка: не предоставлен id протокола", errortype=None))
 else:
     id=int(form.getfirst("id", ""))
 
+
     if ("delid") in form:
         delid=int(form.getfirst("delid", ""))
         bck.delTestFromProtocol(id, delid)
         htmg.out("Испытание удалено успешно!"+str(id)+"  "+str(delid))
         htmg.out("<script> document.location.replace('FRprotocolViewEdit.py?id="+str(id)+"');</script>")
+
     htmg.out (view_protocol_by_id(id))
+
+
+
+
 
 htmg.out(htmg.generateHTMLFooter())
 
 
 
-
-
-
-
-
 #http://www.codeisart.ru/processing-forms-javascript/
+
 

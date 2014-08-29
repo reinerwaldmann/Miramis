@@ -17,11 +17,14 @@ class AProtocol(BaseStrReturn):
     typeOfTest=str()
     channelname=list()
 
-
+    dictOfReportFormParameters = dict() #Словарь классов параметров отчётных форм 'название' - класс
 
     procedures=dict()  # словарь номер процедуры - процедура
+    def __init__(self):
+        dictOfReportFormParameters = dict() #Словарь классов параметров отчётных форм 'название' - класс
 
-    dictOfReportFormParameters = dict() #Словарь классов параметров отчётных форм 'название' - класс
+
+
 
 
     def __str__(self):
@@ -35,7 +38,7 @@ class ReportFormParameters (BaseStrReturn):
     """
     Содержит в себе информацию о параметрах выходных отчётных форм
     """
-    dictOfProceduresParameters  = dict () #словарь айди процедуры - класс параметров процедуры
+    dictOfProceduresParameters=dict() #словарь айди процедуры - класс параметров процедуры
 
 class ProcedureReportFormParameters (BaseStrReturn):
     """
