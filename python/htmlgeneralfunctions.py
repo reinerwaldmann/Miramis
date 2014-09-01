@@ -2,6 +2,11 @@
 __author__ = 'vasilev_is'
 import sys
 
+
+def generateSimpleMetaHeader ():
+    res="""Content-Type: text/html;charset=utf-8\n\n"""
+    return res
+
 #генерирует начало HTML-файла
 def generateHTMLMetaHeader(title="Протокол испытаний", displaymenu=1):
     res="""Content-Type: text/html;charset=utf-8\n\n

@@ -40,7 +40,7 @@ $query = "SELECT * FROM `results` ".filters();
 $res = mysql_query($query);
 
 
-echo "<div align='left'> <form action='../python/FR_makereports.py' method='post'>    <table id='itemstableid'  class='itemstable'>";
+echo "<div align='left'> <form action='../python/FR_makereports.py' method='post'  id='resform'>    <table id='itemstableid'  class='itemstable'>";
 echo "<tr>";
 echo "<td><b>ID</b></td>";
 echo "<td><b>Название изделия</b></td>";
@@ -79,8 +79,61 @@ echo "</tr>";
 echo "</table>";
 
 
+
+echo "<script type='text/javascript' src='https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js'></script>";
+
 echo "
-<script>
+<script type='text/javascript' language='javascript'>
+    function asyncrequestforrepparnames() {
+      var msg   = $('#resform').serialize();
+        $.ajax({
+          type: 'POST',
+          url: 'http://192.168.111.15/python/AJAX_getrepparnames.py',
+          data: msg,
+          success: function(data) {
+
+            if (data)
+            {
+                var divf=document.getElementById('ololodiv');
+                var selectgr = document.createElement('select');
+                selectgr.title='Выбор имени набора параметров отчёта';
+                divf.appendChild(selectgr);
+
+                var getlist = eval(data);
+
+                for (index = 0; index < getlist.length; ++index)
+                {
+                    var option=document.createElement('option');
+                    option.value=getlist[index];
+                    option.text=getlist[index];
+                    selectgr.appendChild(option);
+
+
+                }
+
+                var option=document.createElement('option');
+                option.value='';
+                option.text='Без параметров';
+                selectgr.appendChild(option);
+
+
+
+            }
+
+
+            //divf.innerHTML=divf.innerHTML+data;
+
+
+
+          },
+          error:  function(xhr, str){
+                alert('Возникла ошибка при запросе параметров протокола: ' + xhr.responseCode);
+            }
+        });
+
+    }
+
+
 
 function cancel()
 {
@@ -96,7 +149,7 @@ function putDiv ()
 
 var divf=document.getElementById('reportformfieldsdiv');
 
-divf.innerHTML=\"<div style='border: 1px solid; width: 500px; padding: 10px;'> \
+divf.innerHTML=\"<div style='border: 1px solid; width: 500px; padding: 10px;' id='ololodiv'> \
 \
     <table>  \
         <tr> \
@@ -112,9 +165,10 @@ divf.innerHTML=\"<div style='border: 1px solid; width: 500px; padding: 10px;'> \
             <td> <input type='text' name='field_smbsurname' > </td> \
         </tr>   \
     </table>    \
-    </br>   \
     <input type='submit' value='Создать отчёт' style='width: 200px; height: 50px; ' >  </br> \
+    </br>   \
     <input type='button' onclick='cancel();' value='Отмена' style='width: 200px;'>   \
+    <input type='button' onclick='asyncrequestforrepparnames();' value='Запросить параметры отчёта' style='width: 200px;'>   \
 </form> \
 </div>\";
 
@@ -126,5 +180,9 @@ divf.innerHTML=\"<div style='border: 1px solid; width: 500px; padding: 10px;'> \
 
 
 echo "<div id='reportformfieldsdiv'>  <input type='button' onclick='putDiv();'  value='Создать отчётную форму' >  </form>   </div>";
+
+
+
+
 echo makefoot();
 ?>

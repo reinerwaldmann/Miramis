@@ -1,4 +1,4 @@
-<!-- структура файла результатов  -->
+﻿<!-- структура файла результатов  -->
 <root>
     <typeOfReport>NIST</typeOfReport>
 
@@ -72,6 +72,22 @@
             </channels_normal_values>
 
 
+            <common_normal_values>
+                <!--Описание нормативов. 
+                 Вместо указанных ниже секций common_normal_values может быть представление в виде словаря Python
+                 {'имя величины':'значение по норме (строка)'}
+                 -->
+                   
+                    <common_normal_value>
+                        <norm_name>имя величины</norm_name>
+                        <norm_value>значение по норме (строка)</norm_value>
+                    </common_normal_value>
+                
+            </common_normal_values>
+
+
+
+
             <hasPassedProcedure>1 если процедура пройдена, 0, если нет></hasPassedProcedure>
 
             <channels_result_values>
@@ -85,8 +101,21 @@
                         <value>Значение величины</value>
                     </result>
                 </channel_result_values>
-
             </channels_result_values>
+
+            <common_result_values>
+                <!--Описание полученных результатов. Указываются вообще
+                 Может быть представлено секциями result, а может быть представлено в виде словаря Python
+		{'Имя параметра':'Значение параметра'}. Это представление предпочтительнее.
+                 -->
+                     <result>
+                        <name>Имя величины</name>
+                        <value>Значение величины</value>
+                    </result>
+                
+            </common_result_values>
+
+
         </procedure_result>
     </proceduresResults>
 </root>

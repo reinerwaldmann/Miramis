@@ -48,12 +48,6 @@ class ProcedureReportFormParameters (BaseStrReturn):
     listOfHiddenPerchannelParameters = list()
 
 
-
-
-
-
-
-
 class Procedures(BaseStrReturn):
     """
     Класс, представляющий процедуру из типа протокола
