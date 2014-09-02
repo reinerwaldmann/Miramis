@@ -70,10 +70,12 @@ def generateHTMLOLD (resultslist:list, protocol:AProtocol, form):
     return res
 
 
-def generateHTML (resultslist:list, protocol:AProtocol, form):
+def generateHTML (resultslist:list, protocol:AProtocol, form, name=None):
     """
     @resultslist список результатов
     @protocol протокол
+
+    @name - имя набора параметров отчёта
 
     Генерирует тело таблицы
     """
@@ -96,12 +98,38 @@ def generateHTML (resultslist:list, protocol:AProtocol, form):
 
     #Здесь можно напистаьпроверку на соответствие результатов протоколу
 
+    #ReportFormParameters
+
+
+
+    # try:
+    #     rfp=protocol.dictOfReportFormParameters[name]
+    # except BaseException:
+    #     rfp=None
+
+    #rfp - ReportFormParameters
+
+
+
+
     for i in protocol.procedures.keys():
         p=protocol.procedures[i]
-        res+="<tr>"+p.toHTML()
+
+        prfp=None
+        try:
+            prfp=protocol.dictOfReportFormParameters[name].dictOfProceduresParameters[i]
+        except BaseException:
+            prfp=None
+
+        #получили ProcedureReportFormParameters, если он есть
+
+
+
+        res+="<tr>"+p.toHTML(prfp=prfp)
+
         for k in resultslist:
             if i in k.proceduresResults.keys():
-                res+="<td>{0}</td>".format(k.proceduresResults[i].toHTML())
+                res+="<td>{0}</td>".format(k.proceduresResults[i].toHTML(prfp))
             else:
                 res+="<td> </td>"
         res+="</tr>"
@@ -155,7 +183,11 @@ def generageHTMLProtocolHeader(numOfProducts, result, form):
 
 
 
-def outreport (residlist, form):
+def outreport (residlist, form, name=None):
+    """
+
+    name - имя набора параметров отчёта (из протокола)
+    """
     errlog=str()
 
     reslist=list()
@@ -185,7 +217,7 @@ def outreport (residlist, form):
     protocol=prot[0]
 
 
-    return generateHTML (reslist, protocol, form), errlog
+    return generateHTML (reslist, protocol, form, name), errlog
 
 
 
@@ -195,7 +227,12 @@ def outreport (residlist, form):
 
 
 
-def outreportsgroup (residlist, form):
+def outreportsgroup (residlist, form, name):
+    """
+    residlist - список айди результатов
+    form - дескриптор принятых параметрво формы
+    name - имя набора парметров отчёта
+    """
 
     step=int(form.getfirst("field_step", ""))
 
@@ -204,7 +241,7 @@ def outreportsgroup (residlist, form):
     err=str()
 
     for i in range (0, len(residlist), step):
-        outr=outreport(residlist[i:i+step], form)
+        outr=outreport(residlist[i:i+step], form, name)
         res+=outr[0]+"<br style='page-break-after: always'> "
         err+=outr[1]
 
@@ -215,9 +252,14 @@ def outreportsgroup (residlist, form):
 
 
 htmg.out (htmg.generateHTMLMetaHeader("Вывод отчётной формы", 0))
-
 #получение списка результатов для построения отчётов
 form = cgi.FieldStorage()
+
+name=""
+if "name" in form:
+    name=form.getfirst("name", "")
+
+
 residlist=list()
 #making results list:
 for key in form:
@@ -226,7 +268,7 @@ for key in form:
         residlist.append(int(key.split("_")[1]))
 
 if len(residlist)>0:
-    htmg.out(outreportsgroup(residlist, form))  #если список не пуст, вывести группу отчётов
+    htmg.out(outreportsgroup(residlist, form, name))  #если список не пуст, вывести группу отчётов
 
 
 

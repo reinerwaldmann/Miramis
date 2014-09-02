@@ -94,10 +94,12 @@ echo "
 
             if (data)
             {
-                var divf=document.getElementById('ololodiv');
-                var selectgr = document.createElement('select');
-                selectgr.title='Выбор имени набора параметров отчёта';
-                divf.appendChild(selectgr);
+                //var divf=document.getElementById('ololodiv1');
+                //var selectgr = document.createElement('select');
+                //selectgr.title='Выбор имени набора параметров отчёта';
+                //divf.appendChild(selectgr);
+                var selectgr = document.getElementById('lselect');
+                selectgr.style.display='';
 
                 var getlist = eval(data);
 
@@ -165,6 +167,7 @@ divf.innerHTML=\"<div style='border: 1px solid; width: 500px; padding: 10px;' id
             <td> <input type='text' name='field_smbsurname' > </td> \
         </tr>   \
     </table>    \
+     <div id='ololodiv1'> <select id='lselect' name='name' style='display:none;'>    </select>  </div>  \
     <input type='submit' value='Создать отчёт' style='width: 200px; height: 50px; ' >  </br> \
     </br>   \
     <input type='button' onclick='cancel();' value='Отмена' style='width: 200px;'>   \

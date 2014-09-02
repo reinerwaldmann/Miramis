@@ -69,15 +69,28 @@ class Procedures(BaseStrReturn):
 
 
 
-    def toHTML(self, out3=1):      #переводит подержимое в левую половину строки в протоколе (первые три ячейки)
+    def toHTML(self, out3=1, prfp=None):      #переводит подержимое в левую половину строки в протоколе (первые три ячейки)
+        """
+        Производит html-представление в виде нескольких ячеек
+        prfp - ProcedureReportFormParameters, параметры спрятываемых величин
+        """
+
+        lhp_com=list()
+        lhp_chn=list()
+
+        res="<td>{0}</td>\n".format(str(self.number)+" "+self.name.strip())
+
         try:
-            """
-            Производит html-представление в виде нескольких ячеек
-            """
+            lhp_com=prfp.listOfHiddenCommonParameters
+            lhp_chn=prfp.listOfHiddenPerchannelParameters
+        except BaseException:
+            pass
+
+        try:
             nopr=self.listOfPossibleResults.__len__() #numOfPossibleResults
             #Выводим название процедуры в первую колонку
             #res="<td rowspan={0}>{1}</td>\n".format(nopr,  str(self.number)+" "+self.name)
-            res="<td>{0}</td>\n".format(str(self.number)+" "+self.name.strip())
+
             #Выводим вторую колонку - требования к режимам
             modereprcm=""
             for k, v in  self.mode_common.items():
@@ -98,12 +111,14 @@ class Procedures(BaseStrReturn):
                 norms+="Общие: <br/>"
 
             for k, v in self.normal_values_common.items():
-                norms+="{0}:</br>{1}</br>\n".format(k.strip(), v.strip())
+                if not lhp_com or (lhp_com and not k in lhp_com):
+                    norms+="{0}:</br>{1}</br>\n".format(k.strip(), v.strip())
 
             for k in self.normal_values.keys():
                 norms+="{0}: </br>".format(k)
                 for k, v in  self.normal_values[k].items():
-                    norms+="{0}:</br>{1}</br>\n".format(k.strip(), v.strip())
+                    if not lhp_chn or (lhp_chn and not k in lhp_chn):
+                        norms+="{0}:</br>{1}</br>\n".format(k.strip(), v.strip())
             #res+="<td rowspan={0}>{1}</td>\n".format(nopr, norms)
 
 
@@ -116,19 +131,31 @@ class Procedures(BaseStrReturn):
             valnames=""
 
             if self.listOfPossibleResultsCommon:
-                valnames+="Общие параметры <br/>"
-            for km in self.listOfPossibleResultsCommon:
-                valnames+=km+"</br>"
+                for km in self.listOfPossibleResultsCommon:
+                    if not lhp_com or (lhp_com and not km in lhp_com):
+                        valnames+=km+"</br>"
+                if valnames:
+                    valnames="Общие параметры: <br/>"+valnames
+
 
             if self.listOfPossibleResults:
-                valnames+="Поканальные параметры <br/>"
-            for km in self.listOfPossibleResults:
-                valnames+=km.strip()+"</br>"
+                valnames_1=""
+                for km in self.listOfPossibleResults:
+                    if not lhp_chn or (lhp_chn and not km in lhp_chn):
+                        valnames_1+=km.strip()+"</br>"
+                if valnames_1:
+                    valnames_1="Поканальные параметры: <br/>"+valnames_1
+                    valnames+=valnames_1
+
+
+
+
             if out3:
                 res+="<td>{0}</td>".format(valnames)
 
 
             return res
+
         except BaseException:
             return ""
 
@@ -166,22 +193,43 @@ class resultsOfProcedure(BaseStrReturn):
         res = BaseStrReturn.__str__(self)   #по непонятной причине, BaseStrReturn отказывается выводить словарь словарей
         return res
 
-    def toHTML(self):
+    def toHTML(self, prfp=None):
         """
         Возвращает HTML представление результатов, сиречь содержание ячейки.
         Теги ячейки не включаются в оную строку
+        prfp - ProcedureReportFormParameters, параметры спрятываемых величин
         """
         res="{0} </br>".format("[Пройдена]" if self.hasPassedProcedure else "[Не пройдена]") #вариант тернарного оператора в Python
 
-        valrepr=""
-        for k in self.values1.keys():
-            valrepr+="{0}: </br>".format(k)
-            for k, v in  self.values1[k].items():
-                valrepr+="{0}={1}</br>\n".format(k, v)
+        lhp_com=list()
+        lhp_chn=list()
 
-        valrepr+="{0}: </br>".format("Общие")
+
+        try:
+            lhp_com=prfp.listOfHiddenCommonParameters
+            lhp_chn=prfp.listOfHiddenPerchannelParameters
+        except BaseException:
+            pass
+
+
+        valrepr=""
+        for kk in self.values1.keys(): #по каналам
+            vlp=""
+            for k, v in  self.values1[kk].items():
+                if not lhp_chn or (lhp_chn and not k in lhp_chn):
+                    vlp+="{0}={1}</br>\n".format(k, v)
+            if vlp:
+                valrepr+="{0}: </br>".format(kk)+vlp
+
+
+
+        valreprcom=""
         for k in self.values_common.keys():
-            valrepr+="{0}={1}</br>\n".format(k, self.values_common[k])
+            if not lhp_com or (lhp_chn and not k in lhp_com):
+                valreprcom+="{0}={1}</br>\n".format(k, self.values_common[k])
+        if valreprcom:
+            valreprcom="{0}: </br>".format("Общие параметры")+valreprcom
+            valrepr+=valreprcom
 
         res+=valrepr
 
