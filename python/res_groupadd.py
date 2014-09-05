@@ -35,7 +35,7 @@ def log (strm):
     @strm - сообщение
     """
     global logfile
-    with open(logfile, "wt") as f:
+    with open(logfile, "a+t") as f:
         f.write(strm)
 
 
@@ -43,17 +43,20 @@ def log (strm):
 def process():
     global watchfolder, putfolder
 
+
+
     #получить список файлов
     files = os.listdir(watchfolder)
-    textfiles = list(filter(lambda x: x.endswith('.txt'), files))
-    report=""
+    textfiles = list(filter(lambda x: x.endswith('.TXT') or x.endswith('.txt'), files))
+    report="[INFO] Process {0} {1}\n".format(watchfolder, putfolder)
 
 
 
     for name in textfiles:
+
         #print (prs.parseToResult (watchfolder+name))
         #отсылка к бакенду - добавление результата в базу данных
-
+        report+=name + "\n"
         st = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
 
         rs = prs.parseToResultCP1251 (watchfolder+name)
@@ -81,6 +84,7 @@ def process():
 
 
     log (report)
+    print (report)
 
 
 
