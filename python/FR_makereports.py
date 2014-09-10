@@ -69,6 +69,9 @@ def generateHTMLOLD (resultslist:list, protocol:AProtocol, form):
     res += htmg.generateHTMLFooterRep()
     return res
 
+def sortResultsBySerial(input):
+    return input.numOfProduct
+
 
 def generateHTML (resultslist:list, protocol:AProtocol, form, name=None):
     """
@@ -91,8 +94,10 @@ def generateHTML (resultslist:list, protocol:AProtocol, form, name=None):
         htmg.throwError("makereports", "Нет результатов в списке!")
         return ""
 
+#отсортируем выводимые по серийничку
+    resultslist.sort(key=sortResultsBySerial)
 
-    res=generageHTMLProtocolHeader(resultslist.__len__(), resultslist[0], form)
+    res=generageHTMLProtocolHeader(resultslist.__len__(), resultslist[0], form, resultslist)
     #res+=generageHTMLProtocolHeader(resultslist[0])  #resultslist - это список результатов. Результатов всегда список, тогда как протокол - один
     #таблица пошла
 
@@ -141,10 +146,12 @@ def generateHTML (resultslist:list, protocol:AProtocol, form, name=None):
 
 
 
-def generageHTMLProtocolHeader(numOfProducts, result, form):
+def generageHTMLProtocolHeader(numOfProducts, result, form, reslist):
     """
     @numOfProducts число изделий
     @result один из результатов (оттуда списывается модель и дата теста)
+    @reslist - список результатов. Оттуда берём серийные номера
+
     Создаёт голову таблицы
     """
 
@@ -155,8 +162,12 @@ def generageHTMLProtocolHeader(numOfProducts, result, form):
     res+="<p>"+result.model+"</p>"
 
     strnumprs=""
-    for x in range (1, numOfProducts+1):
-        strnumprs+="<td align=center >{0}</td>\n".format(x)
+    #for x in range (1, numOfProducts+1):
+     #   strnumprs+="<td align=center >{0}</td>\n".format(x)
+    for x in reslist:
+        strnumprs+="<td align=center >{0}</td>\n".format(sortResultsBySerial(x))
+
+
 
     res+= """
 
@@ -235,6 +246,8 @@ def outreportsgroup (residlist, form, name):
     """
 
     step=int(form.getfirst("field_step", ""))
+
+    residlist.sort()
 
 
     res=str()

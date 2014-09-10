@@ -51,7 +51,7 @@ errlog = ""
 if "debug" in form:
     isdebug=1
     htmg.out ("Hello, debug mode!")
-
+    
 
 
 for key in form:

@@ -7,7 +7,7 @@ from itertools import starmap
 __author__ = 'vasilev_is'
 from classes import *
 import datetime as dt
-import dateutil.parser as dparser
+
 import copy
 
 
@@ -138,10 +138,14 @@ def parseToResult (filename):
     return res
 
 
+
+
 def parceToPrRes (line):
     """
     Парсит строку в результат  процедуры
     """
+    line = delcomments(line)
+
     rp=resultsOfProcedure()
     listlines=line.split("\n")
     rp.hasPassedProcedure=listlines[0].__contains__("PASS")
@@ -270,11 +274,26 @@ def parseTable (line, type):
     return rp
 
 
+
+def delcomments (line):
+    listlines=line.split("\n")
+    for i in range (0, len(listlines)-1):
+
+        try:
+            if listlines[i].strip()[0]=="/":
+                listlines.pop(i)
+        except BaseException:
+            pass
+    return "\n".join(listlines)
+
+
+
 def parseToProcedures (line):
     """
     Парсит в класс Procedures
     """
     rtp=Procedures ()
+    line = delcomments(line)
 
     #пилим на строки
     listlines=line.split("\n")
@@ -491,19 +510,19 @@ def test ():
     #filename="G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\1б.txt"
 
     #f = open ("G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\nocommon1.txt", "rt")
-    filename = "G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\nocommon1.txt"
+    filename = "D:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\Newest\\44367_comments.txt"
 
-    #f = open (filename)
-#    print (parseToAProtocol(f).procedures[9].__str__())
+    f = open (filename)
+    print (parseToAProtocol(f).procedures[9].__str__())
 
-    print (parseToResult(filename).proceduresResults[8].toHTML())
-
-
+    #print (parseToResult(filename).proceduresResults[8].toHTML())
 
 
 
 
-#test()
+
+
+test()
 
 
 

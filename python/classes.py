@@ -93,13 +93,34 @@ class Procedures(BaseStrReturn):
 
             #Выводим вторую колонку - требования к режимам
             modereprcm=""
-            for k, v in  self.mode_common.items():
-                modereprcm+="{0}={1}</br>\n".format(k.strip(), v.strip())
+
+
+            klist=list(self.mode_common.keys())
+            klist.sort()
+
+            for k in klist:
+                v=self.mode_common[k]
+            #for k, v in  self.mode_common.items():
+                modereprcm+="{0}{1}{2}</br>\n".format(k.strip(),"=" if k.strip() and v.strip() else ""   , v.strip())
             modechannelrepr="Режим по каналам</br>"
-            for k in self.mode_channel.keys():
+
+
+
+            klist=sorted(list(self.mode_channel.keys()))
+
+            for k in klist:
+                v=self.mode_channel[k]
+            #for k in self.mode_channel.keys():
                 modechannelrepr+="{0}: </br>".format(k.strip())
-                for k, v in  self.mode_channel[k].items():
-                    modechannelrepr+="{0}={1}</br>\n".format(k.strip(), v.strip())
+
+                mlist=list(self.mode_channel[k].keys())
+                mlist.sort()
+                for mm in mlist:
+                    v = self.mode_channel[k][mm]
+
+                #for k, v in  self.mode_channel[k].items():
+                    modechannelrepr+="{0}{1}{2}</br>\n".format(mm.strip(), "=" if mm.strip() and v.strip() else "", v.strip())
+
             #res+="<td rowpan={0}>{1}</td>\n".format(nopr, modereprcm + "</br>"+ modechannelrepr)
             res+="<td >{0}</td>\n".format(modereprcm.strip() + "</br>"+ modechannelrepr.strip())
 
@@ -110,15 +131,37 @@ class Procedures(BaseStrReturn):
             if self.normal_values_common:
                 norms+="Общие: <br/>"
 
-            for k, v in self.normal_values_common.items():
+
+            klist = list(self.normal_values_common)
+            klist.sort()
+
+            for k in klist:
+
+                v=self.normal_values_common[k]
+
+
+            #for k, v in self.normal_values_common.items():
                 if not lhp_com or (lhp_com and not k in lhp_com):
                     norms+="{0}:</br>{1}</br>\n".format(k.strip(), v.strip())
 
-            for k in self.normal_values.keys():
+
+
+            klist = list(self.normal_values.keys())
+            klist.sort()
+
+
+            for k in klist:#по каналам
+            #for k in self.normal_values.keys():
                 norms+="{0}: </br>".format(k)
-                for k, v in  self.normal_values[k].items():
-                    if not lhp_chn or (lhp_chn and not k in lhp_chn):
-                        norms+="{0}:</br>{1}</br>\n".format(k.strip(), v.strip())
+
+                mlist = list(self.normal_values[k].keys())
+                mlist.sort()
+
+                for m in mlist: #по величинам
+                    v = self.normal_values[k][m]
+                #for k, v in  self.normal_values[k].items():
+                    if not lhp_chn or (lhp_chn and not m in lhp_chn):
+                        norms+="{0}:</br>{1}</br>\n".format(m.strip(), v.strip())
             #res+="<td rowspan={0}>{1}</td>\n".format(nopr, norms)
 
 
@@ -131,7 +174,7 @@ class Procedures(BaseStrReturn):
             valnames=""
 
             if self.listOfPossibleResultsCommon:
-                for km in self.listOfPossibleResultsCommon:
+                for km in sorted(self.listOfPossibleResultsCommon):
                     if not lhp_com or (lhp_com and not km in lhp_com):
                         valnames+=km+"</br>"
                 if valnames:
@@ -140,7 +183,7 @@ class Procedures(BaseStrReturn):
 
             if self.listOfPossibleResults:
                 valnames_1=""
-                for km in self.listOfPossibleResults:
+                for km in sorted(self.listOfPossibleResults):
                     if not lhp_chn or (lhp_chn and not km in lhp_chn):
                         valnames_1+=km.strip()+"</br>"
                 if valnames_1:
@@ -213,9 +256,18 @@ class resultsOfProcedure(BaseStrReturn):
 
 
         valrepr=""
-        for kk in self.values1.keys(): #по каналам
+
+        klist=list(self.values1.keys())
+        klist.sort()
+
+        for kk in klist: #по каналам
             vlp=""
-            for k, v in  self.values1[kk].items():
+            varlistl=list(self.values1[kk].keys())
+            varlistl.sort()
+
+            for k in varlistl:
+                v=self.values1[kk][k]
+            #for k, v in  self.values1[kk].items():
                 if not lhp_chn or (lhp_chn and not k in lhp_chn):
                     vlp+="{0}={1}</br>\n".format(k, v)
             if vlp:
@@ -223,9 +275,17 @@ class resultsOfProcedure(BaseStrReturn):
 
 
 
+
+
+
+
         valreprcom=""
-        for k in self.values_common.keys():
-            if not lhp_com or (lhp_chn and not k in lhp_com):
+
+
+        klist=list(self.values_common.keys())
+        klist.sort()
+        for k in klist:
+            if not lhp_com or (lhp_com and not k in lhp_com):
                 valreprcom+="{0}={1}</br>\n".format(k, self.values_common[k])
         if valreprcom:
             valreprcom="{0}: </br>".format("Общие параметры")+valreprcom
@@ -236,3 +296,5 @@ class resultsOfProcedure(BaseStrReturn):
         return res
 
 
+def sba(inputStr):
+        return inputStr[0] # Ключом является первый символ в каждой строке, сортируем по нему

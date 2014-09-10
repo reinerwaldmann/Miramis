@@ -1,4 +1,8 @@
 #!/usr/bin/python3.4
+#!/usr/bin/python3.4
+#!/usr/bin/python3.4
+#!/usr/bin/python3.4
+#!/usr/bin/python3.4
 #-*- coding: utf-8
 
 __author__ = 'vasilev_is'

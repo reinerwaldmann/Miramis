@@ -1,4 +1,8 @@
 #!/usr/bin/python3.4
+#!/usr/bin/python3.4
+#!/usr/bin/python3.4
+#!/usr/bin/python3.4
+#!/usr/bin/python3.4
 
 #-*- coding: utf-8
 
@@ -80,7 +84,9 @@ def outNormalForm (id):
     if protocol==None:
         return htmg.throwError("FRtestedit", "Нет такого протокола, испытание которого намереваемся править")
 
-    listchannels = protocol.channelname
+    listchannels = list(protocol.channelname)
+
+    listchannels.sort()
     out=" <script> \n  add_forms_to_table("+listchannels.__str__()+" ); </script>"
     return out
 
@@ -110,8 +116,8 @@ def outFilledForm(id, procid):
     # normal_values=dict(dict()) # словарь словарей значений нормативов название канала-название параметра-строка больше-меньше (значение параметра)
     # listOfPossibleResults=list()  # список полей результатов, каковые должны быть отражены в протоколе
     out+="var name=\""+proc.name+"\";\n"
-    out+="var pars="+proc.listOfPossibleResults.__str__()+";\n"
-    out+="var listOfPossibleResultsCommon="+proc.listOfPossibleResultsCommon.__str__()+";\n"
+    out+="var pars="+sorted(proc.listOfPossibleResults).__str__()+";\n"
+    out+="var listOfPossibleResultsCommon="+sorted(proc.listOfPossibleResultsCommon).__str__()+";\n"
 
 
 

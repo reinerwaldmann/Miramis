@@ -1,4 +1,8 @@
 #!/usr/bin/python3.4
+#!/usr/bin/python3.4
+#!/usr/bin/python3.4
+#!/usr/bin/python3.4
+#!/usr/bin/python3.4
 __author__ = 'vasilev_is'
 
 from classes import *
@@ -20,13 +24,13 @@ delTestFromProtocol(idprotocol, idtest): Удаляет испытание из 
 writeProtocolToDatabase(protocol, idprotocol=None): Записать протокол в базу данных
     @protocol - объект протокола
     @idprotocol - если задано, то пишет на этот айди. Если таковой айди имеется в базе данных, то проиcходит обязательная перезапись
-getProtocolFromDatabase(id) Получить протокол из базы данных
+    getProtocolFromDatabase(id) Получить протокол из базы данных
     @id: айди в базе данных
-getTestFromProtocol (idprotocol, idtest) Возвращает объект испытания
+    getTestFromProtocol (idprotocol, idtest) Возвращает объект испытания
     @idprotocol - айди протокола
     @idtest - айди испытания
 
-getProtocolFromDatabaseParams (ProductName, TestName):
+    getProtocolFromDatabaseParams (ProductName, TestName):
     Получить протокол из базы данных
     @ProductName - имя продукта
     @TestName - имя теста

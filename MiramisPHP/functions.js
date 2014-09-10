@@ -176,9 +176,20 @@ function fillDictForm (dict, formid)
  div.innerHTML="";
 
 
-    for (var key in dict)
+ var keylist =[];
+
+ for (var key in dict) {
+        keylist.push(key);
+    }
+
+    keylist.sort();
+
+
+    //for (var key in keylist)
+
+    for (var i = 0; i < keylist.length; i++)
     {
-         insertRow(formid, 1, key, dict[key]);
+         insertRow(formid, 1, keylist[i], dict[keylist[i]]);
 
     }
 
@@ -370,9 +381,23 @@ function fillDict2DictForm (dict2dict, formid)
 {
  div = document.getElementById(formid);
  div.innerHTML="";
-    for (var i in dict2dict)
+
+
+     var keylist =[];
+
+     for (var key in dict2dict) {
+        keylist.push(key);
+    }
+
+    keylist.sort();
+
+
+    //for (var key in keylist)
+
+    for (var i = 0; i < keylist.length; i++)
+//    for (var i in dict2dict)
     {
-      insertDict2DictField (formid, i, dict2dict[i]);
+      insertDict2DictField (formid, keylist[i], dict2dict[keylist[i]]);
     }
 }
 
@@ -440,7 +465,7 @@ function ListformMakeResString(dicttableId )  //в таблице 1 строка
             if (numrows==0) return "[]";  //если нет полей, то вернуть пустую строку
 
             maxid=getMaxRowIdInTable(dicttableId);
-            for (var i=0; i<maxid; i++)
+            for (var i=0; i<maxid+1; i++)
             {
                 item = document.getElementById(dicttableId+"_item["+i+"]");
 
@@ -449,10 +474,11 @@ function ListformMakeResString(dicttableId )  //в таблице 1 строка
 
                     itemval=item.value.trim();
 
+                    res+="'"+itemval+"'";
+
                     if (itemval)
                     {
 
-                        res+="'"+itemval+"'";
 
 
 
@@ -468,6 +494,8 @@ function ListformMakeResString(dicttableId )  //в таблице 1 строка
                     }
                 }
             }
+
+
 
             res+="]";
 
@@ -511,9 +539,9 @@ function add_forms_to_table(channellist)
     addDictForm('mode_common','mode_contendor', 'Общие режимы');
     addDict2DictFormChannels ('mode_channel','mode_contendor', channellist, 'Поканальные режимы' );
 
-    addDict2DictFormChannels('normal_values','normal_values_contendor', channellist, 'Поканальные нормы:');
-    addDictForm('normal_values_common','normal_values_contendor', 'Общие нормы:');
 
+    addDictForm('normal_values_common','normal_values_contendor', 'Общие нормы:');
+    addDict2DictFormChannels('normal_values','normal_values_contendor', channellist, 'Поканальные нормы:');
 
 
 

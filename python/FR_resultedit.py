@@ -36,7 +36,15 @@ def insertTestsAccToProtocol(idres):
             newrp.hasPassedProcedure=False #устанавливаем флаг, успешна ли процедура
             newrp.values1=dict() #объявляем значения словарём
 
-            #заполнение значений
+            newrp.values_common=dict()  #словарь название параметра-значение для общих величин
+
+            #заполнение значений у общих величин
+            for possibleres in protocolitem.listOfPossibleResultsCommon:
+                newrp.values_common[possibleres]=0
+
+
+
+            #заполнение значений у поканальных величин
             for channel in protocolitem.normal_values: #для каждого канала
                 newrp.values1[channel]=dict() #объявляем  словарём
                 for possibleres in protocolitem.listOfPossibleResults: #и для каждого возможного  результата
@@ -51,10 +59,22 @@ def outResultsOfProcedureForm (rop: resultsOfProcedure, prefix: str):
     Выводит форму редакции одного результата как часть формы
     """
     outstr=""
-    for channel in rop.values1:
+
+    chlist = list(rop.values1.keys())
+    chlist.sort()
+
+
+    #for channel in rop.values1:
+    for channel in chlist:
         outstr+="<b>{0}</b><br/>\n".format(channel)
         outstr+="<table>\n"
-        for parameter in rop.values1[channel]:
+
+        parlist = list(rop.values1[channel].keys())
+
+        parlist.sort()
+        for parameter in parlist:
+
+        #for parameter in rop.values1[channel]:
 
             inpstr="<input type='text' name='{0}' value='{1}' >".format(str(prefix)+"_"+channel+"_"+parameter, str(rop.values1[channel][parameter]))
             outstr+="<tr> <td> {0} </td> <td> {1} </td> </tr> \n".format(parameter, inpstr)
@@ -66,7 +86,12 @@ def outResultsOfProcedureForm (rop: resultsOfProcedure, prefix: str):
 
     if rop.values_common:
         outstr+="<b>{0}</b><br/>\n".format("Общие:")
-    for parameter in rop.values_common:
+
+    parlist = list(rop.values_common.keys())
+    parlist.sort()
+
+    #for parameter in rop.values_common:
+    for parameter in parlist:
 
         inpstr="<input type='text' name='{0}' value='{1}' >".format(str(prefix)+"_"+"common&&&"+"_"+parameter, str(rop.values_common[parameter]))
         outstr+="<tr> <td> {0} </td> <td> {1} </td> </tr> \n".format(parameter, inpstr)
@@ -181,7 +206,14 @@ def outEditFormForResult(result: AResult, id):
 
     <th>Удаление</th>
     </tr>"""
-    for key, val in result.proceduresResults.items():
+
+    klist = list(result.proceduresResults.keys())
+    klist.sort()
+
+    for key in klist:
+
+    #for key, val in result.proceduresResults.items():
+        val = result.proceduresResults[key]
         res+="<tr>\n"
         interactive_form=outResultsOfProcedureForm (val, key)
         delbtn=" <input type='button' onclick=\"destroy('Вы уверенно хотите удалить данный результат?', 'FR_resultedit.py?id="+str(id)+"&delid="+str(key)+"' ) \"   value='Удаление'  >"
