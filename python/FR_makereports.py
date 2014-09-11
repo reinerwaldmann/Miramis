@@ -11,6 +11,7 @@ import htmlgeneralfunctions as htmg
 import backend_manageProtocols as bck
 import backend_manageResults as bmr
 import parsers as prs
+import datetime
 import cgitb, cgi, io, sys, os
 cgitb.enable()
 
@@ -71,6 +72,38 @@ def generateHTMLOLD (resultslist:list, protocol:AProtocol, form):
 
 def sortResultsBySerial(input):
     return input.numOfProduct
+
+
+def generateOneReportFooter (form, resultslist:list):
+    """
+    :param form: форма post, пришедшая от пользователя
+    :param resultslist: список результатов
+    :return: строку футера одного отчёта
+    """
+    res=""
+
+    numOfPrInGroup = len(resultslist)
+
+    numOfPassed=len(list( filter(lambda x: x.hasPassedTest, resultslist)))
+
+    numOfFailed = numOfPrInGroup-numOfPassed
+
+    spdict= {"RK":"ОТК", "OTK": "ВП", "VP": "____"}
+
+    # Делаем вот такой словарь. Затем ищем то, что в типе теста после _, и это то пытаемся применить как ключ.
+    #
+
+
+    try:
+        out = spdict[resultslist[0].typeOfTest[resultslist[0].typeOfTest.rfind("_")+1::].strip()]
+    except BaseException:
+        out="____"
+
+
+    return """Из партии {0} шт. проверено {1} шт. из которых: \n  <br/>
+    {2} шт. соотвутствуют НТД и подлежат предъявлению в {3}, {4} шт. отошли при испытаниях. \n <br/>
+    Испытания проводил _______________________________. Начато ______________________. Окончено ______________________.
+     """.format ("______", numOfPrInGroup, numOfPassed, out,  numOfPassed, numOfFailed)
 
 
 def generateHTML (resultslist:list, protocol:AProtocol, form, name=None):
@@ -155,18 +188,14 @@ def generageHTMLProtocolHeader(numOfProducts, result, form, reslist):
     Создаёт голову таблицы
     """
 
-    typeofthetest=form.getfirst("field_testtype", "")
-
-    res="<div align='center'> <p>ПРОТОКОЛ №  от "+result.testDateTime+"</p>  "
-    res+="<p>"+typeofthetest+"</p>"
-    res+="<p>"+result.model+"</p>"
-
     strnumprs=""
     #for x in range (1, numOfProducts+1):
      #   strnumprs+="<td align=center >{0}</td>\n".format(x)
     for x in reslist:
         strnumprs+="<td align=center >{0}</td>\n".format(sortResultsBySerial(x))
 
+
+    res=""
 
 
     res+= """
@@ -194,11 +223,30 @@ def generageHTMLProtocolHeader(numOfProducts, result, form, reslist):
 
 
 
-def outreport (residlist, form, name=None):
+def outreport (reslist, form, protocol, name=None):
     """
 
     name - имя набора параметров отчёта (из протокола)
     """
+    return generateHTML (reslist, protocol, form, name), ""
+
+    #bck.getProtocolFromDatabaseParams (ProductName, TestName)
+
+
+
+
+
+def outreportsgroup (residlist, form, name):
+    """
+    residlist - список айди результатов
+    form - дескриптор принятых параметрво формы
+    name - имя набора парметров отчёта
+    """
+    residlist.sort()
+
+    res=str()
+    err=str()
+
     errlog=str()
 
     reslist=list()
@@ -228,36 +276,31 @@ def outreport (residlist, form, name=None):
     protocol=prot[0]
 
 
-    return generateHTML (reslist, protocol, form, name), errlog
-
-
-
-    #bck.getProtocolFromDatabaseParams (ProductName, TestName)
-
-
-
-
-
-def outreportsgroup (residlist, form, name):
-    """
-    residlist - список айди результатов
-    form - дескриптор принятых параметрво формы
-    name - имя набора парметров отчёта
-    """
 
     step=int(form.getfirst("field_step", ""))
+    now = datetime.datetime.now()
+    typeofthetest=form.getfirst("field_testtype", "")
+    field_repformnumber = form.getfirst("field_repformnumber", "")
 
-    residlist.sort()
+
+    res="<div align='center'> <p>ПРОТОКОЛ №{0} от {1}</p>".format (field_repformnumber, now.strftime("%Y-%m-%d"))
 
 
-    res=str()
-    err=str()
 
-    for i in range (0, len(residlist), step):
-        outr=outreport(residlist[i:i+step], form, name)
+    #res="<div align='center'> <p>ПРОТОКОЛ №   от "+now.strftime("%Y-%m-%d")+"</p>  "
+
+
+    res+="<p>"+typeofthetest+"</p>"
+    res+="<p>"+result.model+"</p>"
+
+
+
+
+    for i in range (0, len(reslist), step):
+        outr=outreport(reslist[i:i+step], form, protocol, name)
         res+=outr[0]+"<br style='page-break-after: always'> "
-        err+=outr[1]
 
+    res+=generateOneReportFooter (form, reslist)
 
     return res + err
 
@@ -286,7 +329,7 @@ if len(residlist)>0:
 
 
 
-htmg.out(htmg.generateHTMLFooter())
+htmg.out( htmg.generateHTMLFooter())
 
 
 #Как ставить номер протокола? Добавить поля вид протокола (ОТК), вид испытаний (Предъявительские)

@@ -101,6 +101,13 @@ echo "
                 var selectgr = document.getElementById('lselect');
                 selectgr.style.display='';
 
+                var selectgrlabel = document.getElementById('lselectlabel');
+                selectgrlabel.style.display='';
+
+
+
+
+
                 var getlist = eval(data);
 
                 for (index = 0; index < getlist.length; ++index)
@@ -163,11 +170,11 @@ divf.innerHTML=\"<div style='border: 1px solid; width: 500px; padding: 10px;' id
             <td> <input type='text' name='field_testtype' > </td>   \
         </tr>   \
         <tr>    \
-            <td> <label for='field_smbsurname'>Фамилия кого-то там:</label> </td>   \
-            <td> <input type='text' name='field_smbsurname' > </td> \
+            <td> <label for='field_repformnumber'>Номер протокола:</label> </td>   \
+            <td> <input type='text' name='field_repformnumber' > </td> \
         </tr>   \
     </table>    \
-     <div id='ololodiv1'> <select id='lselect' name='name' style='display:none;'>    </select>  </div>  \
+     <div id='ololodiv1'><p id='lselectlabel' style='display:none;' >Профиль отображаемых параметров: </p>  <select id='lselect' name='name' style='display:none;'>    </select>  </div>  \
     <input type='submit' value='Создать отчёт' style='width: 200px; height: 50px; ' >  </br> \
     </br>   \
     <input type='button' onclick='cancel();' value='Отмена' style='width: 200px;'>   \
