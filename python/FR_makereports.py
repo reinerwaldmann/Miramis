@@ -95,7 +95,7 @@ def generateOneReportFooter (form, resultslist:list):
 
 
     try:
-        out = spdict[resultslist[0].typeOfTest[resultslist[0].typeOfTest.rfind("_")+1::].strip()]
+        out = spdict[resultslist[0].typeOfTest[resultslist[0].typeOfTest.rfind("-")+1::].strip()]
     except BaseException:
         out="____"
 
