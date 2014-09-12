@@ -277,23 +277,37 @@ def parseTable (line, type):
 
 def delcomments (line):
     listlines=line.split("\n")
+    listToPop=list()
+
     for i in range (0, len(listlines)-1):
 
         try:
-            if listlines[i].strip()[0]=="/":
+            while listlines[i].strip()[0]=="/":
+         #       print (listlines[i])
                 listlines.pop(i)
+                #listToPop.append (i)
+
         except BaseException:
             pass
+
+    # reslist=list()
+    # for i in range (0, len(listlines)-1):
+    #     if not i in listToPop:
+    #         reslist.append(listlines[i])
+
     return "\n".join(listlines)
 
 
 
-def parseToProcedures (line):
+def parseToProcedures (linex):
     """
     Парсит в класс Procedures
     """
     rtp=Procedures ()
-    line = delcomments(line)
+    line = delcomments(linex)
+
+
+
 
     #пилим на строки
     listlines=line.split("\n")
@@ -510,10 +524,13 @@ def test ():
     #filename="G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\1б.txt"
 
     #f = open ("G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\nocommon1.txt", "rt")
-    filename = "D:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\Newest\\44367_comments.txt"
+
+
+
+    filename = "D:\\111123CHN.txt"
 
     f = open (filename)
-    print (parseToAProtocol(f).procedures[9].__str__())
+    print (parseToAProtocol(f).procedures[4].__str__())
 
     #print (parseToResult(filename).proceduresResults[8].toHTML())
 
@@ -522,7 +539,7 @@ def test ():
 
 
 
-test()
+#test()
 
 
 
