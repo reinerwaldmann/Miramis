@@ -7,6 +7,7 @@ from itertools import starmap
 __author__ = 'vasilev_is'
 from classes import *
 import datetime as dt
+import dateutil.parser as dparser
 
 import copy
 
@@ -45,7 +46,9 @@ def parseToResultCP1251 (filename):
             #print (res.testDateTime)
             date=dparser.parse(res.testDateTime)
             #print(date)
-            res.testDateTime = date.__str__()
+            #res.testDateTime = date.__str__()
+            res.testDateTime = date.date().isoformat()
+
 
         if linelst[0].__contains__("Контр"):
                 res.operator=linelst[1].strip()
@@ -109,7 +112,7 @@ def parseToResult (filename):
             date=dparser.parse(res.testDateTime)
             #print(date)
 
-            res.testDateTime = date.__str__()
+            res.testDateTime = date.date().isoformat()
 
 
 
@@ -306,14 +309,13 @@ def parseToProcedures (linex):
     rtp=Procedures ()
     line = delcomments(linex)
 
-
-
-
     #пилим на строки
     listlines=line.split("\n")
 
     #Получили номер процедуры
     rtp.number=int(listlines[0].split(":")[0].split(".")[1])
+
+    print (rtp.number)
 
     #Получили имя процедуры
     rtp.name=listlines[1]
@@ -527,12 +529,13 @@ def test ():
 
 
 
-    filename = "D:\\111123CHN.txt"
+    filename = "D:\\131512.TXT"
+
 
     f = open (filename)
-    print (parseToAProtocol(f).procedures[4].__str__())
+    #print (parseToAProtocol(f).procedures[4].__str__())
 
-    #print (parseToResult(filename).proceduresResults[8].toHTML())
+    print (parseToResult(filename))
 
 
 

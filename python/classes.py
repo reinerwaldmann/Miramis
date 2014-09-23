@@ -96,13 +96,14 @@ class Procedures(BaseStrReturn):
 
 
             klist=list(self.mode_common.keys())
-            klist.sort()
+            klist.sort(key=sba)
 
             for k in klist:
                 v=self.mode_common[k]
             #for k, v in  self.mode_common.items():
                 modereprcm+="{0}{1}{2}</br>\n".format(k.strip(),"=" if k.strip() and v.strip() else ""   , v.strip())
-            modechannelrepr="Режим по каналам</br>"
+            #modechannelrepr="Режим по каналам</br>"
+            modechannelrepr="</br>"
 
 
 
@@ -114,7 +115,7 @@ class Procedures(BaseStrReturn):
                 modechannelrepr+="{0}: </br>".format(k.strip())
 
                 mlist=list(self.mode_channel[k].keys())
-                mlist.sort()
+                mlist.sort(key=sba)
                 for mm in mlist:
                     v = self.mode_channel[k][mm]
 
@@ -129,11 +130,12 @@ class Procedures(BaseStrReturn):
             norms=""
 
             if self.normal_values_common:
-                norms+="Общие: <br/>"
+                #norms+="Общие: <br/>"
+                norms+="<br/>"
 
 
             klist = list(self.normal_values_common)
-            klist.sort()
+            klist.sort(key=sba)
 
             for k in klist:
 
@@ -147,7 +149,7 @@ class Procedures(BaseStrReturn):
 
 
             klist = list(self.normal_values.keys())
-            klist.sort()
+            klist.sort(key=sba)
 
 
             for k in klist:#по каналам
@@ -155,7 +157,7 @@ class Procedures(BaseStrReturn):
                 norms+="{0}: </br>".format(k)
 
                 mlist = list(self.normal_values[k].keys())
-                mlist.sort()
+                mlist.sort(key=sba)
 
                 for m in mlist: #по величинам
                     v = self.normal_values[k][m]
@@ -178,7 +180,8 @@ class Procedures(BaseStrReturn):
                     if not lhp_com or (lhp_com and not km in lhp_com):
                         valnames+=km+"</br>"
                 if valnames:
-                    valnames="Общие параметры: <br/>"+valnames
+                    #valnames="Общие параметры: <br/>"+valnames
+                    valnames="<br/>"+valnames
 
 
             if self.listOfPossibleResults:
@@ -187,7 +190,8 @@ class Procedures(BaseStrReturn):
                     if not lhp_chn or (lhp_chn and not km in lhp_chn):
                         valnames_1+=km.strip()+"</br>"
                 if valnames_1:
-                    valnames_1="Поканальные параметры: <br/>"+valnames_1
+                    #valnames_1="Поканальные параметры: <br/>"+valnames_1
+                    valnames_1="<br/>"+valnames_1
                     valnames+=valnames_1
 
 
@@ -257,36 +261,37 @@ class resultsOfProcedure(BaseStrReturn):
 
         valrepr=""
 
-        klist=list(self.values1.keys())
-        klist.sort()
 
-        for kk in klist: #по каналам
+
+
+        klist=sorted (self.values1.keys())
+
+
+        for kk in klist: #результаты по каналам
             vlp=""
-            varlistl=list(self.values1[kk].keys())
-            varlistl.sort()
+
+            varlistl=sorted(self.values1[kk].keys())
+
+
 
             for k in varlistl:
                 v=self.values1[kk][k]
-            #for k, v in  self.values1[kk].items():
                 if not lhp_chn or (lhp_chn and not k in lhp_chn):
                     vlp+="{0}={1}</br>\n".format(k, v)
             if vlp:
                 valrepr+="{0}: </br>".format(kk)+vlp
 
 
-
-
-
-
-
         valreprcom=""
 
 
-        klist=list(self.values_common.keys())
-        klist.sort()
+        klist=sorted(self.values_common.keys(), key=sba)
+
         for k in klist:
             if not lhp_com or (lhp_com and not k in lhp_com):
                 valreprcom+="{0}={1}</br>\n".format(k, self.values_common[k])
+
+
         if valreprcom:
             valreprcom="{0}: </br>".format("Общие параметры")+valreprcom
             valrepr+=valreprcom
@@ -297,4 +302,16 @@ class resultsOfProcedure(BaseStrReturn):
 
 
 def sba(inputStr):
-        return inputStr[0] # Ключом является первый символ в каждой строке, сортируем по нему
+        return inputStr.lower() # Ключом является первый символ в каждой строке, сортируем по нему
+
+
+
+def test():
+
+    ls=["Нu-,%", "Uвых/0,1Iн,В ", "Uвых/0,5Iн,В ","Uвых/Iн,В ", "Нu+,% "]
+
+    print (ls)
+    print (sorted(ls, key=sba))
+
+
+#test()

@@ -57,7 +57,7 @@ def generateHTMLOLD (resultslist:list, protocol:AProtocol, form):
 
     for i in protocol.procedures.keys():
         p=protocol.procedures[i]
-        res+="<tr>"+p.toHTML()
+        res+="<tr>"+p.toHTML(out3=0)
         for k in resultslist:
             if i in k.proceduresResults.keys():
                 res+="<td>{0}</td>".format(k.proceduresResults[i].toHTML())
@@ -163,7 +163,7 @@ def generateHTML (resultslist:list, protocol:AProtocol, form, name=None):
 
 
 
-        res+="<tr>"+p.toHTML(prfp=prfp)
+        res+="<tr>"+p.toHTML(out3=0, prfp=prfp)
 
         for k in resultslist:
             if i in k.proceduresResults.keys():
@@ -174,7 +174,8 @@ def generateHTML (resultslist:list, protocol:AProtocol, form, name=None):
         #res+= """<tr> {0} <td> </td> <td> </td> <td> </td> </tr> """.format(p.toHTML())
 
 
-    res += htmg.generateHTMLFooterRep()
+    res += """ </tbody>
+    </table>"""
     return res
 
 
@@ -200,14 +201,14 @@ def generageHTMLProtocolHeader(numOfProducts, result, form, reslist):
 
     res+= """
 
-    <table border="1" style="width: 900px">
+    <table border="1" style="width: 1000px">
       <tbody>
         <tr>
-          <th width=100px align=center  rowspan=3>Наименование измеряемого параметра, пункт технических требований по ТУ </br>(методов контроля)</th>
-          <th width=100px align=center rowspan=3>Требования к режиму измерения</th>
-          <th width=100px align=center rowspan=3>Норма по ТУ</th>
-          <th width=100px align=center rowspan=3>Условное обозначение измеряемого параметра </th>
-          <th align=center colspan={0}>Результаты измерений</th>
+          <th style="width: 70px" align=center  rowspan=3>Наименование измеряемого параметра, пункт технических требований по ТУ </br>(методов контроля)</th>
+          <th style="width: 100px"  align=center rowspan=3>Требования к режиму измерения</th>
+          <th style="width: 120px;" align=center rowspan=3>Норма по ТУ</th>
+
+          <th align=center  colspan={0}>Результаты измерений</th>
         </tr>
         <tr>
           <td align=center  colspan={0}>Номер ИВЭП</td>
@@ -217,6 +218,7 @@ def generageHTMLProtocolHeader(numOfProducts, result, form, reslist):
         </tr>
 
     """.format(numOfProducts, strnumprs)
+    #<th style="width: 50px;" align=center rowspan=3> Условное обозначение измеряемого параметра </th>
     return res
 
 
@@ -258,20 +260,20 @@ def outreportsgroup (residlist, form, name):
             reslist.append(res[0])
 
     if len(reslist)==0: #если список результатов пуст, это из-за всяких ошибок может быть
-        return "", errlog
+        return errlog
 
 
 
     for result in reslist: #проверяем список результатов на однородность, то есть все результаты должны быть от одного протокола
         if not result.model==reslist[0].model or not result.typeOfTest==reslist[0].typeOfTest:
             errlog+="Ошибка: в выборке присутствуют результаты от разных протоколов"
-            return "", errlog
+            return  errlog
 
 
     prot = bck.getProtocolFromDatabaseParams (reslist[0].model, reslist[0].typeOfTest)
     if prot[0]==None:
          errlog+="Ошибка: в базе данных нет протокола под такой результат"
-         return "", errlog
+         return errlog
 
     protocol=prot[0]
 
@@ -298,7 +300,7 @@ def outreportsgroup (residlist, form, name):
 
     for i in range (0, len(reslist), step):
         outr=outreport(reslist[i:i+step], form, protocol, name)
-        res+=outr[0]+"<br style='page-break-after: always'> "
+        res+=outr[0]#+"<br style='page-break-after: always'> "
 
     res+=generateOneReportFooter (form, reslist)
 
