@@ -569,7 +569,7 @@ var request;
 	{
 
     var method="POST";
-    var name=document.getElementById("name").value;
+    var name=document.getElementById("namearea").value;
     var mode_common=collectDataFromDictTable ('mode_common');
     var mode_channel=dict2dictMakeResString ('mode_channel');
 

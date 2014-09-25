@@ -270,7 +270,8 @@ class resultsOfProcedure(BaseStrReturn):
         for kk in klist: #результаты по каналам
             vlp=""
 
-            varlistl=sorted(self.values1[kk].keys())
+
+            varlistl=sorted(self.values1[kk].keys(), key=sba)
 
 
 
@@ -302,7 +303,7 @@ class resultsOfProcedure(BaseStrReturn):
 
 
 def sba(inputStr):
-        return inputStr.lower() # Ключом является первый символ в каждой строке, сортируем по нему
+        return inputStr.strip().lower() # Ключом является первый символ в каждой строке, сортируем по нему
 
 
 

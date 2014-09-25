@@ -18,12 +18,16 @@ cgitb.enable()
 Файл, предоставляющий доступ к редакции одного испытания
 """
 
-def outGeneral(id, saveitemid=None):
+def outGeneral(id, saveitemid=None, namepr=None):
     """
     Выводит то, что должно выводиться по-любому
     @id - айди протокола
     @sh_saveid - отображать форму для редакции, если установлена в 0 - отображать форму для создания
     """
+    nm=""
+    if namepr:
+        nm=namepr
+
     out="""Content-Type: text/html;charset=utf-8\n\n
     <html lang="ru-RU">
 <meta charset='UTF-8' />
@@ -51,7 +55,7 @@ def outGeneral(id, saveitemid=None):
         </tr>
 
        <tr>
-        <td><textarea name ='name' id='name' cols='70' rows='5'> </textarea></td>
+        <td><textarea name ='name' id='namearea' cols='70' rows='5'>"""+nm+"""</textarea></td>
         <td> <div id='mode_contendor'>               </div>      </td>
         <td> <div id='normal_values_contendor'>    </div>  </td>
         <td> <div id='pars_contedor'>  </div> </td>
@@ -81,6 +85,8 @@ def outNormalForm (id):
     #оттуда взять список каналов
     #на основе этого списка пстроить форму
     protocol = bck.getProtocolFromDatabase(id)[0];
+
+
     if protocol==None:
         return htmg.throwError("FRtestedit", "Нет такого протокола, испытание которого намереваемся править")
 
@@ -99,8 +105,15 @@ def outFilledForm(id, procid):
     @id - айди протокола
     @procid - айди испытания
     """
-    out=outNormalForm(id)
+
     proc=bck.getTestFromProtocol (id, procid) # Возвращает объект испытания
+    out=outGeneral(id, procid, proc.name)
+
+
+    out+=outNormalForm(id)
+
+
+
 
 
     if  proc==None:
@@ -148,7 +161,7 @@ def outFilledForm(id, procid):
 
 
     out+="""
-    setname(name, 'name');
+    setname(name, 'namearea');
     """
 
 
@@ -237,7 +250,7 @@ id=int(form.getfirst("id", ""))
 
 if "testedit" in form:
     testedit=int(form.getfirst("testedit", ""))
-    htmg.out(outGeneral(id, testedit))
+
     htmg.out(outFilledForm (id, testedit))
 else:
     htmg.out(outGeneral(id))

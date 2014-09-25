@@ -535,12 +535,7 @@ def test ():
     f = open (filename)
     #print (parseToAProtocol(f).procedures[4].__str__())
 
-    print (parseToResult(filename))
-
-
-
-
-
+    print (parseToResult(filename).proceduresResults[5].toHTML())
 
 #test()
 

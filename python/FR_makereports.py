@@ -163,7 +163,7 @@ def generateHTML (resultslist:list, protocol:AProtocol, form, name=None):
 
 
 
-        res+="<tr>"+p.toHTML(out3=0, prfp=prfp)
+        res+="<tr style='page-break-inside: avoid' >"+p.toHTML(out3=0, prfp=prfp)
 
         for k in resultslist:
             if i in k.proceduresResults.keys():
@@ -201,7 +201,7 @@ def generageHTMLProtocolHeader(numOfProducts, result, form, reslist):
 
     res+= """
 
-    <table border="1" style="width: 1000px">
+    <table border="1" style="width: 1000px; page-break-inside: auto;">
       <tbody>
         <tr>
           <th style="width: 70px" align=center  rowspan=3>Наименование измеряемого параметра, пункт технических требований по ТУ </br>(методов контроля)</th>
