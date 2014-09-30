@@ -14,7 +14,7 @@ function makehead($pagename)
 	echo "</head>\n";
 	echo "<body>\n";
 
-	echo "<a href='protocols.php'> Обзор протоколов </a> &nbsp&nbsp&nbsp&nbsp <a href='results.php'> Обзор результатов </a>";
+	echo "<a href='index.php'> Главная </a> &nbsp&nbsp&nbsp&nbsp <a href='protocols.php'> Обзор протоколов </a> &nbsp&nbsp&nbsp&nbsp <a href='results.php'> Обзор результатов </a>";
 	
 		
 }

@@ -26,7 +26,7 @@ def generateHTMLMetaHeader(title="Протокол испытаний", displaym
     #<link rel="stylesheet" type="text/css" media="all" href="http://192.168.111.15/MiramisPHP/main.css" />
 
     if displaymenu==1:
-        res+="<a href='../MiramisPHP/protocols.php'> Обзор протоколов </a> &nbsp&nbsp&nbsp&nbsp <a href='../MiramisPHP/results.php'> Обзор результатов </a>";
+        res+="<a href='../MiramisPHP/index.php'> Главная </a> &nbsp&nbsp&nbsp&nbsp <a href='../MiramisPHP/protocols.php'> Обзор протоколов </a> &nbsp&nbsp&nbsp&nbsp <a href='../MiramisPHP/results.php'> Обзор результатов </a>";
 
 
 
