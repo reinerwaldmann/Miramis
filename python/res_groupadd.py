@@ -48,7 +48,7 @@ def process():
     textfiles = list(filter(lambda x: x.endswith('.txt'), files))
     report=""
 
-
+    #TODO сюда добавить добавление xml
 
     for name in textfiles:
         #print (prs.parseToResult (watchfolder+name))
