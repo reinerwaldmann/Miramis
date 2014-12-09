@@ -36,6 +36,22 @@ numOfBatch=root.find('numOfABatch').text
 hasPassedTest=bool(int(root.find('hasPassedTest').text))
 proceduresResultsXML=list(root.find ('proceduresResults'))
 
+
+
+
+def todict(xmlel, names):
+    modes_common_nodes=xmlel
+    keys=[mode_common.find(names[0]).text for mode_common  in modes_common_nodes]
+    vals=[mode_common.find(names[1]).text for mode_common  in modes_common_nodes]
+    return dict(zip(keys,vals))
+
+def toDicttodict(xmlel,names):
+    keys = [topel.attrib['channame'] for topel in xmlel]
+    vals = [todict(topel,names[1::]) for topel in xmlel ]
+    return dict(zip(keys,vals))
+
+
+
 def parseResultToProcedureProtocol(rx):
     """
     Парсит xml в процедуру из протокола
@@ -52,21 +68,14 @@ def parseResultToProcedureProtocol(rx):
     #     value=mode_common.find('value')
 
 
-    #или более питонически, но чистый ад по производительности (два прохода по циклу)
-    #ну и чуть упоротости ибо функция в функции, возможно, поимеет смысл снести и вынести в отдельную
-    def modedict(xmlel):
-        modes_common_nodes=xmlel
-        keys=[mode_common.find('modename').text for mode_common  in modes_common_nodes]
-        vals=[mode_common.find('modevalue').text for mode_common  in modes_common_nodes]
-        return dict(zip(keys,vals))
-
-    prc.mode_common=modedict(rx.find('modes_common'))
+    prc.mode_common=todict(rx.find('modes_common'), ('modename', 'modevalue'))
+    prc.mode_channel=toDicttodict(rx.find('channels_modes'),('channel_modes', 'modename', 'modevalue'))
 
 
 
 
 
-    # mode_common=dict() # словарь общих режимов имя-значение
+
     # mode_channel=dict(dict()) # словарь словарей режимов по каналам (имя канала - имя параметра - значение)
     # normal_values=dict(dict()) # словарь словарей значений нормативов название канала-название параметра-строка больше-меньше (значение параметра)
     # listOfPossibleResults=list()  # список полей результатов, каковые должны быть отражены в протоколе
