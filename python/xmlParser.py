@@ -71,12 +71,8 @@ def parseResultToProcedureProtocol(rx):
     prc.mode_common=todict(rx.find('modes_common'), ('modename', 'modevalue'))
     prc.mode_channel=toDicttodict(rx.find('channels_modes'),('channel_modes', 'modename', 'modevalue'))
 
+    prc.normal_values=toDicttodict(rx.find('channels_normal_values'),('channel_normal_value', 'modename', 'modevalue'))
 
-
-
-
-
-    # mode_channel=dict(dict()) # словарь словарей режимов по каналам (имя канала - имя параметра - значение)
     # normal_values=dict(dict()) # словарь словарей значений нормативов название канала-название параметра-строка больше-меньше (значение параметра)
     # listOfPossibleResults=list()  # список полей результатов, каковые должны быть отражены в протоколе
 
