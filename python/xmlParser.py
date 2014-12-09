@@ -9,34 +9,8 @@ import datetime as dt
 import dateutil.parser as dparser
 
 import xml.etree.ElementTree as ET
-
-
+import traceback
 testfilename='sandbox/03_12_2014_RK_191.xml'
-
-tree=ET.parse(testfilename)
-root=tree.getroot()
-
-#root = ET.fromstring(country_data_as_string)
-
-
-
-typeOfReport=root.find('typeOfReport').text
-model=root.find('model').text
-typeOfTest=root.find('typeOfTest').text
-channels = [x.text for x in list(root.find('channelnames'))]
-
-
-operator=root.find('operator').text
-testDateTime=root.find('testDateTime').text
-testTime=testDateTime.split(' ')[1]
-
-
-numOfProduct=root.find('numOfAProduct').text
-numOfBatch=root.find('numOfABatch').text
-hasPassedTest=bool(int(root.find('hasPassedTest').text))
-proceduresResultsXML=list(root.find ('proceduresResults'))
-
-
 
 
 def todict(xmlel, names):
@@ -52,54 +26,87 @@ def toDicttodict(xmlel,names):
 
 
 
-def parseResultToProcedureProtocol(rx):
+def parsePrc(rx, type=""):
     """
-    Парсит xml в процедуру из протокола
+    Парсит xml в процедуру из протокола, если type='prc' иначе в результат процедуры
     :param rx xml представление
     """
-    prc = Procedures()
-    prc.number=int(rx.attrib['number'])
-    prc.name=rx.find('name').text
+    number=int(rx.attrib['number'])
+    channelresults=toDicttodict(rx.find('channels_result_values'),('channels_result_values', 'name', 'value'))
+    commonresults=todict(rx.find('common_result_values'),('name', 'value'))
+    if type=='prc':
+        prc = Procedures()
+        prc.number=number
+        prc.name=rx.find('name').text
+        prc.mode_common=todict(rx.find('modes_common'), ('modename', 'modevalue'))
+        prc.mode_channel=toDicttodict(rx.find('channels_modes'),('channel_modes', 'modename', 'modevalue'))
+        prc.normal_values=toDicttodict(rx.find('channels_normal_values'),('channel_normal_value', 'modename', 'modevalue'))
+        prc.normal_values_common=todict(rx.find('common_normal_values'),('modename', 'modevalue'))
+        prc.listOfPossibleResults=list(list(channelresults.items())[0][1].keys())
+        prc.listOfPossibleResultsCommon=list(commonresults.keys())
+        return prc
+    res= resultsOfProcedure()
+    #парсинг результатов. его организация намекает нам на целесообразность объединения парсингов в одну функцию, которая вернёт или результат, или протокол, в зависимости от флага входного параметра
+    res.hasPassedProcedure=bool(int(rx.find('hasPassedProcedure').text))
+    res.number=number
+    res.values1=channelresults
+    res.values_common=commonresults
+
+    return res
+
+def parceXml(testfilename, type=''):
+
+    try:
+        tree=ET.parse(testfilename)
+        root=tree.getroot()
+
+        typeOfReport=root.find('typeOfReport').text #должен быть NIST
+
+        model=root.find('model').text
+        typeOfTest=root.find('typeOfTest').text
+        channels = [x.text for x in list(root.find('channelnames'))]
+        operator=root.find('operator').text
+        testDateTime=root.find('testDateTime').text
+        testTime=testDateTime.split(' ')[1]
+        numOfProduct=root.find('numOfAProduct').text
+        numOfBatch=root.find('numOfABatch').text
+        hasPassedTest=bool(int(root.find('hasPassedTest').text))
+        proceduresResultsXML=list(root.find ('proceduresResults'))
+        if type=='prc':
+            prc=AProtocol()
+            prc.model=model
+            prc.typeOfTest=typeOfTest
+            prc.channelname=channels
+            prc.procedures=dict()
+            ffunc=lambda x: parsePrc(x, type="prc")
+            proceduresResults=list(map(ffunc, proceduresResultsXML))
+            for pp in proceduresResults:
+                prc.procedures[pp.number]=pp
+            return prc,''
+
+        #else result
+        res=AResult()
+        res.model=model
+        res.typeOfTest=typeOfTest
+        res.operator=operator
+        res.testDateTime=testDateTime
+        res.testTime=testTime
+        res.numOfProduct=numOfProduct
+        res.numOfBatch=numOfBatch
+        res.hasPassedTest=hasPassedTest
+        res.proceduresResults=dict()
+        proceduresResults=list(map(parsePrc, proceduresResultsXML))
+        for pp in proceduresResults:
+            res.proceduresResults[pp.number]=pp
+        return res,''
+
+    except BaseException as e:
+        return None, e.__str__()+"\n"+traceback.format_exc()
 
 
-    #более эффективно с точки зрения прохода по циклу (один против двух)
-    # for mode_common in rx.find('modes_common'):
-    #     key=mode_common.find('modename')
-    #     value=mode_common.find('value')
 
+def test():
+    #root = ET.fromstring(country_data_as_string)
+    print(parceXml(testfilename,  'prc')[1])
 
-    prc.mode_common=todict(rx.find('modes_common'), ('modename', 'modevalue'))
-    prc.mode_channel=toDicttodict(rx.find('channels_modes'),('channel_modes', 'modename', 'modevalue'))
-
-    prc.normal_values=toDicttodict(rx.find('channels_normal_values'),('channel_normal_value', 'modename', 'modevalue'))
-
-    # normal_values=dict(dict()) # словарь словарей значений нормативов название канала-название параметра-строка больше-меньше (значение параметра)
-    # listOfPossibleResults=list()  # список полей результатов, каковые должны быть отражены в протоколе
-
-
-
-
-    return prc
-
-
-
-def parseResultToProcedureResult(resxml):
-    """
-    Парсит xml в результат
-    :param resxml xml представление
-    """
-    pass
-
-
-
-
-
-
-print(typeOfReport)
-print(model, typeOfTest, channels)
-print(operator, testDateTime, testTime, hasPassedTest)
-
-print(numOfProduct,numOfBatch)
-
-
-print('\nprtpp:', parseResultToProcedureProtocol(proceduresResultsXML[0]))
+test()

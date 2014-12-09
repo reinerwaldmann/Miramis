@@ -118,7 +118,7 @@
         </result>
       </common_result_values>
     </procedure_result>
-    <procedure_result number="1">
+    <procedure_result number="2">
       <name>Теплозащита</name>
       <modes_common>
         <mode_common>
@@ -218,7 +218,7 @@
       </channels_result_values>
       <common_result_values />
     </procedure_result>
-    <procedure_result number="1">
+    <procedure_result number="3">
       <name>Электротермотренировка</name>
       <modes_common>
         <mode_common>
@@ -321,7 +321,7 @@
         </result>
       </common_result_values>
     </procedure_result>
-    <procedure_result number="1">
+    <procedure_result number="4">
       <name>Электротермотренировка</name>
       <modes_common>
         <mode_common>
