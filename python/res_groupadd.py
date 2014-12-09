@@ -50,7 +50,7 @@ def process():
     textfiles = list(filter(lambda x: x.endswith('.TXT') or x.endswith('.txt'), files))
     report="[INFO] Process {0} {1}\n".format(watchfolder, putfolder)
 
-
+    #TODO сюда добавить добавление xml
 
     for name in textfiles:
 

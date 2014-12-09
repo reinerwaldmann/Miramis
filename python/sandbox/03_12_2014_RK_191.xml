@@ -1,0 +1,428 @@
+<?xml version='1.0'?>
+<!--структура файла результатов-->
+<root>
+  <typeOfReport>NIST</typeOfReport>
+  <model>ИВЭП71</model>
+  <typeOfTest>Полный цикл</typeOfTest>
+  <channelnames>
+    <channel>Канал №1</channel>
+    <channel>Канал №2</channel>
+    <channel>Канал №3</channel>
+  </channelnames>
+  <operator>Иванов И.И.</operator>
+  <testDateTime>03.12.2014 03:50:08</testDateTime>
+  <numOfAProduct>586</numOfAProduct>
+  <numOfABatch>77</numOfABatch>
+  <hasPassedTest>0</hasPassedTest>
+  <proceduresResults>
+    <procedure_result number="1">
+      <name>Электротермотренировка</name>
+      <modes_common>
+        <mode_common>
+          <modename>T_корпуса_изделия,С</modename>
+          <modevalue>85</modevalue>
+        </mode_common>
+        <mode_common>
+          <modename>Время выдержки при повышенной температуре</modename>
+          <modevalue>8</modevalue>
+        </mode_common>
+        <mode_common>
+          <modename>Uвх</modename>
+          <modevalue>300</modevalue>
+        </mode_common>
+      </modes_common>
+      <channels_modes>
+        <channel_modes channame="Канал №1">
+          <channel_mode>
+            <modename>Uвх 1 канал</modename>
+            <modevalue>8,5</modevalue>
+          </channel_mode>
+          <channel_mode>
+            <modename>Iвх 1 канал</modename>
+            <modevalue>8,2</modevalue>
+          </channel_mode>
+        </channel_modes>
+        <channel_modes channame="Канал №2">
+          <channel_mode>
+            <modename>Uвх 2 канал</modename>
+            <modevalue>6,5</modevalue>
+          </channel_mode>
+          <channel_mode>
+            <modename>Iвх 2 канал</modename>
+            <modevalue>2</modevalue>
+          </channel_mode>
+        </channel_modes>
+        <channel_modes channame="Канал №3">
+          <channel_mode>
+            <modename>Uвх 3 канал</modename>
+            <modevalue>7,5</modevalue>
+          </channel_mode>
+          <channel_mode>
+            <modename>Iвх 3 канал</modename>
+            <modevalue>0,5</modevalue>
+          </channel_mode>
+        </channel_modes>
+      </channels_modes>
+      <channels_normal_values>
+        <channel_normal_value channame="Канал №1">
+          <channel_normal_value>
+            <modename>Uвых 1 канал</modename>
+            <modevalue>1,8</modevalue>
+          </channel_normal_value>
+        </channel_normal_value>
+        <channel_normal_value channame="Канал №2">
+          <channel_normal_value>
+            <modename>Uвых 2 канал</modename>
+            <modevalue>1,8</modevalue>
+          </channel_normal_value>
+        </channel_normal_value>
+        <channel_normal_value channame="Канал №3">
+          <channel_normal_value>
+            <modename>Uвых 3 канал</modename>
+            <modevalue>1,8</modevalue>
+          </channel_normal_value>
+        </channel_normal_value>
+      </channels_normal_values>
+      <common_normal_values>
+        <common_normal_value>
+          <modename>T_корпуса_изделия,С</modename>
+          <modevalue>82-88</modevalue>
+        </common_normal_value>
+      </common_normal_values>
+      <hasPassedProcedure>0</hasPassedProcedure>
+      <channels_result_values>
+        <channel_result_values channame="Канал №1">
+          <result>
+            <name>Uвых 1 канал</name>
+            <value>8,507635</value>
+          </result>
+        </channel_result_values>
+        <channel_normal_value channame="Канал №2">
+          <result>
+            <name>Uвых 1 канал</name>
+            <value>6,4657562</value>
+          </result>
+        </channel_normal_value>
+        <channel_normal_value channame="Канал №3">
+          <result>
+            <name>Uвых 1 канал</name>
+            <value>6,4657562</value>
+          </result>
+        </channel_normal_value>
+      </channels_result_values>
+      <common_result_values>
+        <result>
+          <name>T_корпуса_изделия,С</name>
+          <value>
+          </value>
+        </result>
+      </common_result_values>
+    </procedure_result>
+    <procedure_result number="1">
+      <name>Теплозащита</name>
+      <modes_common>
+        <mode_common>
+          <modename>Предельная температура срабатывания термозащиты,С</modename>
+          <modevalue>120</modevalue>
+        </mode_common>
+        <mode_common>
+          <modename>Температура восстановления работы изделия</modename>
+          <modevalue>85</modevalue>
+        </mode_common>
+      </modes_common>
+      <channels_modes>
+        <channel_modes channame="Канал №1">
+          <channel_mode>
+            <modename>Uвх 1 канал</modename>
+            <modevalue>8,5</modevalue>
+          </channel_mode>
+          <channel_mode>
+            <modename>Iвх 1 канал</modename>
+            <modevalue>8,2</modevalue>
+          </channel_mode>
+        </channel_modes>
+        <channel_modes channame="Канал №2">
+          <channel_mode>
+            <modename>Uвх 2 канал</modename>
+            <modevalue>6,5</modevalue>
+          </channel_mode>
+          <channel_mode>
+            <modename>Iвх 2 канал</modename>
+            <modevalue>2</modevalue>
+          </channel_mode>
+        </channel_modes>
+        <channel_modes channame="Канал №3">
+          <channel_mode>
+            <modename>Uвх 3 канал</modename>
+            <modevalue>7,5</modevalue>
+          </channel_mode>
+          <channel_mode>
+            <modename>Iвх 3 канал</modename>
+            <modevalue>0,5</modevalue>
+          </channel_mode>
+        </channel_modes>
+      </channels_modes>
+      <channels_normal_values>
+        <channel_normal_value channame="Канал №1">
+          <channel_normal_value>
+            <modename>Uвых 1 канал</modename>
+            <modevalue>1,8</modevalue>
+          </channel_normal_value>
+        </channel_normal_value>
+        <channel_normal_value channame="Канал №2">
+          <channel_normal_value>
+            <modename>Uвых 2 канал</modename>
+            <modevalue>1,8</modevalue>
+          </channel_normal_value>
+        </channel_normal_value>
+        <channel_normal_value channame="Канал №3">
+          <channel_normal_value>
+            <modename>Uвых 3 канал</modename>
+            <modevalue>1,8</modevalue>
+          </channel_normal_value>
+        </channel_normal_value>
+      </channels_normal_values>
+      <common_normal_values />
+      <hasPassedProcedure>0</hasPassedProcedure>
+      <channels_result_values>
+        <channel_result_values channame="Канал №1">
+          <result>
+            <name>Uвых 1 канал</name>
+            <value>-1,426E-06</value>
+          </result>
+          <result>
+            <name>Uвых 1 канал</name>
+            <value>0</value>
+          </result>
+        </channel_result_values>
+        <channel_normal_value channame="Канал №2">
+          <result>
+            <name>Uвых 2 канал</name>
+            <value>-1,342E-06</value>
+          </result>
+          <result>
+            <name>Uвых 2 канал</name>
+            <value>0</value>
+          </result>
+        </channel_normal_value>
+        <channel_normal_value channame="Канал №3">
+          <result>
+            <name>Uвых 3 канал</name>
+            <value>1,51E-06</value>
+          </result>
+          <result>
+            <name>Uвых 3 канал</name>
+            <value>0</value>
+          </result>
+        </channel_normal_value>
+      </channels_result_values>
+      <common_result_values />
+    </procedure_result>
+    <procedure_result number="1">
+      <name>Электротермотренировка</name>
+      <modes_common>
+        <mode_common>
+          <modename>T_корпуса_изделия,С</modename>
+          <modevalue>85</modevalue>
+        </mode_common>
+        <mode_common>
+          <modename>Время выдержки при повышенной температуре</modename>
+          <modevalue>8</modevalue>
+        </mode_common>
+        <mode_common>
+          <modename>Uвх</modename>
+          <modevalue>300</modevalue>
+        </mode_common>
+      </modes_common>
+      <channels_modes>
+        <channel_modes channame="Канал №1">
+          <channel_mode>
+            <modename>Uвх 1 канал</modename>
+            <modevalue>8,5</modevalue>
+          </channel_mode>
+          <channel_mode>
+            <modename>Iвх 1 канал</modename>
+            <modevalue>8,2</modevalue>
+          </channel_mode>
+        </channel_modes>
+        <channel_modes channame="Канал №2">
+          <channel_mode>
+            <modename>Uвх 2 канал</modename>
+            <modevalue>6,5</modevalue>
+          </channel_mode>
+          <channel_mode>
+            <modename>Iвх 2 канал</modename>
+            <modevalue>2</modevalue>
+          </channel_mode>
+        </channel_modes>
+        <channel_modes channame="Канал №3">
+          <channel_mode>
+            <modename>Uвх 3 канал</modename>
+            <modevalue>7,5</modevalue>
+          </channel_mode>
+          <channel_mode>
+            <modename>Iвх 3 канал</modename>
+            <modevalue>0,5</modevalue>
+          </channel_mode>
+        </channel_modes>
+      </channels_modes>
+      <channels_normal_values>
+        <channel_normal_value channame="Канал №1">
+          <channel_normal_value>
+            <modename>Uвых 1 канал</modename>
+            <modevalue>1,8</modevalue>
+          </channel_normal_value>
+        </channel_normal_value>
+        <channel_normal_value channame="Канал №2">
+          <channel_normal_value>
+            <modename>Uвых 2 канал</modename>
+            <modevalue>1,8</modevalue>
+          </channel_normal_value>
+        </channel_normal_value>
+        <channel_normal_value channame="Канал №3">
+          <channel_normal_value>
+            <modename>Uвых 3 канал</modename>
+            <modevalue>1,8</modevalue>
+          </channel_normal_value>
+        </channel_normal_value>
+      </channels_normal_values>
+      <common_normal_values>
+        <common_normal_value>
+          <modename>T_корпуса_изделия,С</modename>
+          <modevalue>82-88</modevalue>
+        </common_normal_value>
+      </common_normal_values>
+      <hasPassedProcedure>0</hasPassedProcedure>
+      <channels_result_values>
+        <channel_result_values channame="Канал №1">
+          <result>
+            <name>Uвых 1 канал</name>
+            <value>8,507635</value>
+          </result>
+        </channel_result_values>
+        <channel_normal_value channame="Канал №2">
+          <result>
+            <name>Uвых 1 канал</name>
+            <value>6,4657562</value>
+          </result>
+        </channel_normal_value>
+        <channel_normal_value channame="Канал №3">
+          <result>
+            <name>Uвых 1 канал</name>
+            <value>6,4657562</value>
+          </result>
+        </channel_normal_value>
+      </channels_result_values>
+      <common_result_values>
+        <result>
+          <name>T_корпуса_изделия,С</name>
+          <value>
+          </value>
+        </result>
+      </common_result_values>
+    </procedure_result>
+    <procedure_result number="1">
+      <name>Электротермотренировка</name>
+      <modes_common>
+        <mode_common>
+          <modename>T_корпуса_изделия,С</modename>
+          <modevalue>85</modevalue>
+        </mode_common>
+        <mode_common>
+          <modename>Время выдержки при повышенной температуре</modename>
+          <modevalue>8</modevalue>
+        </mode_common>
+        <mode_common>
+          <modename>Uвх</modename>
+          <modevalue>300</modevalue>
+        </mode_common>
+      </modes_common>
+      <channels_modes>
+        <channel_modes channame="Канал №1">
+          <channel_mode>
+            <modename>Uвх 1 канал</modename>
+            <modevalue>8,5</modevalue>
+          </channel_mode>
+          <channel_mode>
+            <modename>Iвх 1 канал</modename>
+            <modevalue>8,2</modevalue>
+          </channel_mode>
+        </channel_modes>
+        <channel_modes channame="Канал №2">
+          <channel_mode>
+            <modename>Uвх 2 канал</modename>
+            <modevalue>6,5</modevalue>
+          </channel_mode>
+          <channel_mode>
+            <modename>Iвх 2 канал</modename>
+            <modevalue>2</modevalue>
+          </channel_mode>
+        </channel_modes>
+        <channel_modes channame="Канал №3">
+          <channel_mode>
+            <modename>Uвх 3 канал</modename>
+            <modevalue>7,5</modevalue>
+          </channel_mode>
+          <channel_mode>
+            <modename>Iвх 3 канал</modename>
+            <modevalue>0,5</modevalue>
+          </channel_mode>
+        </channel_modes>
+      </channels_modes>
+      <channels_normal_values>
+        <channel_normal_value channame="Канал №1">
+          <channel_normal_value>
+            <modename>Uвых 1 канал</modename>
+            <modevalue>1,8</modevalue>
+          </channel_normal_value>
+        </channel_normal_value>
+        <channel_normal_value channame="Канал №2">
+          <channel_normal_value>
+            <modename>Uвых 2 канал</modename>
+            <modevalue>1,8</modevalue>
+          </channel_normal_value>
+        </channel_normal_value>
+        <channel_normal_value channame="Канал №3">
+          <channel_normal_value>
+            <modename>Uвых 3 канал</modename>
+            <modevalue>1,8</modevalue>
+          </channel_normal_value>
+        </channel_normal_value>
+      </channels_normal_values>
+      <common_normal_values>
+        <common_normal_value>
+          <modename>T_корпуса_изделия,С</modename>
+          <modevalue>82-88</modevalue>
+        </common_normal_value>
+      </common_normal_values>
+      <hasPassedProcedure>0</hasPassedProcedure>
+      <channels_result_values>
+        <channel_result_values channame="Канал №1">
+          <result>
+            <name>Uвых 1 канал</name>
+            <value>8,507635</value>
+          </result>
+        </channel_result_values>
+        <channel_normal_value channame="Канал №2">
+          <result>
+            <name>Uвых 1 канал</name>
+            <value>6,4657562</value>
+          </result>
+        </channel_normal_value>
+        <channel_normal_value channame="Канал №3">
+          <result>
+            <name>Uвых 1 канал</name>
+            <value>6,4657562</value>
+          </result>
+        </channel_normal_value>
+      </channels_result_values>
+      <common_result_values>
+        <result>
+          <name>T_корпуса_изделия,С</name>
+          <value>
+          </value>
+        </result>
+      </common_result_values>
+    </procedure_result>
+  </proceduresResults>
+</root>
