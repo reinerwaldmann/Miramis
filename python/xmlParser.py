@@ -1,16 +1,17 @@
 #!/usr/bin/python3.4
+#!/usr/bin/python3.4
+#!/usr/bin/python3.4
 #!C:\Python33\python.exe
 
 #-*- coding: utf-8
 
 __author__ = 'reiner'
 from classes import *
-import datetime as dt
-import dateutil.parser as dparser
+
 
 import xml.etree.ElementTree as ET
 import traceback
-testfilename='sandbox/03_12_2014_RK_191.xml'
+#testfilename='sandbox/03_12_2014_RK_191.xml'
 
 
 def todict(xmlel, names):
@@ -55,10 +56,20 @@ def parsePrc(rx, type=""):
     return res
 
 def parceXml(testfilename, type=''):
+    """
+    Парсит файл в протокол (если type='prc') или в результат, если это не так
+    :param testfilename: имя файла
+    :param type: 'prc', чтоб парсить в протокол, иначе всё, что угодно, чтоб парсить в результат
+    :return: протокол или результат  (объект), лог
+    """
 
     try:
-        tree=ET.parse(testfilename)
-        root=tree.getroot()
+        try:
+            tree=ET.parse(testfilename)
+            root=tree.getroot()
+        except BaseException: #что выйдет, если тип не подходит для функции ET
+            root = ET.fromstring(testfilename.read())
+
 
         typeOfReport=root.find('typeOfReport').text #должен быть NIST
 
@@ -109,4 +120,4 @@ def test():
     #root = ET.fromstring(country_data_as_string)
     print(parceXml(testfilename,  'prc')[1])
 
-test()
+

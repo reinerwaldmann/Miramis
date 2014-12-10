@@ -1,4 +1,5 @@
 #!/usr/bin/python3.4
+#!/usr/bin/python3.4
 __author__ = 'vasilev_is'
 import sys
 

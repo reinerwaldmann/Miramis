@@ -1,4 +1,5 @@
 #!/usr/bin/python3.4
+#!/usr/bin/python3.4
 #!C:\Python33\python.exe
 
 #-*- coding: utf-8
@@ -106,6 +107,9 @@ def saveCameData(form):
     if  prot==None:
         return 1
 
+    if name.strip()=='':
+        return 2
+
 
     for key in form.keys():
 
@@ -165,14 +169,16 @@ else:
 
 
     if "save" in form: #запрос на сохранение
-        if saveCameData(form): #сохранение
+        errcode=saveCameData(form) #сохранение
+        if errcode:
             #если ошибка
-            htmg.out(htmg.throwError("FR_ReportParametersEdit.py", "Ошибка при сохранении"))
+            htmg.out(htmg.throwError("FR_ReportParametersEdit.py", "Ошибка при сохранении {0}".format('Не задано имя набора параметров' if errcode==2 else '') ))
+            htmg.out("<br/><a href=\'FRprotocolViewEdit.py?id={0}\'>Вернуться к протоколу</a>".format(id))
             htmg.out(htmg.generateHTMLFooter())
             exit(0)
         #debug
         else:
-            htmg.out("<br/>Сохранено успешно<br/>")
+            htmg.out("<br/>Сохранено успешно<br/> <a href=\'FRprotocolViewEdit.py?id={0}\'>Вернуться к протоколу</a>".format(id))
 
     if "del" in form: #запрос на удаление
         if delCameData(form): #удаление

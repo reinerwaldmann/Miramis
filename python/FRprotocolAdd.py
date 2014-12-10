@@ -3,6 +3,9 @@
 #!/usr/bin/python3.4
 #!/usr/bin/python3.4
 #!/usr/bin/python3.4
+#!/usr/bin/python3.4
+#!/usr/bin/python3.4
+#!/usr/bin/python3.4
 #-*- coding: utf-8
 
 __author__ = 'vasilev_is'
@@ -10,6 +13,7 @@ from  classes import *
 import htmlgeneralfunctions as htmg
 import backend_manageProtocols as bck
 import parsers as prs
+import xmlParser as xprs
 
 import cgitb, cgi, io, sys, os
 cgitb.enable()
@@ -29,11 +33,18 @@ def upload_protocol():
         #for line in fileitem.file:
          #   strfile+=line.decode("cp1251")  #собрали файл в строку
         ap = prs.parseToAProtocolCP1251(fileitem.file) #распарсили протокол
-
         if ap[0]==None:  #ошибка при парсинге протокола
-            htmg.out("<script>  alert(\"Произошла ошибка при загрузке протокола  на этапе парсинга err="+ap[1] + "\"); </script>")
-            show_form()
-            return
+            ap=xprs.parceXml(fileitem.file, type='prc') #только теперь передаём не имя файла, а его объект, что делает функцию parseXML полиморфной
+            if ap[0]==None:
+                htmg.out("<script>  alert(\"Произошла ошибка при загрузке протокола  на этапе парсинга err="+ap[1] + "\"); </script>")
+                show_form()
+                return
+        #если не удалось распарсить протокол как текст (что, скорее всего, произойдёт при парсинге xml, что, правда, не факт, и это печалит, надо бы филтр по mime)
+        #то пытаемся распарсить как xml. Если всё равно не получается, то выбрасываем error
+
+        
+
+
 
         err=bck.writeProtocolToDatabase(ap[0], idprotocol=None)
         if not err:

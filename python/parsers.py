@@ -1,4 +1,5 @@
 #!/usr/bin/python3.4
+#!/usr/bin/python3.4
 #!C:\Python33\python.exe
 
 #-*- coding: utf-8
@@ -531,11 +532,15 @@ def test ():
 
     filename = "D:\\131512.TXT"
 
-
     f = open (filename)
     #print (parseToAProtocol(f).procedures[4].__str__())
 
-    print (parseToResult(filename).proceduresResults[5].toHTML())
+    print (parseToResult(filename))
+
+
+
+
+
 
 #test()
 
