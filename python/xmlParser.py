@@ -11,7 +11,7 @@ from classes import *
 
 import xml.etree.ElementTree as ET
 import traceback
-#testfilename='sandbox/03_12_2014_RK_191.xml'
+testfilename='sandbox/09_12_2014_RK_210.xml'
 
 
 def todict(xmlel, names):
@@ -41,8 +41,8 @@ def parsePrc(rx, type=""):
         prc.name=rx.find('name').text
         prc.mode_common=todict(rx.find('modes_common'), ('modename', 'modevalue'))
         prc.mode_channel=toDicttodict(rx.find('channels_modes'),('channel_modes', 'modename', 'modevalue'))
-        prc.normal_values=toDicttodict(rx.find('channels_normal_values'),('channel_normal_value', 'modename', 'modevalue'))
-        prc.normal_values_common=todict(rx.find('common_normal_values'),('modename', 'modevalue'))
+        prc.normal_values=toDicttodict(rx.find('channels_normal_values'),('channel_normal_value', 'norm_name', 'norm_value'))
+        prc.normal_values_common=todict(rx.find('common_normal_values'),('norm_name', 'norm_value'))
         prc.listOfPossibleResults=list(list(channelresults.items())[0][1].keys())
         prc.listOfPossibleResultsCommon=list(commonresults.keys())
         return prc
@@ -120,4 +120,4 @@ def test():
     #root = ET.fromstring(country_data_as_string)
     print(parceXml(testfilename,  'prc')[1])
 
-
+#test()

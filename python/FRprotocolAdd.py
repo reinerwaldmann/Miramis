@@ -6,6 +6,7 @@
 #!/usr/bin/python3.4
 #!/usr/bin/python3.4
 #!/usr/bin/python3.4
+#!/usr/bin/python3.4
 #-*- coding: utf-8
 
 __author__ = 'vasilev_is'
@@ -37,20 +38,20 @@ def upload_protocol():
             ap=xprs.parceXml(fileitem.file, type='prc') #только теперь передаём не имя файла, а его объект, что делает функцию parseXML полиморфной
             if ap[0]==None:
                 htmg.out("<script>  alert(\"Произошла ошибка при загрузке протокола  на этапе парсинга err="+ap[1] + "\"); </script>")
+                htmg.out("Произошла ошибка при загрузке протокола  на этапе парсинга err={0}".format(ap[1]))
                 show_form()
                 return
         #если не удалось распарсить протокол как текст (что, скорее всего, произойдёт при парсинге xml, что, правда, не факт, и это печалит, надо бы филтр по mime)
         #то пытаемся распарсить как xml. Если всё равно не получается, то выбрасываем error
-
-        
-
-
 
         err=bck.writeProtocolToDatabase(ap[0], idprotocol=None)
         if not err:
             htmg.out("<script> alert(\"Загрузка протокола произошла успешно\");   document.location.replace(\"../MiramisPHP/protocols.php\");   </script>  ")
             return
         htmg.out("<script>  alert(\"Произошла ошибка при загрузке протокола err="+str(err) + "\"); </script>")
+        htmg.out("Произошла ошибка при загрузке протокола err="+str(err))
+
+
         show_form()
 
 
