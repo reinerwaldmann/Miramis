@@ -15,15 +15,16 @@ __author__ = 'vasilev_is'
 import os
 import parsers as prs
 import backend_manageResults as bmr
+import backend_manageProtocols as bck
 import shutil
 import datetime
 import time
 import xmlParser as xprs
 
+
 # watchfolder="C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\groupadd_reswatchfolder\\"
 # putfolder="C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\groupadd_resputfolder\\"
 # logfile="C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\groupadd_log.txt"
-
 watchfolder="/home/r_uploader/groupadd_reswatchfolder/"
 putfolder="/home/r_uploader/groupadd_resputfolder/"
 logfile="/var/log/miramis/report_groupadd.txt"
@@ -53,6 +54,7 @@ def process():
     xmlfilter=lambda x: x.endswith('.XML') or x.endswith('.xml')
     #textfiles = list(filter(lambda x: x.endswith('.TXT') or x.endswith('.txt'), files))
     report="[INFO] Process {0} {1}\n".format(watchfolder, putfolder)
+
 
     for name in files:
 
@@ -84,14 +86,26 @@ def process():
             wr=bmr.writeResultToDatabase(rs[0]);
             if wr:
                 report+="[ERROR] "+st+" При записи в БД произошла ошибка код="+str(wr)+"\n"
-
-            report+="\t"+st+"Запись в БД произошла успешно "+name+"\n"
+            else:
+                report+="\t"+st+"Запись в БД произошла успешно "+name+"\n"
+                #код поиска подходящего протокола, если не найдёт - то запишет и в протокол
+                if bck.getProtocolFromDatabaseParams (rs[0].model, rs[0].typeOfTest)[0]==None: #если нет протокола такого в базе данных
+                    file = open(putfolder+name, 'rt') #открыли файл
+                    ap=None,'Error while parsing'
+                    if textfilter(name):
+                        #rs = prs.parseToResultCP1251 (watchfolder+name)
+                        ap = prs.parseToAProtocolCP1251(file) #распарсили протокол
+                    elif xmlfilter (name):
+                        ap = xprs.parceXml(file,'prc') #распарсили протокол
+                    if ap[0]:
+                        err=bck.writeProtocolToDatabase(ap[0], idprotocol=None)
+                        if err:
+                            log ("[ERROR]"+st+"Проблема при добавлении протокола в базу данных на этапе включения в БД {0}".format(err))
+                    else:
+                        log ("[ERROR]"+st+"Проблема при добавлении протокола в базу данных на этапе парсинга {0}".format(ap[1]))
 
     log (report)
     print (report)
-
-
-
 
 #testarea
 

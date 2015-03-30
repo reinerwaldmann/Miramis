@@ -31,7 +31,7 @@ writeProtocolToDatabase(protocol, idprotocol=None): Записать прото�
     @idprotocol - айди протокола
     @idtest - айди испытания
 
-    getProtocolFromDatabaseParams (ProductName, TestName):
+getProtocolFromDatabaseParams (ProductName, TestName):
     Получить протокол из базы данных
     @ProductName - имя продукта
     @TestName - имя теста
