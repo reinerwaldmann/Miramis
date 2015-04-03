@@ -165,7 +165,11 @@ def parceToPrRes (line):
     strWithTables = line[line.rfind("Результаты измерений"):]  #строка, в которой находятся таблицы с результатами (возможно, одна  таблица)
 
 
+
+
     if "\n\r\n" in strWithTables : #если оная таблица содержит в себе пустую строку
+
+
     #if detector_two_tables:
         #Если в ней есть пустая строка, то считать случай 3 - есть и поканальный, и общий режимы
         #TODO но пока не  реализовно защиты от случайно впиленной пустой строки в конце, или чего-то подобного
@@ -410,14 +414,13 @@ def parseToAProtocolCP1251(file):
     на входе - дескриптор файла
     """
     try:
-
         ap=AProtocol()
-        first_line=file.readline().decode("cp1251")
+        first_line=file.readline()
         if first_line.__contains__("ИВЭП")!=1:
             return None, "Эта версия только для ИВЭП"
         #парсим справочную часть
         for linex in file:
-            line = linex.decode("cp1251")[:-2]+"\n"
+            line = linex[:-2]+"\n"
             if line.__contains__("*"): # значит, дошли до главной части
                 break
             linelst=line.strip().split(":")
@@ -428,7 +431,7 @@ def parseToAProtocolCP1251(file):
 
         proclines=""
         for linex in file:
-            line = linex.decode("cp1251")[:-2]+"\n"
+            line = linex[:-2]+"\n"
             proclines+=line
 
 
@@ -449,7 +452,7 @@ def parseToAProtocolCP1251(file):
             ap.channelname=list()
 
     except BaseException as e:
-        return None, "Some error occured"
+        return None, "Some error occured"+e.__str__()
 
 
     return ap, ""
