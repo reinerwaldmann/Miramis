@@ -6,7 +6,7 @@
 from itertools import starmap
 
 __author__ = 'vasilev_is'
-from classes import *
+from python.classes import *
 import datetime as dt
 import dateutil.parser as dparser
 
@@ -73,10 +73,6 @@ def parseToResultCP1251 (filename):
     numseq=list(map (lambda  rpc: rpc.number, rpcseq))
     res.proceduresResults=dict(zip(numseq, rpcseq))
     return res
-
-
-
-
 def parseToResult (filename):
     """
     Парсит файл filename в AResult
@@ -140,71 +136,60 @@ def parseToResult (filename):
     numseq=list(map (lambda  rpc: rpc.number, rpcseq))
     res.proceduresResults=dict(zip(numseq, rpcseq))
     return res
+def searchFirstLineInList (lst, str, contains=True):
+#возвращает индекс первой строки с начала списка, в которой найдена str
+    for i in range (len(lst)):
+        if str in lst[i] and contains:#содержать
+            return i
+        if not contains and str==lst[i]: #равняться
+            return i
 
+    return -1
+def stripLineList (listlines1):
+    while listlines1[0]=='':
+        del (listlines1[0])
 
-
-
+    while listlines1[len(listlines1)-1]=='':
+        listlines1.remove(listlines1[len(listlines1)-1])
 def parceToPrRes (line):
     """
     Парсит строку в результат  процедуры
     """
     line = delcomments(line)
-
     rp=resultsOfProcedure()
     listlines=line.split("\n")
-    rp.hasPassedProcedure=listlines[0].__contains__("PASS")
+    listlines1=[x.strip() for x in line.split("\n")] #создали список строк, у каждой из которой выпилены spance, \r\n и прочее
 
-    # print (listlines[0])
-    # return rp;
-    rp.number=int(listlines[0].split(":")[0].split(".")[1])
-    #или же поудалять все символы, которые не цифры
+    #удаляем из этого списка пустые строки в конце и в начале
 
+    rp.hasPassedProcedure=listlines1[0].__contains__("PASS")
+    rp.number=int(listlines1[0].split(":")[0].split(".")[1])
 
+    try:
 
+        listOfStrsWithTables = listlines1[searchFirstLineInList(listlines1, 'Результаты измерений'):]  #слайс списка, начиная с требуемого нам индекса
+        stripLineList(listOfStrsWithTables)
+        strWithTables = line[line.rfind("Результаты измерений"):]  #строка, в которой находятся таблицы с результатами (возможно, одна  таблица)
+        splitinddex = searchFirstLineInList(listOfStrsWithTables, '', contains=False)
+        if splitinddex!=-1 and splitinddex!=len(listOfStrsWithTables)-1 and splitinddex!=0:
+        #if splitinddex !=all((-1,len(listOfStrsWithTables)-1,0)):
+        #если процедура поиска не выдала -1, тоесть отсутствие пустых строк, последний элемент, то есть пустую строку в конце, 0, то есть её же в начале
+            commonpart = listOfStrsWithTables[1:splitinddex] #отсекаем "результаты измерений"
+            channelpart = listOfStrsWithTables[splitinddex+1:]
+            comtablestr = '\n'.join(commonpart) #костыль для объединения списка в няшную строку для скармливания таблицепарсеру
+            chtablestr = '\n'.join(channelpart) #костыль для объединения списка в няшную строку для скармливания таблицепарсеру
+            rp.values_common = parseTable(comtablestr,'rescom') #распарсили результаты общие
+            rp.values1 = parseTable(chtablestr,'res') #распарсили результаты поканальные
+        else:
+            if "Выходной канал" in strWithTables: #если данные только поканальные
+                #Получили строку результатов измерений, и распарсили ей, считав только нормативы
+                rp.values1 = parseTable(line[line.rfind("Результаты измерений"):],'res') #распарсили результаты поканальные
+            else: #если есть только общие данные
+                rp.values_common = parseTable(strWithTables,"rescom") #распарсили результаты общие
 
-    strWithTables = line[line.rfind("Результаты измерений"):]  #строка, в которой находятся таблицы с результатами (возможно, одна  таблица)
+    except Exception as error:
+         raise RuntimeError('We got an error in procedure number {0}'.format (rp.number)) from error
 
-
-
-
-    if "\n\r\n" in strWithTables : #если оная таблица содержит в себе пустую строку
-
-
-    #if detector_two_tables:
-        #Если в ней есть пустая строка, то считать случай 3 - есть и поканальный, и общий режимы
-        #TODO но пока не  реализовно защиты от случайно впиленной пустой строки в конце, или чего-то подобного
-        twotableslist = strWithTables.split("\n\r\n")
-
-         #Здесь запилить парсинг общей таблицы
-
-        comtable =twotableslist[0][twotableslist[0].find('\n')+1::  ]+"\n" #таблица с общими результатами
-
-        rp.values_common = parseTable(comtable,"rescom") #распарсили результаты общие
-        rp.values1 = parseTable(twotableslist[1],'res') #распарсили результаты поканальные
-
-
-
-    else:
-        if "Выходной канал" in strWithTables: #если данные только поканальные
-            #Получили строку результатов измерений, и распарсили ей, считав только нормативы
-            rp.values1 = parseTable(line[line.rfind("Результаты измерений"):],'res') #распарсили результаты поканальные
-
-        else: #если есть только общие данные
-            rp.values_common = parseTable(strWithTables,"rescom") #распарсили результаты общие
-
-
-
-    #в этом месте пытается найти результаты измерений
-    # ind=0
-    # for i in range (0, listlines.__len__()):
-    #     if (listlines[i].__contains__("Результаты измерений")):
-    #         ind=i
-    #         break
-    # ind+=2
-    # #print (listlines[ind])
-    # value_names=listlines[ind][0: listlines[ind].rfind("#")].split("$")[1::]
-    # ind+=2
-    # rp.values1 = parseTable(line[line.rfind("Результаты измерений"):],'res')
     return rp
 
 
@@ -214,12 +199,11 @@ def parceToPrRes (line):
   # -------------------  -------
   # 1 канал +5 В        $   3.000
 #На выходе словарь словарей - имя канала - название параметра - значение
-
 def parseTable (line, type):
     """
     Парсит таблицу во что прикажут: type: 'res' - если нужны результаты 'norm' - если нужны нормы 'mode' - если нужны режимы
     """
-    line = line [line.find("-"):]
+    line = line [line.find("-"):]   #для результата для v2 это не делает ничего, ибо там уже начинается с палки
     listlines=line.split("\n")
     ind=1
     namesline=listlines[ind]
@@ -242,7 +226,8 @@ def parseTable (line, type):
  # print (listlines[ind][listlines[ind].rfind("#"):].split("$")) #вариант для норм
     ind+=2
     rp=dict()
-    while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
+    #while (ind!=listlines.__len__()-1): #цикл по строчкам каналов
+    while ( listlines[ind].strip()!='') and ind<len(listlines) :
 
         listnamesvals = {
             'res': lambda resline: resline[0: resline.rfind("#")].split("$"),
@@ -262,12 +247,8 @@ def parseTable (line, type):
             'mode': listnamesvals[1::]
         }[type]
 
-
-
-#ПИТОН - САМЫЙ ОМСКИЙ ЯЗЫК ВСЕХ ВРЕМЁН И НАРОДОВ!!! ЛЯМБДЫ ВО ВСЕ ПОЛЯ!!!!!!!!!!!
         valsdict=dict(zip(value_names, map (lambda d: d.strip(), listvals)))
         #valsdict=dict(zip(value_names, listvals))
-
 
         if "rescom" in type: #если считываем общие результаты, слить первую строчку сразу
             return valsdict
@@ -280,9 +261,6 @@ def parseTable (line, type):
         ind+=1
         #print (rp.number)
     return rp
-
-
-
 def delcomments (line):
     listlines=line.split("\n")
     listToPop=list()
@@ -304,6 +282,73 @@ def delcomments (line):
     #         reslist.append(listlines[i])
 
     return "\n".join(listlines)
+
+
+
+
+def basicParserTextForm (file, type='result'):
+    """формирует и протокол, и результат. А выдаёт то, что затребовано
+    эту процедуру потом можно оборачивать для совместимости во всякое"""
+
+    msg="" #сообщение, цепляемое к результату
+
+    res=AResult()
+    proc=AProtocol()
+
+    first_line=file.readline()
+    if first_line.__contains__("ИВЭП")!=1:
+        print ("Эта версия только для ИВЭП")
+        exit(1)
+    #парсим справочную часть
+    for line in file:
+        if line.__contains__("*"): # значит, дошли до главной части
+            break
+
+        linelst=line.strip().split(":")
+        if linelst[0].__contains__("Модель"):
+            proc.model=res.model=linelst[1].strip()
+        if linelst[0].__contains__("Имя программы"):
+            proc.typeOfTest=res.typeOfTest=linelst[1].strip()
+        if linelst[0].__contains__("Дата"):
+            #res.testDateTime=linelst[1].strip()
+            res.testDateTime=line[line.index(":")+1::].strip().replace("/", "-")
+            #print (res.testDateTime)
+            date=dparser.parse(res.testDateTime)
+            #print(date)
+            res.testDateTime = date.date().isoformat()
+        if linelst[0].__contains__("Контр"):
+                res.operator=linelst[1].strip()
+        if linelst[0].__contains__("Результат"):
+                res.hasPassedTest=linelst[1].__contains__("PASS")
+        if linelst[0].__contains__("Серийный номер"):
+                res.numOfProduct = linelst[1].strip()
+        if linelst[0].__contains__("Номер партии"):
+               res.numOfBatch = linelst[1].strip()
+
+    proclines=""
+    for line in file:
+        proclines+=line
+
+    #получили последовательность объектов resultsOfProcedure, применив парсинговую функцию
+    ## ко всем строчкам, относившимся к результатам
+    #срез потому, что иначе последним в сплите идёт пустая строка - ибо последняя процедура
+    # в конце файла также имеет строчку из звёздочек с \n
+    rrlist=proclines.split("********************************************************************************\n")[0:-1]
+    rpcseq=list(map(parceToPrRes, rrlist))
+    numseq=list(map (lambda  rpc: rpc.number, rpcseq))
+    res.proceduresResults=dict(zip(numseq, rpcseq))
+    return res
+
+    pass
+def basicParserTestProcedure (line, type='result'):
+#формирует процедуру и для протокола, и для результата
+    pass
+
+
+
+
+
+
 
 
 
@@ -369,7 +414,6 @@ def parseToProcedures (linex):
     rtp.mode_common =  (dict(map (parsefunc, listcommonmode)))
 
     return rtp
-
 def parseToAProtocol (file):
     """
     Парсит в класс AProtocol
@@ -414,6 +458,7 @@ def parseToAProtocolCP1251(file):
     на входе - дескриптор файла
     """
     try:
+
         ap=AProtocol()
         first_line=file.readline()
         if first_line.__contains__("ИВЭП")!=1:
@@ -452,7 +497,7 @@ def parseToAProtocolCP1251(file):
             ap.channelname=list()
 
     except BaseException as e:
-        return None, "Some error occured"+e.__str__()
+        return None, e.__str__()
 
 
     return ap, ""
@@ -502,50 +547,6 @@ def parseToAProtocolStr (instr):
 
     return ap
 
-
-
-
-#Такая структура, как представлена, даёт возможность генерировать также и пустые объекты для  заполнения их руками
-#Заполненность объектов может быть любой, от никакой вообще (пустой объект) и до полной.
-
-
-
-#TODO привести перекодиование в порядок, когда дело дойдёт до загрузки
-
-
-# import platform
-# #print (platform.system())
-#
-# if (platform.system().__contains__("Linux")):
-#     filename="utf8.txt" #и вот тут должно быть перекодирование, тащемта
-# else:
-#     filename="protocolCP1251.txt"
-
-
-
-
-#тестовая хрень
-
-def test ():
-    #filename="G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\1б.txt"
-
-    #f = open ("G:\\Projects\\Miramis\\MiramisNewest\\Miramis\\Materials\\NewProtocols\\nocommon1.txt", "rt")
-
-
-
-    filename = "D:\\131512.TXT"
-
-    f = open (filename)
-    #print (parseToAProtocol(f).procedures[4].__str__())
-
-    print (parseToResult(filename))
-
-
-
-
-
-
-#test()
 
 
 

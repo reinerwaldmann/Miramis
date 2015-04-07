@@ -1,5 +1,6 @@
 #!/usr/bin/python3.4
 #!/usr/bin/python3.4
+#!/usr/bin/python3.4
 __author__ = 'vasilev_is'
 """
 Этот файл должен запускаться кроном раз в 5 минут. Он осматривает папку, заданную переменной watchfolder,
@@ -25,6 +26,7 @@ import xmlParser as xprs
 # watchfolder="C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\groupadd_reswatchfolder\\"
 # putfolder="C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\groupadd_resputfolder\\"
 # logfile="C:\Program Files (x86)\Apache Software Foundation\Apache2.2\htdocs\groupadd_log.txt"
+
 watchfolder="/home/r_uploader/groupadd_reswatchfolder/"
 putfolder="/home/r_uploader/groupadd_resputfolder/"
 logfile="/var/log/miramis/report_groupadd.txt"
@@ -54,7 +56,6 @@ def process():
     xmlfilter=lambda x: x.endswith('.XML') or x.endswith('.xml')
     #textfiles = list(filter(lambda x: x.endswith('.TXT') or x.endswith('.txt'), files))
     report="[INFO] Process {0} {1}\n".format(watchfolder, putfolder)
-
 
     for name in files:
 

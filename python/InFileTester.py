@@ -2,7 +2,8 @@ __author__ = 'vasilev_is'
 #Это специальный файл для тестирования корректности формата входящих файлов
 
 
-import parsers as prs
+
+import python.parsers as prs
 import os
 
 
@@ -18,7 +19,7 @@ def testTextProtocols (filename):
     print (protocol)
 
     print ('parsed result')
-    print (result)
+#    print (result)
 
 
 #testTextProtocols(input('Enter path'))
