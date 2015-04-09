@@ -16,10 +16,10 @@ def testTextProtocols (filename):
 
 
     print ('parsed protocol')
-    print (protocol)
+    print (protocol[0])
 
     print ('parsed result')
-#    print (result)
+    #print (result)
 
 
 #testTextProtocols(input('Enter path'))

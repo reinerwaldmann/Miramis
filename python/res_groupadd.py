@@ -1,6 +1,4 @@
 #!/usr/bin/python3.4
-#!/usr/bin/python3.4
-#!/usr/bin/python3.4
 __author__ = 'vasilev_is'
 """
 Этот файл должен запускаться кроном раз в 5 минут. Он осматривает папку, заданную переменной watchfolder,
@@ -66,7 +64,7 @@ def process():
 
         rs=None,'Invalid file extension'
         if textfilter(name):
-            rs = prs.parseToResultCP1251 (watchfolder+name)
+            rs=prs.basicParserTextFormFilename (watchfolder+name)
         elif xmlfilter (name):
             rs = xprs.parceXml(watchfolder+name)
 
@@ -90,15 +88,16 @@ def process():
             else:
                 report+="\t"+st+"Запись в БД произошла успешно "+name+"\n"
                 #код поиска подходящего протокола, если не найдёт - то запишет и в протокол
+
+
                 if bck.getProtocolFromDatabaseParams (rs[0].model, rs[0].typeOfTest)[0]==None: #если нет протокола такого в базе данных
-                    file = open(putfolder+name, 'rt') #открыли файл
-                    ap=None,'Error while parsing'
-                    if textfilter(name):
-                        #rs = prs.parseToResultCP1251 (watchfolder+name)
-                        ap = prs.parseToAProtocolCP1251(file) #распарсили протокол
+                    if textfilter (name):
+                        ap = prs.basicParserTextFormFilename (putfolder+name, type='protocol')
                     elif xmlfilter (name):
-                        ap = xprs.parceXml(file,'prc') #распарсили протокол
-                    if ap[0]:
+                        with open(putfolder+name, 'rt') as file:
+                            ap = xprs.parceXml(file,'prc') #распарсили протокол
+
+                    if ap[0] is not None:
                         err=bck.writeProtocolToDatabase(ap[0], idprotocol=None)
                         if err:
                             log ("[ERROR]"+st+"Проблема при добавлении протокола в базу данных на этапе включения в БД {0}".format(err))
