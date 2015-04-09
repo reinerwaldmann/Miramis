@@ -303,7 +303,7 @@ def basicParserTextProcedure (line, type='result'):
     else:
         raise RuntimeError('basicParserTextProcedure Некорректное задание типа выходного объекта')
 
-
+ 
 
 
 
