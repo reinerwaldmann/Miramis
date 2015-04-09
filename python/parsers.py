@@ -10,7 +10,6 @@ from classes import *
 import dateutil.parser as dparser
 
 
-
 #service functions
 def searchFirstLineInList (lst, str, contains=True):
 #возвращает индекс первой строки с начала списка, в которой найдена str
@@ -120,7 +119,6 @@ def delcomments (line):
     #         reslist.append(listlines[i])
 
     return "\n".join(listlines)
-
 
 #basic parse functions
 def basicParserTextForm (file, type='result'):
@@ -303,9 +301,6 @@ def basicParserTextProcedure (line, type='result'):
     else:
         raise RuntimeError('basicParserTextProcedure Некорректное задание типа выходного объекта')
 
- 
-
-
 
 def basicParserTextFormFilename (filename, type='result'):
     try:
@@ -316,10 +311,6 @@ def basicParserTextFormFilename (filename, type='result'):
                 return None, e.__str__()+str(e.__traceback__)
     except BaseException:
         return None, e.__str__()+str(e.__traceback__)
-
-
-
-
 
 #wrapper functions
 def parseToResult (filename):
@@ -337,10 +328,6 @@ def parseToResult (filename):
                 return None
     except BaseException:
         return None
-
-
-
-
 
 def parseToAProtocolCP1251(file):
     """
