@@ -184,16 +184,19 @@ def basicParserTextForm (file, type='result'):
     try:
         reslist=list(map(basicParserTextProcedure, rrlist)) #список результатов процедур
     except Exception as e:
-        raise RuntimeError (' basicParserTextForm: Ошибка при формирование списка результатов процедур.') from e
+        e.args = (e.args[0] + ' basicParserTextForm: Ошибка при формирование списка результатов процедур.',) #добавляем к описанию ошибки свой текст
+        #raise RuntimeError (' basicParserTextForm: Ошибка при формирование списка результатов процедур.') from e
+        raise
         #e.args = (e.args[0] + ' basicParserTextForm: Ошибка при формирование списка результатов процедур.',) #добавляем к описанию ошибки свой текст
         #raise #пропускаем исключение дальше
 
     try:
         proclist=list(map(lambda x: basicParserTextProcedure(x, 'protocol'), rrlist)) #список результатов процедур
     except Exception as e:
-        raise RuntimeError (' basicParserTextForm: Ошибка при формирование списка процедур.') from e
-        # e.args = (e.args[0] + ' basicParserTextForm: Ошибка при формирование списка процедур.',) #добавляем к описанию ошибки свой текст
-        # raise #пропускаем исключение дальше
+
+        #raise RuntimeError (' basicParserTextForm: Ошибка при формирование списка процедур.') from e
+        e.args = (e.args[0] + ' basicParserTextForm: Ошибка при формирование списка процедур.',) #добавляем к описанию ошибки свой текст
+        raise #пропускаем исключение дальше
 
 
     numseq=list(map (lambda  rpc: rpc.number, reslist))
@@ -288,7 +291,8 @@ def basicParserTextProcedure (line, type='result'):
 
     except Exception as e:
          e.args = (e.args[0] + 'We got an error in procedure number {0}'.format (rp.number),) #добавляем к описанию ошибки свой текст
-         raise
+         raise e
+
 
          #raise RuntimeError('We got an error in procedure number {0}'.format (rp.number)) from e #это тоже вариант, тогда будет выброшено два исключения - Runtime и e, притом e будет названо
         # прямой причиной Runtime

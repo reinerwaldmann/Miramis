@@ -16,12 +16,13 @@ def testTextProtocols (filename):
 
 
     print ('parsed protocol')
-    print (protocol[0])
+    print (protocol)
 
     print ('parsed result')
-    #print (result)
+    print (result)
 
 
 #testTextProtocols(input('Enter path'))
-testTextProtocols('d:/2.txt')
+[ testTextProtocols('d:/newProtocols/{0}.txt'.format(x)) for x in [1,2,3]]
 
+#0001  0002 0003 0004 00005
